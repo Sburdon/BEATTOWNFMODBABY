@@ -8,7 +8,7 @@ public class PlayerMove2 : MonoBehaviour
     private bool isMoving = false;
     private bool movementEnabled = false;
 
-    private Vector2Int currentGridPos;  // Current player grid position
+    public Vector2Int currentGridPos;  // Current player grid position
 
     void Start()
     {
