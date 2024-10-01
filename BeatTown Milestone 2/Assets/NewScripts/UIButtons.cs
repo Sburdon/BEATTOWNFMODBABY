@@ -19,7 +19,7 @@ public class UIButtons : MonoBehaviour
     {
         UnityEditor.EditorApplication.isPlaying = false;
 
-            Application.Quit();
+        Application.Quit();
     }
     public void ResetToSceneZero()
     {

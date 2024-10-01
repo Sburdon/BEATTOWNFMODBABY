@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: cfb1fd60721bd5e44ac4de5a00b86dce
   - enabled: 1
-    path: Assets/Scenes/New BeatTown.unity
-    guid: ea6c809fa79d266488d5af46917c4417
+    path: Assets/Scenes/SampleScene.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}

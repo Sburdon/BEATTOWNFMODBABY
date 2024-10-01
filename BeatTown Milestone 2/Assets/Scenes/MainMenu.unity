@@ -306,7 +306,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 637566051}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5ac128fb89e8dd41bc4110241c1486d, type: 3}
+  m_Script: {fileID: 11500000, guid: 7e3fb59181a15a74fb4e2f2d09e95b4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &637566054
@@ -949,7 +949,7 @@ GameObject:
   - component: {fileID: 1627790470}
   - component: {fileID: 1627790469}
   - component: {fileID: 1627790468}
-  - component: {fileID: 1627790467}
+  - component: {fileID: 1627790471}
   m_Layer: 5
   m_Name: PlayButton
   m_TagString: Untagged
@@ -977,18 +977,6 @@ RectTransform:
   m_AnchoredPosition: {x: 111.390015, y: 37}
   m_SizeDelta: {x: 102.77002, y: 26.649109}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1627790467
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1627790465}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5ac128fb89e8dd41bc4110241c1486d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1627790468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1033,7 +1021,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1627790467}
+      - m_Target: {fileID: 1627790471}
         m_TargetAssemblyTypeName: UIButtons, Assembly-CSharp
         m_MethodName: LoadNextScene
         m_Mode: 1
@@ -1083,6 +1071,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1627790465}
   m_CullTransparentMesh: 1
+--- !u!114 &1627790471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1627790465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e3fb59181a15a74fb4e2f2d09e95b4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
