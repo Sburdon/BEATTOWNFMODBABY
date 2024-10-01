@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private bool isInRange = false;
-    private HashSet<Collider2D> collidersInRange = new HashSet<Collider2D>(); // store all colliders in range
+    public HashSet<Collider2D> collidersInRange = new HashSet<Collider2D>(); // store all colliders in range
 
     // check if Player is in range to punch/act
     public bool IsInRange()

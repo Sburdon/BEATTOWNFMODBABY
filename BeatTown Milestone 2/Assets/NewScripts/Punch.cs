@@ -1,19 +1,33 @@
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Punch : MonoBehaviour
 {
     private Collider2D selectedEnemy; // Reference to the currently selected enemy
     private PlayerFatigue playerFatigue; // Reference to PlayerFatigue script
+    private PlayerMove2 playerMove; // Reference to PlayerMove2 script
+    private PlayerRange playerRange; // Reference to PlayerRange script
     private bool isPunching; // State to check if punch action is active
-    public int punchDamage = 1; //Damage
+    public int punchDamage = 1; // Damage
 
     void Start()
     {
         playerFatigue = FindObjectOfType<PlayerFatigue>(); // Get PlayerFatigue component
+        playerMove = FindObjectOfType<PlayerMove2>(); // Get PlayerMove2 component
+        playerRange = FindObjectOfType<PlayerRange>(); // Get PlayerRange component
+
         if (playerFatigue == null)
         {
             Debug.LogError("PlayerFatigue component not found in the scene!");
+        }
+        if (playerMove == null)
+        {
+            Debug.LogError("PlayerMove2 component not found in the scene!");
+        }
+        if (playerRange == null)
+        {
+            Debug.LogError("PlayerRange component not found in the scene!");
         }
     }
 
@@ -48,33 +62,35 @@ public class Punch : MonoBehaviour
 
     private void AttemptPunch()
     {
-        if (playerFatigue != null && playerFatigue.currentFatigue > 0)
+        // Check if the selected enemy is in range using PlayerRange
+        if (selectedEnemy != null && playerRange.IsEnemyInRange(selectedEnemy))
         {
-            DealDamageToEnemy(selectedEnemy, punchDamage); // Deal damage
-            playerFatigue.currentFatigue -= 1; // Reduce fatigue after punching
-            Debug.Log($"Fatigue remaining: {playerFatigue.currentFatigue}");
+            // Logic for damaging the enemy using the EnemyHealth script
+            EnemyHealth enemyHealth = selectedEnemy.GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(punchDamage);
+                Debug.Log($"Punched {selectedEnemy.name} for {punchDamage} damage!");
+                playerFatigue.currentFatigue -= 1; // Deduct fatigue
+            }
+            else
+            {
+                Debug.LogError("Enemy does not have an EnemyHealth component!");
+            }
         }
         else
         {
-            Debug.LogWarning("Not enough fatigue to perform a punch action.");
+            if (selectedEnemy == null)
+            {
+                Debug.LogWarning("No enemy selected to punch!");
+            }
+            else
+            {
+                Debug.LogWarning("Selected enemy is out of range to punch!");
+            }
         }
 
-        // Reset punch state
-        isPunching = false; // Disable enemy selection
+        isPunching = false; // Reset the punching state
         selectedEnemy = null; // Clear selected enemy
-    }
-
-    private void DealDamageToEnemy(Collider2D enemyCollider, int damage)
-    {
-        EnemyHealth enemyHealth = enemyCollider.GetComponent<EnemyHealth>(); // Get the EnemyHealth component
-
-        if (enemyHealth != null)
-        {
-            enemyHealth.TakeDamage(damage); // Apply damage to the enemy
-        }
-        else
-        {
-            Debug.LogError("No EnemyHealth component found on the selected enemy!");
-        }
     }
 }

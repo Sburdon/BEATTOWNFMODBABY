@@ -7,6 +7,7 @@ public class Spin : MonoBehaviour
     private Collider2D selectedEnemy; // Reference to the currently selected enemy
     private PlayerFatigue playerFatigue; // Reference to PlayerFatigue script
     private PlayerMove2 playerMove; // Reference to PlayerMove2 script
+    private PlayerRange playerRange; // Reference to PlayerRange script
     private bool isSelectingEnemy = false; // State to check if we are selecting an enemy
     private bool isSelectingTarget = false; // State to check if we are selecting where to move the enemy
 
@@ -14,6 +15,7 @@ public class Spin : MonoBehaviour
     {
         playerFatigue = FindObjectOfType<PlayerFatigue>();
         playerMove = FindObjectOfType<PlayerMove2>();
+        playerRange = FindObjectOfType<PlayerRange>(); // Get PlayerRange component
 
         if (playerFatigue == null)
         {
@@ -23,6 +25,11 @@ public class Spin : MonoBehaviour
         if (playerMove == null)
         {
             Debug.LogError("PlayerMove2 not found");
+        }
+
+        if (playerRange == null)
+        {
+            Debug.LogError("PlayerRange not found");
         }
     }
 
@@ -49,11 +56,17 @@ public class Spin : MonoBehaviour
 
             if (hit.collider != null && hit.collider.CompareTag("Enemy"))
             {
-                // If clicked on an enemy, select it and move to selecting the grid
-                selectedEnemy = hit.collider;
-                isSelectingEnemy = false;
-                isSelectingTarget = true;
-                Debug.Log("Selected enemy: " + selectedEnemy.name);
+                if (playerRange.IsEnemyInRange(hit.collider)) // Check if the enemy is in range
+                {
+                    selectedEnemy = hit.collider;
+                    isSelectingEnemy = false;
+                    isSelectingTarget = true;
+                    Debug.Log("Selected enemy: " + selectedEnemy.name);
+                }
+                else
+                {
+                    Debug.Log("Selected enemy is out of range.");
+                }
             }
         }
         // If we've selected the enemy, let the player select the grid to move to
