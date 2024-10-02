@@ -12,10 +12,15 @@ public class PlayerMove2 : MonoBehaviour
     public Vector2Int currentGridPos;  // Current player grid position
     private int gridSize = 5;  // Assuming a 5x5 grid
 
+    public GridSpace currentGridSpace; // Reference to the player's current GridSpace
+
     void Start()
     {
         gameManager = FindObjectOfType<GameManager2>();
         targetPosition = transform.position;
+
+        // Initialize player's current grid space based on starting grid position
+        UpdateCurrentGridSpace();
     }
 
     public void InitializePlayerPosition(Vector2Int startGridPos)
@@ -207,4 +212,18 @@ public class PlayerMove2 : MonoBehaviour
         }
     }
 
+
+    void UpdateCurrentGridSpace()
+    {
+        // Update the reference to the player's current grid space
+        foreach (var gridSpace in FindObjectsOfType<GridSpace>())
+        {
+            if (gridSpace.X == currentGridPos.x && gridSpace.Y == currentGridPos.y)
+            {
+                currentGridSpace = gridSpace;
+                Debug.Log("Player's current grid space updated: " + gridSpace.name);
+                break;
+            }
+        }
+    }
 }
