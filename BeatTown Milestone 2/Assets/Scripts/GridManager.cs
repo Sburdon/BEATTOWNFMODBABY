@@ -6,7 +6,7 @@ public class GridManager : MonoBehaviour
 {
     public static GridManager Instance { get; private set; } // Singleton instance
 
-    public Tilemap tilemap;
+    public Tilemap tilemap; // Reference to your Tilemap
     private Dictionary<Vector3Int, bool> occupiedCells = new Dictionary<Vector3Int, bool>();
 
     void Awake()
@@ -22,6 +22,19 @@ public class GridManager : MonoBehaviour
             Destroy(gameObject);
         }
         InitializeGrid();
+    }
+
+    void Start()
+    {
+        // If tilemap is not assigned in the inspector, find it
+        if (tilemap == null)
+        {
+            tilemap = GetComponent<Tilemap>();
+            if (tilemap == null)
+            {
+                Debug.LogError("Tilemap not found! Please assign a Tilemap to the GridManager.");
+            }
+        }
     }
 
     void InitializeGrid()
