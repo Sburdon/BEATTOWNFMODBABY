@@ -11,7 +11,7 @@ public class GridSpace : MonoBehaviour
     public int X => x;
     public int Y => y;
 
-    // Optional: Visualize the coordinates in the Editor when selected
+    // Pretty stuff: Visualize the coordinates in the Editor when selected
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
