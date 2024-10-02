@@ -22,9 +22,16 @@ public class GameManager2 : MonoBehaviour
     private bool isPlayerTurn = true;  // True if it's the player's turn
     private bool canMove = false;      // Player can move only once per turn
     private bool canAttack = false;    // Player can attack only once per turn
+
     public GameObject player;  // Reference to the player GameObject
     public Vector2Int playerStartGridPosition = new Vector2Int(2, 3);  // Starting grid position
-    private PlayerMove2 playerMoveScript;
+
+    public PlayerMove2 playerMoveScript;
+
+    // Variables for AI
+    public GameObject ai;  // Reference to the AI GameObject
+    public Vector2Int aiStartGridPosition = new Vector2Int(1, 1);  // Starting grid position of AI
+    public AIMove aiMoveScript;
 
     void Start()
     {
@@ -41,6 +48,33 @@ public class GameManager2 : MonoBehaviour
 
             // Initialize the player's grid position in the PlayerMove2 script
             playerMoveScript.InitializePlayerPosition(playerStartGridPosition);
+        }
+        else
+        {
+            Debug.LogError("Player start position is not within the grid.");
+        }
+
+        // Find and initialize AI
+        aiMoveScript = FindObjectOfType<AIMove>();  // Assuming there's only one AI
+        if (aiMoveScript != null)
+        {
+            // Set AI initial position
+            if (gridSquares.ContainsKey(aiStartGridPosition))
+            {
+                Vector3 aiStartPosition = gridSquares[aiStartGridPosition].transform.position;
+                ai.transform.position = new Vector3(aiStartPosition.x, aiStartPosition.y + ai.GetComponent<SpriteRenderer>().bounds.size.y / 2, ai.transform.position.z);
+
+                // Initialize the AI's grid position in the AIMove script
+                aiMoveScript.InitializeAIPosition(aiStartGridPosition);
+            }
+            else
+            {
+                Debug.LogError("AI start position is not within the grid.");
+            }
+        }
+        else
+        {
+            Debug.LogError("AIMove script not found in the scene.");
         }
 
         moveButton.onClick.AddListener(EnableMove);
@@ -94,14 +128,25 @@ public class GameManager2 : MonoBehaviour
     }
 
     // AI Turn logic
-    void StartAITurn()
+    public void StartAITurn()
     {
-        Debug.Log("AI turn success");
-        Invoke("StartPlayerTurn", 2f);  // Wait 2 seconds and then start the player's turn again
+        Debug.Log("AI turn started.");
+        isPlayerTurn = false;
+
+        if (aiMoveScript != null)
+        {
+            aiMoveScript.MoveAI();  // Trigger AI movement
+        }
+        else
+        {
+            Debug.LogError("AIMove script not assigned.");
+            // End AI turn immediately if no AI script is found
+            StartPlayerTurn();
+        }
     }
 
     // Starts the player's turn
-    void StartPlayerTurn()
+    public void StartPlayerTurn()
     {
         Debug.Log("Player's turn started.");
         isPlayerTurn = true;
@@ -125,5 +170,4 @@ public class GameManager2 : MonoBehaviour
         }
         return false;
     }
-
 }

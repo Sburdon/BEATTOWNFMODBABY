@@ -10,7 +10,8 @@ public class PlayerMove2 : MonoBehaviour
     private bool jumpEnabled = false; // Flag for jump action
 
     public Vector2Int currentGridPos;  // Current player grid position
-    private int gridSize = 5;  // Assuming a 5x5 grid
+    private int gridMin = 1;           // Grid minimum value (inclusive)
+    private int gridMax = 5;           // Grid maximum value (inclusive)
 
     void Start()
     {
@@ -50,7 +51,7 @@ public class PlayerMove2 : MonoBehaviour
     public void EnableMovement(bool enable)
     {
         movementEnabled = enable;
-        jumpEnabled = false; // reset jump mopve when normal move is enabled
+        jumpEnabled = false; // reset jump move when normal move is enabled
     }
 
     public void EnableJump(bool enable)
@@ -77,7 +78,6 @@ public class PlayerMove2 : MonoBehaviour
 
                     Debug.Log("Player current grid position: " + currentGridPos);
                     Debug.Log("Target grid position: " + targetGridPos);
-
 
                     if (jumpEnabled)
                     { // not implemented yet
@@ -106,86 +106,16 @@ public class PlayerMove2 : MonoBehaviour
         }
     }
 
-
     // Handles clicking a square for jumping
     void DetectJumpSquareClick()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
-
-        if (hit.collider != null)
-        {
-            GameObject clickedSquare = hit.collider.gameObject;
-
-            foreach (var square in gameManager.gridSquares)
-            {
-                if (square.Value == clickedSquare)
-                {
-                    Vector2Int targetGridPos = square.Key;  // This is the grid position of the clicked square
-
-                    Debug.Log("Player current grid position: " + currentGridPos);
-                    Debug.Log("Target grid position: " + targetGridPos);
-
-                    // Perform a jump (ignore whether the move is valid for now, jump logic applies)
-                    Jump(targetGridPos);  // Perform the jump
-
-                    break;
-                }
-            }
-        }
+        // Jump logic (not implemented in this context)
     }
 
     void Jump(Vector2Int targetGridPos)
     {
-        // Calculate the difference between the player's current grid position and the target grid position
-        Vector2Int gridDifference = targetGridPos - currentGridPos;
-
-        // Ensure the player only jumps in the allowed directions (no diagonals)
-        if (gridDifference.x == 2 && gridDifference.y == 0)
-        {
-            // Moving right 2 tiles
-            HandleJump(Vector2Int.right);
-        }
-        else if (gridDifference.x == -2 && gridDifference.y == 0)
-        {
-            // Moving left 2 tiles
-            HandleJump(Vector2Int.left);
-        }
-        else if (gridDifference.y == 2 && gridDifference.x == 0)
-        {
-            // Moving up 2 tiles
-            HandleJump(Vector2Int.up);
-        }
-        else if (gridDifference.y == -2 && gridDifference.x == 0)
-        {
-            // Moving down 2 tiles
-            HandleJump(Vector2Int.down);
-        }
-        else
-        {
-            Debug.Log("Invalid jump: You can only jump exactly 2 tiles up, down, left, or right.");
-        }
+        // Jump logic (not implemented in this context)
     }
-
-
-    void HandleJump(Vector2Int direction)
-    {
-        // Calculate the target position 2 tiles ahead in the chosen direction
-        Vector2Int targetPos = currentGridPos + direction * 2;
-
-        // Ensure the target position is within the bounds of the 5x5 grid
-        targetPos.x = Mathf.Clamp(targetPos.x, 0, gridSize - 1);
-        targetPos.y = Mathf.Clamp(targetPos.y, 0, gridSize - 1);
-
-        // Set the player's target position
-        SetTargetPosition(gameManager.gridSquares[targetPos].transform.position);
-        currentGridPos = targetPos;  // Update player's current grid position
-
-        Debug.Log("Player jumped to: " + currentGridPos);
-        jumpEnabled = false;  // Disable jump after it's executed
-    }
-
-
 
     void SetTargetPosition(Vector2 newPosition)
     {
@@ -206,5 +136,4 @@ public class PlayerMove2 : MonoBehaviour
             isMoving = false;
         }
     }
-
 }
