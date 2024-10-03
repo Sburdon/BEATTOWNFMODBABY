@@ -3,20 +3,35 @@ using UnityEngine;
 public class EnemyHealth : MonoBehaviour
 {
     [SerializeField]
-    private int maxHealth = 100; // Max health of the enemy
+    public int maxHealth = 100; // Max health of the enemy
     [SerializeField]
-    private int currentHealth; // Current health of the enemy
-
+    public int currentHealth; // Current health of the enemy
     private AIMove aiMoveScript; // Reference to the AIMove script
+    private GameManager2 gameManager; // Reference to GameManager for respawning
+    private Collider2D enemyCollider; // Reference to the enemy's collider
+    private SpriteRenderer spriteRenderer; // Reference to the sprite renderer
 
     private void Start()
     {
         currentHealth = maxHealth; // Initialize current health
         aiMoveScript = GetComponent<AIMove>();
+        gameManager = FindObjectOfType<GameManager2>();
+        enemyCollider = GetComponent<Collider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (aiMoveScript == null)
         {
             Debug.LogError("AIMove script not found on the enemy.");
+        }
+
+        if (enemyCollider == null)
+        {
+            Debug.LogError("Collider2D component not found on the enemy.");
+        }
+
+        if (spriteRenderer == null)
+        {
+            Debug.LogError("SpriteRenderer component not found on the enemy.");
         }
     }
 
@@ -44,7 +59,34 @@ public class EnemyHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("Enemy has died.");
-        // Implement death logic here (e.g., destroy enemy GameObject, update game state)
-        Destroy(gameObject);
+
+        // Instead of disabling the entire GameObject, disable individual components
+        if (aiMoveScript != null) aiMoveScript.enabled = false; // Disable AI movement
+        if (enemyCollider != null) enemyCollider.enabled = false; // Disable the collider
+        if (spriteRenderer != null) spriteRenderer.enabled = false; // Disable the sprite renderer
+
+        // Respawn the AI after handling the death
+        gameManager.RespawnAI(this.gameObject); // Trigger respawn
+    }
+
+    // Method for traps to instantly kill the enemy
+    public void HitByTrap()
+    {
+        Debug.Log("Enemy hit a trap!");
+        currentHealth = 0; // Kill the enemy
+        Die(); // Trigger the death and respawn logic
+    }
+
+    // Method to reset health and re-enable components when the enemy respawns
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth; // Reset health to maximum
+
+        // Re-enable components to restore the enemy's behavior
+        if (aiMoveScript != null) aiMoveScript.enabled = true; // Enable AI movement
+        if (enemyCollider != null) enemyCollider.enabled = true; // Enable the collider
+        if (spriteRenderer != null) spriteRenderer.enabled = true; // Enable the sprite renderer
+
+        Debug.Log("Enemy health reset to full: " + currentHealth);
     }
 }

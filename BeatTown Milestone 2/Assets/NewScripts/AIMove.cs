@@ -8,7 +8,7 @@ public class AIMove : MonoBehaviour
     private int gridMin = 1;            // Grid minimum value (inclusive)
     private int gridMax = 5;            // Grid maximum value (inclusive)
     private Vector2 targetPosition;
-    private bool isMoving = false;
+    public bool isMoving = false;
     public float moveSpeed = 5f;
 
     private AIAttack aiAttack;          // Reference to AIAttack script
@@ -18,6 +18,8 @@ public class AIMove : MonoBehaviour
 
     // Change from boolean to integer counter
     private int turnsToFollowPlayer = 0; // Number of turns to follow the player
+
+   
 
     void Start()
     {
@@ -186,7 +188,7 @@ public class AIMove : MonoBehaviour
         return false;
     }
 
-    void MoveToGridPosition(Vector2Int targetGridPos)
+    public void MoveToGridPosition(Vector2Int targetGridPos)
     {
         currentGridPos = targetGridPos;
         Vector3 gridWorldPosition = gameManager.gridSquares[targetGridPos].transform.position;

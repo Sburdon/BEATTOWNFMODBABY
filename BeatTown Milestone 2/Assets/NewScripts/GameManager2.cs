@@ -1,6 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI;  // For Canvas buttons
+using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 
 public class GameManager2 : MonoBehaviour
 {
@@ -16,22 +17,37 @@ public class GameManager2 : MonoBehaviour
     public GridSquare[] squares; // Assign manually in the Inspector
 
     public Button moveButton;     // Button for moving
-    public Button attackButton;   // Button for attacking
+    public Button pushButton;     // Button for pushing
     public Button endTurnButton;  // Button to end the turn
 
-    private bool isPlayerTurn = true;  // True if it's the player's turn
-    private bool canMove = false;      // Player can move only once per turn
-    private bool canAttack = false;    // Player can attack only once per turn
+    private bool isPlayerTurn = true;
+    private bool canMove = true;
+    private bool canPush = true;
 
     public GameObject player;  // Reference to the player GameObject
-    public Vector2Int playerStartGridPosition = new Vector2Int(2, 3);  // Starting grid position
-
     public PlayerMove2 playerMoveScript;
+    public PlayerFatigue playerFatigueScript;
+    public Push pushScript;
 
-    // Variables for AI
-    public GameObject ai;  // Reference to the AI GameObject
-    public Vector2Int aiStartGridPosition = new Vector2Int(1, 1);  // Starting grid position of AI
-    public AIMove aiMoveScript;
+    // AI variables
+    public GameObject aiPrefab;  // AI prefab for respawning
+    public List<GameObject> activeAIList = new List<GameObject>(); // Track active AI
+
+    // Trap-related variables
+    private int trapKills = 0;
+    public TextMeshProUGUI trapKillCountText; // TextMeshPro for trap kills
+
+    // UI variables
+    public TextMeshProUGUI playerHealthText;
+    public TextMeshProUGUI enemyHealthText;
+    public TextMeshProUGUI playerFatigueText;
+
+    // Boss-related variables
+    public GameObject bossPrefab; // Assign boss prefab in the Inspector
+    public GameObject bossInstance; // Store the spawned boss instance
+    public Vector2Int bossSpawnGridPos = new Vector2Int(3, 3); // Grid position where the boss will spawn
+    private bool bossSpawned = false; // Track if the boss has already spawned
+    private bool isBossTurn = false;  // Track if it's the boss's turn
 
     void Start()
     {
@@ -39,51 +55,18 @@ public class GameManager2 : MonoBehaviour
         InitializeGrid();
 
         playerMoveScript = FindObjectOfType<PlayerMove2>();
-
-        // Set player initial position
-        if (gridSquares.ContainsKey(playerStartGridPosition))
-        {
-            Vector3 startPosition = gridSquares[playerStartGridPosition].transform.position;
-            player.transform.position = new Vector3(startPosition.x, startPosition.y + player.GetComponent<SpriteRenderer>().bounds.size.y / 2, player.transform.position.z);
-
-            // Initialize the player's grid position in the PlayerMove2 script
-            playerMoveScript.InitializePlayerPosition(playerStartGridPosition);
-        }
-        else
-        {
-            Debug.LogError("Player start position is not within the grid.");
-        }
-
-        // Find and initialize AI
-        aiMoveScript = FindObjectOfType<AIMove>();  // Assuming there's only one AI
-        if (aiMoveScript != null)
-        {
-            // Set AI initial position
-            if (gridSquares.ContainsKey(aiStartGridPosition))
-            {
-                Vector3 aiStartPosition = gridSquares[aiStartGridPosition].transform.position;
-                ai.transform.position = new Vector3(aiStartPosition.x, aiStartPosition.y + ai.GetComponent<SpriteRenderer>().bounds.size.y / 2, ai.transform.position.z);
-
-                // Initialize the AI's grid position in the AIMove script
-                aiMoveScript.InitializeAIPosition(aiStartGridPosition);
-            }
-            else
-            {
-                Debug.LogError("AI start position is not within the grid.");
-            }
-        }
-        else
-        {
-            Debug.LogError("AIMove script not found in the scene.");
-        }
+        playerFatigueScript = FindObjectOfType<PlayerFatigue>();
+        pushScript = FindObjectOfType<Push>();
 
         moveButton.onClick.AddListener(EnableMove);
-        attackButton.onClick.AddListener(EnableAttack);
+        pushButton.onClick.AddListener(EnablePush);
         endTurnButton.onClick.AddListener(EndTurn);
 
-        StartPlayerTurn();  // Start with player's turn
+        StartPlayerTurn();
+        UpdateUI();
     }
 
+    // Initialize the grid and populate the dictionary
     void InitializeGrid()
     {
         foreach (GridSquare square in squares)
@@ -99,20 +82,29 @@ public class GameManager2 : MonoBehaviour
     // Called when the player clicks the move button
     void EnableMove()
     {
-        if (isPlayerTurn && !canMove)
+        if (isPlayerTurn && canMove)
         {
             playerMoveScript.EnableMovement(true);  // Enable movement in the PlayerMove2 script
-            canMove = true;
+            canMove = false;  // Disable further movement until reset
         }
     }
 
-    // Placeholder for enabling attack
-    void EnableAttack()
+    // Called when the player clicks the push button
+    void EnablePush()
     {
-        if (isPlayerTurn && !canAttack)
+        if (isPlayerTurn && canPush)
         {
-            Debug.Log("Attack enabled");  // Not implemented yet
-            canAttack = true;
+            Debug.Log("Push mode activated. Select an enemy to push.");
+            canPush = false;
+
+            if (pushScript != null)
+            {
+                pushScript.EnterPushMode();  // Enter push mode and await player click
+            }
+            else
+            {
+                Debug.LogError("Push script not found!");
+            }
         }
     }
 
@@ -127,31 +119,157 @@ public class GameManager2 : MonoBehaviour
         }
     }
 
-    // AI Turn logic
+    // Starts the AI turn
     public void StartAITurn()
     {
         Debug.Log("AI turn started.");
         isPlayerTurn = false;
 
-        if (aiMoveScript != null)
+        foreach (var ai in activeAIList)
         {
-            aiMoveScript.MoveAI();  // Trigger AI movement
+            AIMove aiMove = ai.GetComponent<AIMove>();
+            if (aiMove != null)
+            {
+                aiMove.MoveAI();
+            }
+        }
+
+        // After AI turns, handle boss movement (if the boss is spawned)
+        if (bossSpawned && bossInstance != null)
+        {
+            isBossTurn = true;  // Now it's the boss's turn
+            StartBossTurn();    // Call the method to move the boss
         }
         else
         {
-            Debug.LogError("AIMove script not assigned.");
-            // End AI turn immediately if no AI script is found
-            StartPlayerTurn();
+            StartPlayerTurn();  // After AI and boss turns, return control to the player
         }
     }
 
-    // Starts the player's turn
+    // Starts the boss's turn
+    private void StartBossTurn()
+    {
+        BossMovement bossMove = bossInstance.GetComponent<BossMovement>();
+        if (bossMove != null)
+        {
+            bossMove.MoveTowardsTarget();  // Move the boss only during its turn
+        }
+
+        isBossTurn = false;  // End boss's turn
+        StartPlayerTurn();   // After boss turn, go back to player
+    }
+
+    // Start the player's turn
     public void StartPlayerTurn()
     {
         Debug.Log("Player's turn started.");
         isPlayerTurn = true;
-        canMove = false;
-        canAttack = false;
+
+        canMove = true;
+        canPush = true;
+
+        playerFatigueScript.RecoverFatigue(playerFatigueScript.maxFatigue);
+
+        UpdateUI();
+    }
+
+    // Respawn AI at a random grid position after it dies
+    public void RespawnAI(GameObject ai)
+    {
+        Vector2Int randomPos = GetRandomGridPosition();
+        ai.GetComponent<AIMove>().InitializeAIPosition(randomPos);
+
+        SpriteRenderer spriteRenderer = ai.GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = true;
+        }
+
+        Collider2D collider = ai.GetComponent<Collider2D>();
+        if (collider != null)
+        {
+            collider.enabled = true;
+        }
+
+        ai.SetActive(true);
+
+        EnemyHealth enemyHealth = ai.GetComponent<EnemyHealth>();
+        if (enemyHealth != null)
+        {
+            enemyHealth.ResetHealth();
+        }
+
+        AIMove aiMove = ai.GetComponent<AIMove>();
+        if (aiMove != null)
+        {
+            aiMove.isMoving = false;
+            aiMove.MoveAI();
+        }
+
+        Debug.Log("AI respawned at position: " + randomPos);
+    }
+
+    // Helper method to get a random grid position
+    private Vector2Int GetRandomGridPosition()
+    {
+        int x = Random.Range(1, 5);
+        int y = Random.Range(1, 5);
+        return new Vector2Int(x, y);
+    }
+
+    // Track trap kills (called by Trap script when enemy dies)
+    public void TrapKill()
+    {
+        trapKills += 1;
+        UpdateTrapKillUI();
+
+        if (trapKills >= 2 && !bossSpawned)
+        {
+            SpawnBoss();
+        }
+    }
+
+    // Spawn the boss at the grid coordinates
+    private void SpawnBoss()
+    {
+        if (bossPrefab != null && gridSquares.ContainsKey(bossSpawnGridPos))
+        {
+            Vector3 bossWorldPos = gridSquares[bossSpawnGridPos].transform.position;
+            bossInstance = Instantiate(bossPrefab, bossWorldPos, Quaternion.identity);  // Store the boss instance
+            bossSpawned = true;
+            Debug.Log("Boss spawned at: " + bossSpawnGridPos);
+        }
+        else
+        {
+            Debug.LogError("Boss prefab or grid position for spawn is missing.");
+        }
+    }
+
+    // Update the trap kill count in the UI
+    private void UpdateTrapKillUI()
+    {
+        trapKillCountText.text = "Trap Kills: " + trapKills.ToString();
+    }
+
+    // Update the player's health, enemy health, fatigue, and trap kills in the UI
+    private void UpdateUI()
+    {
+        PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            playerHealthText.text = "Player Health: " + playerHealth.currentHealth + "/" + playerHealth.maxHealth;
+        }
+
+        if (activeAIList.Count > 0)
+        {
+            EnemyHealth enemyHealth = activeAIList[0].GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
+            {
+                enemyHealthText.text = "Enemy Health: " + enemyHealth.currentHealth + "/" + enemyHealth.maxHealth;
+            }
+        }
+
+        playerFatigueText.text = "Fatigue: " + playerFatigueScript.currentFatigue + "/" + playerFatigueScript.maxFatigue;
     }
 
     // Check if the player can move within 2 squares and not diagonally
@@ -162,7 +280,6 @@ public class GameManager2 : MonoBehaviour
 
         Debug.Log("xDistance: " + xDistance + ", yDistance: " + yDistance);
 
-        // Valid if it's within 2 squares and not diagonal
         if ((xDistance == 0 && yDistance > 0 && yDistance <= 2) ||
             (yDistance == 0 && xDistance > 0 && xDistance <= 2))
         {

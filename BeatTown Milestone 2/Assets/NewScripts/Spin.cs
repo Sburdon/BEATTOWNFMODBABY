@@ -1,45 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Spin : MonoBehaviour
 {
-    private Collider2D selectedEnemy; // Reference to the currently selected enemy
+    private PlayerMove2 playerMove; // Reference to the player's movement script
     private PlayerFatigue playerFatigue; // Reference to PlayerFatigue script
-    private PlayerMove2 playerMove; // Reference to PlayerMove2 script
-    private PlayerRange playerRange; // Reference to PlayerRange script
-    private bool isSelectingEnemy = false; // State to check if we are selecting an enemy
-    private bool isSelectingTarget = false; // State to check if we are selecting where to move the enemy
+    private EnemyHealth selectedEnemy; // Reference to the selected enemy's health
+    private bool isSelectingEnemy = false; // Whether the player is selecting an enemy to spin
+    private bool isSelectingDirection = false; // Whether the player is selecting a direction to move the enemy
 
     void Start()
     {
-        playerFatigue = FindObjectOfType<PlayerFatigue>();
         playerMove = FindObjectOfType<PlayerMove2>();
-        playerRange = FindObjectOfType<PlayerRange>(); // Get PlayerRange component
-
-        if (playerFatigue == null)
-        {
-            Debug.LogError("PlayerFatigue not found");
-        }
+        playerFatigue = FindObjectOfType<PlayerFatigue>();
 
         if (playerMove == null)
         {
-            Debug.LogError("PlayerMove2 not found");
+            Debug.LogError("PlayerMove2 script not found!");
         }
-
-        if (playerRange == null)
+        if (playerFatigue == null)
         {
-            Debug.LogError("PlayerRange not found");
+            Debug.LogError("PlayerFatigue script not found!");
         }
     }
 
-    // Call this when the spin button is clicked
+    // Call this method when the spin button is clicked
     public void OnSpinButtonClick()
     {
-        if (playerFatigue != null && playerFatigue.currentFatigue > 0)
+        if (playerFatigue.currentFatigue >= 2) // Ensure player has enough fatigue
         {
-            isSelectingEnemy = true; // Start the enemy selection process
-            Debug.Log("Select an enemy to move.");
+            isSelectingEnemy = true; // Start the process of selecting an enemy
+            Debug.Log("Spin action initiated: Select an adjacent enemy.");
         }
         else
         {
@@ -49,81 +39,81 @@ public class Spin : MonoBehaviour
 
     void Update()
     {
-        // Check for mouse input if we're in enemy selection mode
-        if (isSelectingEnemy && Input.GetMouseButtonDown(0))
+        if (isSelectingEnemy && Input.GetMouseButtonDown(0)) // Select enemy with left mouse click
         {
-            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-
-            if (hit.collider != null && hit.collider.CompareTag("Enemy"))
-            {
-                if (playerRange.IsEnemyInRange(hit.collider)) // Check if the enemy is in range
-                {
-                    selectedEnemy = hit.collider;
-                    isSelectingEnemy = false;
-                    isSelectingTarget = true;
-                    Debug.Log("Selected enemy: " + selectedEnemy.name);
-                }
-                else
-                {
-                    Debug.Log("Selected enemy is out of range.");
-                }
-            }
+            TrySelectEnemy();
         }
-        // If we've selected the enemy, let the player select the grid to move to
-        else if (isSelectingTarget && Input.GetMouseButtonDown(0))
+        else if (isSelectingDirection && selectedEnemy != null) // If an enemy is selected, allow direction input
         {
-            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            TrySelectDirection();
+        }
+    }
 
-            if (hit.collider != null && hit.collider.CompareTag("Grid"))
+    // Method to try selecting an enemy that is adjacent to the player
+    private void TrySelectEnemy()
+    {
+        foreach (var enemy in FindObjectsOfType<EnemyHealth>())
+        {
+            Vector2Int enemyGridPos = enemy.GetComponent<AIMove>().currentGridPos;
+            Vector2Int playerGridPos = playerMove.currentGridPos;
+
+            if (IsAdjacent(playerGridPos, enemyGridPos)) // Check if the enemy is adjacent
             {
-                // Get the grid position of the clicked tile
-                Vector2Int targetGridPos = GetGridPositionFromCollider(hit.collider);
-
-                // Get player's current grid position
-                Vector2Int playerGridPos = playerMove.currentGridPos;
-
-                // Validate the target position is one tile away from the player's position
-                if (IsAdjacent(playerGridPos.x, playerGridPos.y, targetGridPos.x, targetGridPos.y))
-                {
-                    MoveEnemyToCollider(selectedEnemy, hit.collider);
-                    playerFatigue.currentFatigue -= 2; // Reduce fatigue after the spin action
-                    selectedEnemy = null; // Reset the selected enemy
-                    isSelectingTarget = false; // Stop selecting the target
-                    Debug.Log("Enemy moved to: " + hit.collider.name);
-                }
-                else
-                {
-                    Debug.Log("Invalid move: The target position is not adjacent to the player.");
-                }
+                selectedEnemy = enemy;
+                isSelectingEnemy = false;
+                isSelectingDirection = true; // Now wait for direction input
+                Debug.Log("Enemy selected: " + selectedEnemy.name);
+                break;
             }
         }
     }
 
-    private void MoveEnemyToCollider(Collider2D enemyCollider, Collider2D newCollider)
+    // Method to handle direction selection via arrow keys
+    private void TrySelectDirection()
     {
-        // Move the enemy to the center of the new collider
-        Vector3 newPosition = newCollider.bounds.center;
-        newPosition.y += 0.5f; // Adjust the Y position to fit in the grid
-        enemyCollider.transform.position = newPosition;
+        Vector2Int playerGridPos = playerMove.currentGridPos;
 
-        Debug.Log("Enemy moved to: " + newCollider.name); // Log successful move
+        if (Input.GetKeyDown(KeyCode.UpArrow)) // Up
+        {
+            MoveEnemyToGrid(selectedEnemy, new Vector2Int(playerGridPos.x, playerGridPos.y + 1));
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow)) // Down
+        {
+            MoveEnemyToGrid(selectedEnemy, new Vector2Int(playerGridPos.x, playerGridPos.y - 1));
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow)) // Left
+        {
+            MoveEnemyToGrid(selectedEnemy, new Vector2Int(playerGridPos.x - 1, playerGridPos.y));
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow)) // Right
+        {
+            MoveEnemyToGrid(selectedEnemy, new Vector2Int(playerGridPos.x + 1, playerGridPos.y));
+        }
     }
 
-    private Vector2Int GetGridPositionFromCollider(Collider2D collider)
+    // Move the enemy to the selected grid position
+    private void MoveEnemyToGrid(EnemyHealth enemy, Vector2Int targetGridPos)
     {
-        // Simple extraction of grid position from the collider name
-        string colliderName = collider.name; // e.g., "Square (3, 2)"
-        string[] parts = colliderName.Replace("Square (", "").Replace(")", "").Split(',');
+        AIMove enemyMove = enemy.GetComponent<AIMove>();
 
-        int x = int.Parse(parts[0].Trim());
-        int y = int.Parse(parts[1].Trim());
-
-        return new Vector2Int(x, y);
+        if (enemyMove != null)
+        {
+            enemyMove.MoveToGridPosition(targetGridPos); // Move enemy to the new grid position
+            playerFatigue.currentFatigue -= 2; // Deduct fatigue after the spin action
+            selectedEnemy = null; // Clear selected enemy
+            isSelectingDirection = false; // Reset selection process
+            Debug.Log("Enemy moved to: " + targetGridPos);
+        }
+        else
+        {
+            Debug.LogError("No AIMove component found on the selected enemy.");
+        }
     }
 
-    private bool IsAdjacent(int playerX, int playerY, int targetX, int targetY)
+    // Check if two positions are adjacent
+    private bool IsAdjacent(Vector2Int pos1, Vector2Int pos2)
     {
-        return (Mathf.Abs(playerX - targetX) == 1 && playerY == targetY) ||
-               (Mathf.Abs(playerY - targetY) == 1 && playerX == targetX);
+        return (Mathf.Abs(pos1.x - pos2.x) == 1 && pos1.y == pos2.y) ||
+               (Mathf.Abs(pos1.y - pos2.y) == 1 && pos1.x == pos2.x);
     }
 }

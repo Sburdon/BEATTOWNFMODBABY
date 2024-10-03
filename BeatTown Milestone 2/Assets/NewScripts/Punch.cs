@@ -1,96 +1,85 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Punch : MonoBehaviour
 {
-    private Collider2D selectedEnemy; // Reference to the currently selected enemy
     private PlayerFatigue playerFatigue; // Reference to PlayerFatigue script
     private PlayerMove2 playerMove; // Reference to PlayerMove2 script
-    private PlayerRange playerRange; // Reference to PlayerRange script
-    private bool isPunching; // State to check if punch action is active
     public int punchDamage = 1; // Damage
+    private bool isPunching = false; // State to check if punch action is active
 
     void Start()
     {
         playerFatigue = FindObjectOfType<PlayerFatigue>(); // Get PlayerFatigue component
         playerMove = FindObjectOfType<PlayerMove2>(); // Get PlayerMove2 component
-        playerRange = FindObjectOfType<PlayerRange>(); // Get PlayerRange component
 
         if (playerFatigue == null)
         {
-            Debug.LogError("PlayerFatigue component not found in the scene!");
+            Debug.LogError("PlayerFatigue component not found!");
         }
         if (playerMove == null)
         {
-            Debug.LogError("PlayerMove2 component not found in the scene!");
-        }
-        if (playerRange == null)
-        {
-            Debug.LogError("PlayerRange component not found in the scene!");
+            Debug.LogError("PlayerMove2 component not found!");
         }
     }
 
     // Call this method when the punch button is clicked
     public void OnPunchButtonClick()
     {
-        isPunching = true; // Set the state to allow enemy selection
-        Debug.Log("Punch button clicked! Now select an enemy to punch.");
+        if (playerFatigue != null && playerFatigue.currentFatigue > 0)
+        {
+            isPunching = true; // Set the state to allow punch action
+            Debug.Log("Punch mode activated. Select an enemy to punch.");
+        }
+        else
+        {
+            Debug.LogWarning("Not enough fatigue to punch.");
+        }
     }
 
     void Update()
     {
-        if (isPunching)
+        if (isPunching && Input.GetMouseButtonDown(0)) // Left-click to select an enemy
         {
-            // Check for mouse input to select an enemy
-            if (Input.GetMouseButtonDown(0)) // Left mouse button
+            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            if (hit.collider != null && hit.collider.CompareTag("Enemy"))
             {
-                RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                if (hit.collider != null && hit.collider.CompareTag("Enemy"))
+                EnemyHealth enemyHealth = hit.collider.GetComponent<EnemyHealth>();
+                if (enemyHealth != null)
                 {
-                    selectedEnemy = hit.collider; // Set the selected enemy
-                    Debug.Log($"Selected enemy: {selectedEnemy.gameObject.name}");
-                    AttemptPunch(); // Try to punch the selected enemy
-                }
-                else
-                {
-                    Debug.Log("No enemy selected or the selected object is not tagged as 'Enemy'.");
+                    Vector2Int playerPos = playerMove.currentGridPos; // Get player's grid position
+                    Vector2Int enemyPos = hit.collider.GetComponent<AIMove>().currentGridPos; // Get enemy's grid position
+
+                    if (IsAdjacent(playerPos, enemyPos)) // Check if the enemy is adjacent to the player
+                    {
+                        PunchEnemy(enemyHealth);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Enemy is not adjacent to the player.");
+                    }
                 }
             }
+            else
+            {
+                Debug.LogWarning("No valid enemy selected.");
+            }
+
+            isPunching = false; // Reset punch state
         }
     }
 
-    private void AttemptPunch()
+    private void PunchEnemy(EnemyHealth enemyHealth)
     {
-        // Check if the selected enemy is in range using PlayerRange
-        if (selectedEnemy != null && playerRange.IsEnemyInRange(selectedEnemy))
-        {
-            // Logic for damaging the enemy using the EnemyHealth script
-            EnemyHealth enemyHealth = selectedEnemy.GetComponent<EnemyHealth>();
-            if (enemyHealth != null)
-            {
-                enemyHealth.TakeDamage(punchDamage);
-                Debug.Log($"Punched {selectedEnemy.name} for {punchDamage} damage!");
-                playerFatigue.currentFatigue -= 1; // Deduct fatigue
-            }
-            else
-            {
-                Debug.LogError("Enemy does not have an EnemyHealth component!");
-            }
-        }
-        else
-        {
-            if (selectedEnemy == null)
-            {
-                Debug.LogWarning("No enemy selected to punch!");
-            }
-            else
-            {
-                Debug.LogWarning("Selected enemy is out of range to punch!");
-            }
-        }
+        // Apply damage to the enemy
+        enemyHealth.TakeDamage(punchDamage);
+        playerFatigue.currentFatigue -= 1; // Reduce fatigue after punching
+        Debug.Log("Punched enemy for " + punchDamage + " damage.");
+    }
 
-        isPunching = false; // Reset the punching state
-        selectedEnemy = null; // Clear selected enemy
+    // Check if the enemy is adjacent to the player
+    private bool IsAdjacent(Vector2Int playerPos, Vector2Int enemyPos)
+    {
+        return (Mathf.Abs(playerPos.x - enemyPos.x) == 1 && playerPos.y == enemyPos.y) ||
+               (Mathf.Abs(playerPos.y - enemyPos.y) == 1 && playerPos.x == enemyPos.x);
     }
 }
