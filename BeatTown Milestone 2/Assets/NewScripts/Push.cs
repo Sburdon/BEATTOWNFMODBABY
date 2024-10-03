@@ -88,28 +88,40 @@ public class Push : MonoBehaviour
 
     private void PushEnemy(GridSpace enemySpace, Vector2Int direction)
     {
-        Vector2Int targetPos = new Vector2Int(enemySpace.X, enemySpace.Y);
+        GridSpace currentSpace = enemySpace;
+        GridSpace nextSpace = null;
 
-        // Keep pushing the enemy until they hit the edge of the grid
         while (true)
         {
-            Vector2Int nextPos = targetPos + direction;
+            // Get the next space in the push direction
+            Vector2Int nextPos = new Vector2Int(currentSpace.X + direction.x, currentSpace.Y + direction.y);
+            nextSpace = FindGridSpaceAtPosition(nextPos);
 
-            // Check if the next position is within grid bounds
-            if (nextPos.x < 1 || nextPos.x > 5 || nextPos.y < 1 || nextPos.y > 5)
-                break;  // Stop when we hit the edge of the grid
+            // Check if we found a valid next space
+            if (nextSpace == null)
+            {
+                // We've reached the edge of the grid, so stop here
+                break;
+            }
 
-            // Update target position
-            targetPos = nextPos;
+            // Check the flags of the next space and stop if it's at an edge
+            if ((direction == Vector2Int.right && nextSpace.RIGHTMOST) ||
+                (direction == Vector2Int.left && nextSpace.LEFTMOST) ||
+                (direction == Vector2Int.up && nextSpace.TOP) ||
+                (direction == Vector2Int.down && nextSpace.BOTTOM))
+            {
+                // Stop moving the enemy at the edge
+                currentSpace = nextSpace;
+                break;
+            }
+
+            // Move to the next space
+            currentSpace = nextSpace;
         }
 
-        // Move the enemy to the final target position
-        GridSpace finalGridSpace = FindGridSpaceAtPosition(targetPos);
-        if (finalGridSpace != null)
-        {
-            selectedEnemy.transform.position = finalGridSpace.transform.position;
-            Debug.Log("Enemy moved to grid position: " + targetPos);
-        }
+        // Move the enemy to the final grid space
+        selectedEnemy.transform.position = currentSpace.transform.position;
+        Debug.Log("Enemy moved to grid position: " + currentSpace.X + "," + currentSpace.Y);
     }
 
     private GridSpace FindGridSpaceAtPosition(Vector2Int gridPos)

@@ -7,6 +7,11 @@ public class GridSpace : MonoBehaviour
     [SerializeField] private int x;
     [SerializeField] private int y;
 
+    public bool TOP;
+    public bool BOTTOM;
+    public bool LEFTMOST;
+    public bool RIGHTMOST;
+
     // Public properties to access the grid position
     public int X => x;
     public int Y => y;
