@@ -27,9 +27,6 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        // Prevent movement if swing action is active
-        if (swingScript.IsSwinging()) return;
-
         // Update CurrentTilePosition based on the player's position
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
 
@@ -44,19 +41,16 @@ public class PlayerMove : MonoBehaviour
             int deltaX = Mathf.Abs(clickedTilePosition.x - CurrentTilePosition.x);
             int deltaY = Mathf.Abs(clickedTilePosition.y - CurrentTilePosition.y);
 
-            // Check if the clicked tile is within the allowed move range (2 tiles in one direction)
-            if ((deltaX + deltaY <= 2) && (deltaX == 0 || deltaY == 0) && remainingMoves > 0)
+            // Check if the clicked tile is within the allowed move range (up to 2 tiles away)
+            if (deltaX + deltaY <= remainingMoves && (deltaX == 0 || deltaY == 0) && remainingMoves > 0)
             {
-                if (!IsTileOccupied(clickedTilePosition))
-                {
-                    Debug.Log($"Moving to tile: {clickedTilePosition}");
-                    currentMoveCoroutine = StartCoroutine(MoveToTile(clickedTilePosition));
-                    remainingMoves--; // Decrease remaining moves
-                }
-                else
-                {
-                    Debug.Log("Cannot move to this tile. It is occupied by an enemy.");
-                }
+                Debug.Log($"Moving to tile: {clickedTilePosition}");
+
+                // Start movement coroutine
+                StartCoroutine(MoveToTile(clickedTilePosition));
+
+                // Decrement remainingMoves by the number of tiles moved
+                remainingMoves -= (deltaX + deltaY);
             }
             else
             {
@@ -120,7 +114,7 @@ public class PlayerMove : MonoBehaviour
         if (remainingMoves <= 0)
         {
             canMove = false; // Disable further movement until reset
-            Debug.Log("Movement complete. Waiting for refresh.");
+            Debug.Log("Movement complete. No moves remaining.");
         }
     }
 

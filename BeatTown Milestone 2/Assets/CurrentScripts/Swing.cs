@@ -43,9 +43,6 @@ public class Swing : MonoBehaviour
         isSwinging = true; // Activate swinging mode
         selectedEnemy = null; // Reset selected enemy
         Debug.Log("Swing button pressed, current action: " + playerMove.CurrentAction);
-
-        // Check if any enemies are in range to swing immediately
-        CheckEnemiesInRange();
     }
 
     public void CancelSwing()
@@ -71,8 +68,27 @@ public class Swing : MonoBehaviour
             // Check if the clicked object is tagged as "Enemy"
             if (hit.collider.CompareTag("Enemy"))
             {
-                selectedEnemy = hit.collider.transform; // Select the enemy
-                Debug.Log($"Selected enemy: {selectedEnemy.name}");
+                Transform enemy = hit.collider.transform;
+
+                // Get the player's current tile position and the enemy's current tile position
+                Vector3Int playerPosition = playerMove.CurrentTilePosition;
+                Vector3Int enemyPosition = tilemap.WorldToCell(enemy.position);
+
+                // Calculate the difference between the player's position and the enemy's position
+                int deltaX = Mathf.Abs(enemyPosition.x - playerPosition.x);
+                int deltaY = Mathf.Abs(enemyPosition.y - playerPosition.y);
+
+                // Check if the enemy is exactly 1 tile away in one direction (up, down, left, or right)
+                if ((deltaX + deltaY == 1)) // Either deltaX or deltaY must be 1, but not both
+                {
+                    // Enemy is within selection range
+                    selectedEnemy = enemy; // Select the enemy
+                    Debug.Log($"Selected enemy: {selectedEnemy.name}");
+                }
+                else
+                {
+                    Debug.Log("Enemy is not adjacent to the player (1 tile away in cardinal directions).");
+                }
             }
         }
     }
@@ -92,7 +108,7 @@ public class Swing : MonoBehaviour
             int deltaX = clickedTilePosition.x - playerPosition.x;
             int deltaY = clickedTilePosition.y - playerPosition.y;
 
-            // Ensure the clicked tile is exactly 1 tile away from the player in one direction (up, down, left, right)
+            // Ensure the clicked tile is exactly 1 tile away from the player in one direction (up, down, left, or right)
             if (Mathf.Abs(deltaX) + Mathf.Abs(deltaY) == 1)
             {
                 // Target tile is one step away from the player
@@ -102,7 +118,10 @@ public class Swing : MonoBehaviour
                 if (IsTileValid(targetTilePosition))
                 {
                     Debug.Log($"Swinging enemy {selectedEnemy.name} to {targetTilePosition}");
-                    selectedEnemy.position = tilemap.GetCellCenterWorld(targetTilePosition); // Move enemy to new position
+
+                    // Start the coroutine to move the enemy smoothly
+                    StartCoroutine(MoveEnemyToTile(selectedEnemy, targetTilePosition));
+
                     selectedEnemy = null; // Reset enemy selection after swing
                     isSwinging = false; // Exit swing mode
                 }
@@ -118,10 +137,28 @@ public class Swing : MonoBehaviour
         }
     }
 
-    void CheckEnemiesInRange()
+    // Coroutine for smooth movement of the enemy
+    private IEnumerator MoveEnemyToTile(Transform enemy, Vector3Int targetTilePosition)
     {
-        // Logic to check for enemies within range and display UI or similar
+        Vector3 startPosition = enemy.position;
+        Vector3 targetPosition = tilemap.GetCellCenterWorld(targetTilePosition);
+        float travelTime = 0.5f; // Set the duration of the travel
+        float elapsedTime = 0f;
+
+        // Move towards the target position over 'travelTime' seconds
+        while (elapsedTime < travelTime)
+        {
+            enemy.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / travelTime);
+            elapsedTime += Time.deltaTime;
+            yield return null; // Wait for the next frame
+        }
+
+        // Ensure the enemy ends up exactly at the target position
+        enemy.position = targetPosition;
+
+        Debug.Log($"{enemy.name} has been swung to {targetTilePosition}");
     }
+
 
     bool IsTileValid(Vector3Int tilePosition)
     {
