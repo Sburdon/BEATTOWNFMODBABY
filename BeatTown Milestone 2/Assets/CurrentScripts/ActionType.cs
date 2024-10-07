@@ -6,6 +6,7 @@ public enum ActionType
 {
     None,   // No action is selected
     Move,   // Move action
-    Push,   // Spin action
-    Swing   // Swing action
+    Punch,   // Spin action
+    Swing,   // Swing action
+    Push      //Push action
 }
