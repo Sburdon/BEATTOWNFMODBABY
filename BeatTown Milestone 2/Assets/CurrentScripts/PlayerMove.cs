@@ -1,27 +1,37 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEngine.UI;
 
 public class PlayerMove : MonoBehaviour
 {
     public Tilemap tilemap; // Reference to the Tilemap
-    private Vector3Int currentTilePosition; // Current tile position in grid coordinates
     public float moveSpeed = 5f; // Speed of movement
     public int maxMoves = 2; // Maximum moves allowed in a turn
     public int remainingMoves; // Count of remaining moves in the current turn
     private bool canMove = false; // Flag to control movement
+    private ActionType currentAction; // Current action type for the player
+    private Swing swingScript; // Reference to the Swing script
+    public Vector3Int CurrentTilePosition { get; private set; } // Current tile position in grid coordinates
 
     void Start()
     {
         // Initialize the current tile position based on the player's starting position
-        currentTilePosition = tilemap.WorldToCell(transform.position);
+        CurrentTilePosition = tilemap.WorldToCell(transform.position);
         UpdatePlayerPosition();
         remainingMoves = maxMoves; // Initialize remaining moves
+
+        swingScript = GetComponent<Swing>(); // Get reference to Swing script
     }
 
     void Update()
     {
+        // Prevent movement if swing action is active
+        if (swingScript.IsSwinging()) return;
+
+        // Update CurrentTilePosition based on the player's position
+        CurrentTilePosition = tilemap.WorldToCell(transform.position);
+
         // Check for mouse input only if canMove is true
         if (canMove && Input.GetMouseButtonDown(0)) // Left mouse button
         {
@@ -30,15 +40,22 @@ public class PlayerMove : MonoBehaviour
             Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
 
             // Calculate the distance in terms of grid coordinates
-            int deltaX = Mathf.Abs(clickedTilePosition.x - currentTilePosition.x);
-            int deltaY = Mathf.Abs(clickedTilePosition.y - currentTilePosition.y);
+            int deltaX = Mathf.Abs(clickedTilePosition.x - CurrentTilePosition.x);
+            int deltaY = Mathf.Abs(clickedTilePosition.y - CurrentTilePosition.y);
 
             // Check if the clicked tile is within the allowed move range (2 tiles in one direction)
             if ((deltaX + deltaY <= 2) && (deltaX == 0 || deltaY == 0) && remainingMoves > 0)
             {
-                Debug.Log($"Moving to tile: {clickedTilePosition}");
-                StartCoroutine(MoveToTile(clickedTilePosition));
-                remainingMoves--; // Decrease remaining moves
+                if (!IsTileOccupied(clickedTilePosition))
+                {
+                    Debug.Log($"Moving to tile: {clickedTilePosition}");
+                    StartCoroutine(MoveToTile(clickedTilePosition));
+                    remainingMoves--; // Decrease remaining moves
+                }
+                else
+                {
+                    Debug.Log("Cannot move to this tile. It is occupied by an enemy.");
+                }
             }
             else
             {
@@ -49,10 +66,17 @@ public class PlayerMove : MonoBehaviour
 
     public void OnMoveButtonPressed()
     {
+        // Cancel swing mode if active
+        if (swingScript != null && swingScript.IsSwinging())
+        {
+            swingScript.CancelSwing();
+        }
+
         // Allow movement when the Move button is pressed
         canMove = true;
         remainingMoves = maxMoves; // Reset remaining moves
         Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
+        CurrentAction = ActionType.Move; // Set current action to Move
     }
 
     private IEnumerator MoveToTile(Vector3Int targetTilePosition)
@@ -76,7 +100,7 @@ public class PlayerMove : MonoBehaviour
         transform.position = targetPosition;
 
         // Update current tile position after the move
-        currentTilePosition = targetTilePosition;
+        CurrentTilePosition = targetTilePosition;
 
         // Check if no remaining moves are left
         if (remainingMoves <= 0)
@@ -97,6 +121,30 @@ public class PlayerMove : MonoBehaviour
     void UpdatePlayerPosition()
     {
         // Center the player on the current tile position
-        transform.position = tilemap.GetCellCenterWorld(currentTilePosition);
+        transform.position = tilemap.GetCellCenterWorld(CurrentTilePosition);
+    }
+
+    // Check if a tile is occupied by an enemy
+    bool IsTileOccupied(Vector3Int position)
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(tilemap.GetCellCenterWorld(position), 0.1f);
+        foreach (Collider2D collider in colliders)
+        {
+            if (collider.CompareTag("Enemy"))
+            {
+                return true; // Tile is occupied by an enemy
+            }
+        }
+        return false; // Tile is not occupied
+    }
+
+    public ActionType CurrentAction
+    {
+        get { return currentAction; }
+        set
+        {
+            currentAction = value;
+            Debug.Log("Current Action set to: " + currentAction);
+        }
     }
 }
