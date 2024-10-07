@@ -13,6 +13,7 @@ public class PlayerMove : MonoBehaviour
     private ActionType currentAction; // Current action type for the player
     private Swing swingScript; // Reference to the Swing script
     public Vector3Int CurrentTilePosition { get; private set; } // Current tile position in grid coordinates
+    private Coroutine currentMoveCoroutine; // Store reference to the current move coroutine
 
     void Start()
     {
@@ -49,7 +50,7 @@ public class PlayerMove : MonoBehaviour
                 if (!IsTileOccupied(clickedTilePosition))
                 {
                     Debug.Log($"Moving to tile: {clickedTilePosition}");
-                    StartCoroutine(MoveToTile(clickedTilePosition));
+                    currentMoveCoroutine = StartCoroutine(MoveToTile(clickedTilePosition));
                     remainingMoves--; // Decrease remaining moves
                 }
                 else
@@ -74,9 +75,22 @@ public class PlayerMove : MonoBehaviour
 
         // Allow movement when the Move button is pressed
         canMove = true;
-        remainingMoves = maxMoves; // Reset remaining moves
         Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
         CurrentAction = ActionType.Move; // Set current action to Move
+    }
+
+    public void CancelMove()
+    {
+        // Stop current move coroutine if active
+        if (currentMoveCoroutine != null)
+        {
+            StopCoroutine(currentMoveCoroutine);
+            currentMoveCoroutine = null;
+        }
+
+        // Reset movement state
+        canMove = false;
+        Debug.Log("Move action canceled.");
     }
 
     private IEnumerator MoveToTile(Vector3Int targetTilePosition)
@@ -125,7 +139,7 @@ public class PlayerMove : MonoBehaviour
     }
 
     // Check if a tile is occupied by an enemy
-    bool IsTileOccupied(Vector3Int position)
+    public bool IsTileOccupied(Vector3Int position)
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(tilemap.GetCellCenterWorld(position), 0.1f);
         foreach (Collider2D collider in colliders)

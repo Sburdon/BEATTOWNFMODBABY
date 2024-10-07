@@ -7,7 +7,6 @@ public class Swing : MonoBehaviour
     public Tilemap tilemap; // Reference to the Tilemap
     private Transform selectedEnemy; // Currently selected enemy
     private bool isSwinging; // State to track if we are in swing mode
-    private bool enemySelected; // Track if an enemy has been selected
     private PlayerMove playerMove; // Reference to PlayerMove instance
 
     private void Awake()
@@ -17,22 +16,20 @@ public class Swing : MonoBehaviour
 
     void Update()
     {
-        if (isSwinging)
+        // Check for mouse input to select a tile if swinging
+        if (Input.GetMouseButtonDown(0)) // Left mouse button
         {
-            if (!enemySelected)
+            if (isSwinging)
             {
-                // Step 1: Select an enemy when the left mouse button is clicked
-                if (Input.GetMouseButtonDown(0)) // Left mouse button
+                if (selectedEnemy != null)
                 {
-                    SelectEnemy();
-                }
-            }
-            else
-            {
-                // Step 2: Select a tile to swing the enemy to
-                if (Input.GetMouseButtonDown(0)) // Left mouse button
-                {
+                    // Try to swing the enemy to the clicked tile
                     TrySwingEnemy();
+                }
+                else
+                {
+                    // Select an enemy if none is currently selected
+                    SelectEnemy();
                 }
             }
         }
@@ -40,26 +37,27 @@ public class Swing : MonoBehaviour
 
     public void OnSwingButtonPressed()
     {
+        // Cancel any movement when the swing button is pressed
+        playerMove.CancelMove();
+
         isSwinging = true; // Activate swinging mode
-        enemySelected = false; // Reset enemy selection
         selectedEnemy = null; // Reset selected enemy
-        Debug.Log("Swing button pressed.");
+        Debug.Log("Swing button pressed, current action: " + playerMove.CurrentAction);
 
-        // Optionally, check if any enemies are already in range to swing
+        // Check if any enemies are in range to swing immediately
         CheckEnemiesInRange();
-    }
-
-    public bool IsSwinging()
-    {
-        return isSwinging;
     }
 
     public void CancelSwing()
     {
         isSwinging = false;
-        enemySelected = false;
-        selectedEnemy = null;
+        selectedEnemy = null; // Reset selected enemy after swing attempt
         Debug.Log("Swing action canceled.");
+    }
+
+    public bool IsSwinging()
+    {
+        return isSwinging;
     }
 
     void SelectEnemy()
@@ -68,15 +66,14 @@ public class Swing : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        if (hit.collider != null && hit.collider.CompareTag("Enemy"))
+        if (hit.collider != null)
         {
-            selectedEnemy = hit.collider.transform; // Select the enemy
-            enemySelected = true; // Mark enemy as selected
-            Debug.Log($"Selected enemy: {selectedEnemy.name}");
-        }
-        else
-        {
-            Debug.Log("No enemy selected.");
+            // Check if the clicked object is tagged as "Enemy"
+            if (hit.collider.CompareTag("Enemy"))
+            {
+                selectedEnemy = hit.collider.transform; // Select the enemy
+                Debug.Log($"Selected enemy: {selectedEnemy.name}");
+            }
         }
     }
 
@@ -84,97 +81,51 @@ public class Swing : MonoBehaviour
     {
         if (selectedEnemy != null)
         {
-            Vector3Int targetTilePosition = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            // Get the player's current position in grid coordinates
+            Vector3Int playerPosition = playerMove.CurrentTilePosition;
 
-            Debug.Log($"Attempting to swing enemy {selectedEnemy.name} to {targetTilePosition}");
+            // Get the mouse position in world coordinates
+            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
 
-            // Check if the target tile is valid and within range
-            if (IsTileValid(targetTilePosition) && IsWithinSwingRange(targetTilePosition))
+            // Calculate the difference between the clicked tile and the player's position
+            int deltaX = clickedTilePosition.x - playerPosition.x;
+            int deltaY = clickedTilePosition.y - playerPosition.y;
+
+            // Ensure the clicked tile is exactly 1 tile away from the player in one direction (up, down, left, right)
+            if (Mathf.Abs(deltaX) + Mathf.Abs(deltaY) == 1)
             {
-                StartCoroutine(MoveEnemyToTile(selectedEnemy, targetTilePosition));
-                ResetSwingState();
+                // Target tile is one step away from the player
+                Vector3Int targetTilePosition = new Vector3Int(playerPosition.x + deltaX, playerPosition.y + deltaY, playerPosition.z);
+
+                // Ensure the target tile is valid (not occupied and within bounds)
+                if (IsTileValid(targetTilePosition))
+                {
+                    Debug.Log($"Swinging enemy {selectedEnemy.name} to {targetTilePosition}");
+                    selectedEnemy.position = tilemap.GetCellCenterWorld(targetTilePosition); // Move enemy to new position
+                    selectedEnemy = null; // Reset enemy selection after swing
+                    isSwinging = false; // Exit swing mode
+                }
+                else
+                {
+                    Debug.Log("Target tile is not valid for swinging.");
+                }
             }
             else
             {
-                Debug.Log("Invalid target tile or out of swing range.");
-            }
-        }
-        else
-        {
-            Debug.Log("No enemy selected to swing.");
-        }
-    }
-
-    bool IsWithinSwingRange(Vector3Int targetTilePosition)
-    {
-        Vector3Int playerCurrentPosition = tilemap.WorldToCell(transform.position);
-        // Check if the target position is within swinging range (1 tile in any direction)
-        return (Mathf.Abs(playerCurrentPosition.x - targetTilePosition.x) + Mathf.Abs(playerCurrentPosition.y - targetTilePosition.y) == 1);
-    }
-
-    bool IsTileValid(Vector3Int position)
-    {
-        // Check if the tile at the position is valid (not occupied or out of bounds)
-        return tilemap.HasTile(position) && !IsTileOccupied(position);
-    }
-
-    bool IsTileOccupied(Vector3Int position)
-    {
-        // Check if the tile is occupied by another enemy
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(tilemap.GetCellCenterWorld(position), 0.1f);
-        foreach (Collider2D collider in colliders)
-        {
-            if (collider.CompareTag("Enemy"))
-            {
-                return true; // Tile is occupied by another enemy
-            }
-        }
-        return false; // Tile is not occupied
-    }
-
-    private IEnumerator MoveEnemyToTile(Transform enemy, Vector3Int targetTilePosition)
-    {
-        // Calculate target position
-        Vector3 targetPosition = tilemap.GetCellCenterWorld(targetTilePosition);
-        float elapsedTime = 0f;
-        float moveDuration = 0.5f; // Duration of the move
-        Vector3 startPosition = enemy.position;
-
-        // Move towards the target position
-        while (elapsedTime < moveDuration)
-        {
-            enemy.position = Vector3.Lerp(startPosition, targetPosition, (elapsedTime / moveDuration)); // Lerp for smooth movement
-            elapsedTime += Time.deltaTime; // Increment elapsed time
-            yield return null; // Wait for the next frame
-        }
-
-        // Ensure the enemy ends up exactly at the target position
-        enemy.position = targetPosition;
-        Debug.Log($"{enemy.name} has been swung to {targetTilePosition}");
-    }
-
-    private void CheckEnemiesInRange()
-    {
-        Vector3Int playerCurrentPosition = tilemap.WorldToCell(transform.position);
-
-        // Check each enemy if it is within swinging range
-        foreach (GameObject enemyObj in GameObject.FindGameObjectsWithTag("Enemy"))
-        {
-            Transform enemy = enemyObj.transform;
-            Vector3Int enemyPosition = tilemap.WorldToCell(enemy.position);
-            if (IsWithinSwingRange(enemyPosition))
-            {
-                Debug.Log($"{enemy.name} is within swing range.");
+                Debug.Log("You must click one tile adjacent to the player to swing the enemy.");
             }
         }
     }
 
-    private void ResetSwingState()
+    void CheckEnemiesInRange()
     {
-        // Reset swing state after the action is completed
-        isSwinging = false;
-        enemySelected = false;
-        selectedEnemy = null;
-        Debug.Log("Swing action completed.");
+        // Logic to check for enemies within range and display UI or similar
+    }
+
+    bool IsTileValid(Vector3Int tilePosition)
+    {
+        // Check if the tile is a valid, empty tile (e.g., not occupied by another enemy or blocked)
+        return tilemap.HasTile(tilePosition) && !playerMove.IsTileOccupied(tilePosition);
     }
 }
