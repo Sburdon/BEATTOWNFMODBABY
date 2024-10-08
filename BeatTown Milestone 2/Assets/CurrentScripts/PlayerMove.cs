@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -17,122 +16,93 @@ public class PlayerMove : MonoBehaviour
 
     void Start()
     {
-        // Initialize the current tile position based on the player's starting position
-        CurrentTilePosition = tilemap.WorldToCell(transform.position);
-        UpdatePlayerPosition();
+        tilemap = tilemap ?? FindObjectOfType<Tilemap>(); // Finds the Tilemap in the scene if not set in inspector
+        swingScript = swingScript ?? GetComponent<Swing>(); // Ensure Swing script is assigned
+        if (tilemap != null)
+        {
+            CurrentTilePosition = tilemap.WorldToCell(transform.position);
+            UpdatePlayerPosition();
+        }
         remainingMoves = maxMoves; // Initialize remaining moves
-
-        swingScript = GetComponent<Swing>(); // Get reference to Swing script
     }
 
     void Update()
     {
-        // Update CurrentTilePosition based on the player's position
+        if (tilemap == null) return;
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
 
-        // Check for mouse input only if canMove is true
+        // Handle movement logic when canMove is true
         if (canMove && Input.GetMouseButtonDown(0)) // Left mouse button
         {
-            // Get the mouse position and convert it to a world position
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
 
-            // Calculate the distance in terms of grid coordinates
             int deltaX = Mathf.Abs(clickedTilePosition.x - CurrentTilePosition.x);
             int deltaY = Mathf.Abs(clickedTilePosition.y - CurrentTilePosition.y);
 
-            // Check if the clicked tile is within the allowed move range (up to 2 tiles away)
             if (deltaX + deltaY <= remainingMoves && (deltaX == 0 || deltaY == 0) && remainingMoves > 0)
             {
-                Debug.Log($"Moving to tile: {clickedTilePosition}");
-
-                // Start movement coroutine
                 StartCoroutine(MoveToTile(clickedTilePosition));
-
-                // Decrement remainingMoves by the number of tiles moved
-                remainingMoves -= (deltaX + deltaY);
+                remainingMoves -= (deltaX + deltaY); // Decrement remaining moves
             }
             else
             {
-                Debug.Log("Clicked tile is out of range or no moves remaining.");
+                Debug.Log("Tile out of range or no moves remaining.");
             }
         }
     }
 
     public void OnMoveButtonPressed()
     {
-        // Cancel swing mode if active
-        if (swingScript != null && swingScript.IsSwinging())
-        {
-            swingScript.CancelSwing();
-        }
-
-        // Allow movement when the Move button is pressed
+        swingScript?.CancelSwing(); // Cancel swing if it's active
         canMove = true;
-        Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
+        Debug.Log("Move button pressed. Remaining moves: " + remainingMoves);
         CurrentAction = ActionType.Move; // Set current action to Move
     }
 
     public void CancelMove()
     {
-        // Stop current move coroutine if active
-        if (currentMoveCoroutine != null)
-        {
-            StopCoroutine(currentMoveCoroutine);
-            currentMoveCoroutine = null;
-        }
-
-        // Reset movement state
         canMove = false;
         Debug.Log("Move action canceled.");
     }
 
     private IEnumerator MoveToTile(Vector3Int targetTilePosition)
     {
-        // Calculate target position
         Vector3 targetPosition = tilemap.GetCellCenterWorld(targetTilePosition);
         float elapsedTime = 0f;
-
-        // Get current position
         Vector3 startPosition = transform.position;
 
-        // Move towards the target position
-        while (elapsedTime < 1f) // Move for 1 second
+        while (elapsedTime < 1f)
         {
-            transform.position = Vector3.Lerp(startPosition, targetPosition, (elapsedTime / 1f)); // Lerp for smooth movement
-            elapsedTime += Time.deltaTime * moveSpeed; // Increment elapsed time
-            yield return null; // Wait for the next frame
+            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / 1f);
+            elapsedTime += Time.deltaTime * moveSpeed;
+            yield return null;
         }
 
-        // Ensure the player ends up exactly at the target position
-        transform.position = targetPosition;
-
-        // Update current tile position after the move
+        transform.position = targetPosition; // Ensure exact position
         CurrentTilePosition = targetTilePosition;
 
-        // Check if no remaining moves are left
         if (remainingMoves <= 0)
         {
-            canMove = false; // Disable further movement until reset
+            canMove = false;
             Debug.Log("Movement complete. No moves remaining.");
         }
     }
 
-    // This function can be called from another script to refresh movement count
     public void RefreshSpaceCount()
     {
-        remainingMoves = maxMoves; // Reset remaining moves to max
-        canMove = true; // Allow movement again
-        Debug.Log("Movement reset for the next turn.");
+        remainingMoves = maxMoves;
+        canMove = true;
+        Debug.Log("Movement reset for next turn.");
     }
 
-    void UpdatePlayerPosition()
+    // Method to update the player's position based on the current tile
+    public void UpdatePlayerPosition()
     {
-        // Center the player on the current tile position
         transform.position = tilemap.GetCellCenterWorld(CurrentTilePosition);
     }
 
-    // Check if a tile is occupied by an enemy
+    // Method to check if a tile is occupied by an enemy
     public bool IsTileOccupied(Vector3Int position)
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(tilemap.GetCellCenterWorld(position), 0.1f);
