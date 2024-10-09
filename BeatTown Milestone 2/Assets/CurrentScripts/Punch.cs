@@ -7,11 +7,13 @@ public class Punch : MonoBehaviour
     private Transform selectedEnemy; // Currently selected enemy
     private bool isPunching; // State to track if we are in punch mode
     private PlayerMove playerMove; // Reference to PlayerMove instance
-    public int punchDamage = 1;
+    private PlayerFatigue playerFatigue; // Reference to PlayerFatigue instance
+    public int punchDamage = 1; // Damage dealt by punch
 
     private void Awake()
     {
         playerMove = GetComponent<PlayerMove>();
+        playerFatigue = GetComponent<PlayerFatigue>();
     }
 
     void Update()
@@ -91,8 +93,11 @@ public class Punch : MonoBehaviour
             if (enemyScript != null)
             {
                 // Deal damage to the selected enemy
-                enemyScript.TakeDamage(punchDamage); // Assuming punch does 1 damage
-                Debug.Log($"{selectedEnemy.name} has been punched!");
+                enemyScript.TakeDamage(punchDamage); // Punch damage is set through Unity editor
+                Debug.Log($"{selectedEnemy.name} has been punched and took {punchDamage} damage!");
+
+                // Deduct fatigue only when a punch is successfully delivered
+                playerFatigue.UseFatigue(playerFatigue.punchFatigueCost);
             }
             else
             {

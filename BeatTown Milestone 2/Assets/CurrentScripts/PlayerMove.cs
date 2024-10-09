@@ -14,6 +14,7 @@ public class PlayerMove : MonoBehaviour
     private Swing swingScript; // Reference to the Swing script
     public Vector3Int CurrentTilePosition { get; private set; } // Current tile position in grid coordinates
     private Coroutine currentMoveCoroutine; // Store reference to the current move coroutine
+    private PlayerFatigue playerFatigue;
 
     void Start()
     {
@@ -23,6 +24,7 @@ public class PlayerMove : MonoBehaviour
         remainingMoves = maxMoves; // Initialize remaining moves
 
         swingScript = GetComponent<Swing>(); // Get reference to Swing script
+        playerFatigue = GetComponent<PlayerFatigue>();// Get reference to PlayerFatigue scripts
     }
 
     void Update()
@@ -109,6 +111,8 @@ public class PlayerMove : MonoBehaviour
 
         // Update current tile position after the move
         CurrentTilePosition = targetTilePosition;
+
+
 
         // Check if no remaining moves are left
         if (remainingMoves <= 0)

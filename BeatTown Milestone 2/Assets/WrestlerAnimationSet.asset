@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: WrestlerAnimationSet
+  m_EditorClassIdentifier: Assembly-CSharp::WrestlerAnimationSet
+  idleTexture: {fileID: 0}
+  moveTexture: {fileID: 0}
+  punchTexture: {fileID: 0}
+  swingTexture: {fileID: 0}
+  pushTexture: {fileID: 0}
+  reactTexture: {fileID: 0}
+  sourceTexture: {fileID: 0}
+  baseMask: {fileID: 0}

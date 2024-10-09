@@ -8,10 +8,12 @@ public class Swing : MonoBehaviour
     private Transform selectedEnemy; // Currently selected enemy
     private bool isSwinging; // State to track if we are in swing mode
     private PlayerMove playerMove; // Reference to PlayerMove instance
+    private PlayerFatigue playerFatigue; // Reference to PlayerFatigue instance
 
     private void Awake()
     {
         playerMove = GetComponent<PlayerMove>();
+        playerFatigue = GetComponent<PlayerFatigue>();
     }
 
     void Update()
@@ -122,6 +124,9 @@ public class Swing : MonoBehaviour
                     // Start the coroutine to move the enemy smoothly
                     StartCoroutine(MoveEnemyToTile(selectedEnemy, targetTilePosition));
 
+                    // Only deduct fatigue if the enemy is moved
+                    playerFatigue.UseFatigue(playerFatigue.swingFatigueCost);
+
                     selectedEnemy = null; // Reset enemy selection after swing
                     isSwinging = false; // Exit swing mode
                 }
@@ -158,7 +163,6 @@ public class Swing : MonoBehaviour
 
         Debug.Log($"{enemy.name} has been swung to {targetTilePosition}");
     }
-
 
     bool IsTileValid(Vector3Int tilePosition)
     {
