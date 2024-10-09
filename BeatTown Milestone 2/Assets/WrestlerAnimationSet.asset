@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: WrestlerAnimationSet
   m_EditorClassIdentifier: Assembly-CSharp::WrestlerAnimationSet
-  idleTexture: {fileID: 0}
-  moveTexture: {fileID: 0}
-  punchTexture: {fileID: 0}
-  swingTexture: {fileID: 0}
-  pushTexture: {fileID: 0}
-  reactTexture: {fileID: 0}
-  sourceTexture: {fileID: 0}
-  baseMask: {fileID: 0}
+  idleTexture: {fileID: 2800000, guid: 261126f2492192e428986a59f10927d6, type: 3}
+  moveTexture: {fileID: 2800000, guid: 261126f2492192e428986a59f10927d6, type: 3}
+  punchTexture: {fileID: 2800000, guid: 724b369cb74a65448bbf665f9797c1de, type: 3}
+  swingTexture: {fileID: 2800000, guid: 261126f2492192e428986a59f10927d6, type: 3}
+  pushTexture: {fileID: 2800000, guid: 6c69ed2d2f1486f439223738bbb26b2d, type: 3}
+  reactTexture: {fileID: 2800000, guid: 47f494b73fda67642b237c4d008bbecc, type: 3}
+  sourceTexture: {fileID: 2800000, guid: ebfa436fde026b9429be1a0d13dbcd4c, type: 3}
+  baseMask: {fileID: 2800000, guid: b23e00bba6b1a8b4eba37847f57dc1fa, type: 3}
