@@ -2058,8 +2058,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemap: {fileID: 644845377}
   moveSpeed: 5
-  maxMoves: 2
+  maxMoves: 5
   remainingMoves: 0
+  moveFatigueCost: 1
 --- !u!114 &1977991995
 MonoBehaviour:
   m_ObjectHideFlags: 0

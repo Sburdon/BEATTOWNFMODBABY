@@ -14,7 +14,10 @@ public class PlayerMove : MonoBehaviour
     private Swing swingScript; // Reference to the Swing script
     public Vector3Int CurrentTilePosition { get; private set; } // Current tile position in grid coordinates
     private Coroutine currentMoveCoroutine; // Store reference to the current move coroutine
-    private PlayerFatigue playerFatigue;
+    private PlayerFatigue playerFatigue; // Reference to the PlayerFatigue script
+    public int moveFatigueCost = 1; // Fatigue cost for movement
+
+    private bool hasFatigueBeenDeducted = false; // Flag to ensure fatigue is only deducted once per move action
 
     void Start()
     {
@@ -24,7 +27,7 @@ public class PlayerMove : MonoBehaviour
         remainingMoves = maxMoves; // Initialize remaining moves
 
         swingScript = GetComponent<Swing>(); // Get reference to Swing script
-        playerFatigue = GetComponent<PlayerFatigue>();// Get reference to PlayerFatigue scripts
+        playerFatigue = GetComponent<PlayerFatigue>(); // Get reference to PlayerFatigue script
     }
 
     void Update()
@@ -46,13 +49,30 @@ public class PlayerMove : MonoBehaviour
             // Check if the clicked tile is within the allowed move range (up to 2 tiles away)
             if (deltaX + deltaY <= remainingMoves && (deltaX == 0 || deltaY == 0) && remainingMoves > 0)
             {
-                Debug.Log($"Moving to tile: {clickedTilePosition}");
+                // Check if the target tile is occupied by an enemy
+                if (IsTileOccupied(clickedTilePosition))
+                {
+                    Debug.Log("Cannot move to tile, it is occupied by an enemy.");
+                    return; // Prevent movement if the tile is occupied
+                }
 
-                // Start movement coroutine
-                StartCoroutine(MoveToTile(clickedTilePosition));
+                // Only deduct fatigue once per movement session
+                if (!hasFatigueBeenDeducted && playerFatigue.CanPerformAction(moveFatigueCost))
+                {
+                    playerFatigue.UseFatigue(moveFatigueCost); // Deduct fatigue
+                    hasFatigueBeenDeducted = true; // Mark that fatigue has been deducted for this action
+                }
 
-                // Decrement remainingMoves by the number of tiles moved
-                remainingMoves -= (deltaX + deltaY);
+                if (hasFatigueBeenDeducted)
+                {
+                    Debug.Log($"Moving to tile: {clickedTilePosition}");
+
+                    // Start movement coroutine
+                    StartCoroutine(MoveToTile(clickedTilePosition));
+
+                    // Decrement remainingMoves by the number of tiles moved
+                    remainingMoves -= (deltaX + deltaY);
+                }
             }
             else
             {
@@ -71,6 +91,7 @@ public class PlayerMove : MonoBehaviour
 
         // Allow movement when the Move button is pressed
         canMove = true;
+        hasFatigueBeenDeducted = false; // Reset the fatigue deduction flag
         Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
         CurrentAction = ActionType.Move; // Set current action to Move
     }
@@ -112,8 +133,6 @@ public class PlayerMove : MonoBehaviour
         // Update current tile position after the move
         CurrentTilePosition = targetTilePosition;
 
-
-
         // Check if no remaining moves are left
         if (remainingMoves <= 0)
         {
@@ -127,6 +146,7 @@ public class PlayerMove : MonoBehaviour
     {
         remainingMoves = maxMoves; // Reset remaining moves to max
         canMove = true; // Allow movement again
+        hasFatigueBeenDeducted = false; // Reset the fatigue deduction flag
         Debug.Log("Movement reset for the next turn.");
     }
 
