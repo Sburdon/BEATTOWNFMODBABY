@@ -661,7 +661,7 @@ Transform:
   m_GameObject: {fileID: 551773660}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.51, y: -0.47, z: 0}
+  m_LocalPosition: {x: -0.5, y: -0.47, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2058,7 +2058,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemap: {fileID: 644845377}
   moveSpeed: 5
-  maxMoves: 5
+  maxMoves: 2
   remainingMoves: 0
   moveFatigueCost: 1
 --- !u!114 &1977991995
