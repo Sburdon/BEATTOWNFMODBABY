@@ -17,7 +17,7 @@ public class PlayerMove : MonoBehaviour
     private PlayerFatigue playerFatigue; // Reference to the PlayerFatigue script
     public int moveFatigueCost = 1; // Fatigue cost for movement
 
-    private bool hasFatigueBeenDeducted = false; // Flag to ensure fatigue is only deducted once per move action
+    private bool hasFatigueBeenDeductedForMove = false; // Flag to ensure fatigue is only deducted once per move action
 
     void Start()
     {
@@ -57,13 +57,13 @@ public class PlayerMove : MonoBehaviour
                 }
 
                 // Only deduct fatigue once per movement session
-                if (!hasFatigueBeenDeducted && playerFatigue.CanPerformAction(moveFatigueCost))
+                if (!hasFatigueBeenDeductedForMove && playerFatigue.CanPerformAction(moveFatigueCost))
                 {
                     playerFatigue.UseFatigue(moveFatigueCost); // Deduct fatigue
-                    hasFatigueBeenDeducted = true; // Mark that fatigue has been deducted for this action
+                    hasFatigueBeenDeductedForMove = true; // Mark that fatigue has been deducted for this action
                 }
 
-                if (hasFatigueBeenDeducted)
+                if (hasFatigueBeenDeductedForMove)
                 {
                     Debug.Log($"Moving to tile: {clickedTilePosition}");
 
@@ -91,7 +91,6 @@ public class PlayerMove : MonoBehaviour
 
         // Allow movement when the Move button is pressed
         canMove = true;
-        hasFatigueBeenDeducted = false; // Reset the fatigue deduction flag
         Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
         CurrentAction = ActionType.Move; // Set current action to Move
     }
@@ -105,9 +104,9 @@ public class PlayerMove : MonoBehaviour
             currentMoveCoroutine = null;
         }
 
-        // Reset movement state
+        // Reset movement state, but allow further movement without fatigue deduction
         canMove = false;
-        Debug.Log("Move action canceled.");
+        Debug.Log("Move action canceled, but further movement is allowed if remaining moves exist.");
     }
 
     private IEnumerator MoveToTile(Vector3Int targetTilePosition)
@@ -146,7 +145,7 @@ public class PlayerMove : MonoBehaviour
     {
         remainingMoves = maxMoves; // Reset remaining moves to max
         canMove = true; // Allow movement again
-        hasFatigueBeenDeducted = false; // Reset the fatigue deduction flag
+        hasFatigueBeenDeductedForMove = false; // Reset the fatigue deduction flag
         Debug.Log("Movement reset for the next turn.");
     }
 
