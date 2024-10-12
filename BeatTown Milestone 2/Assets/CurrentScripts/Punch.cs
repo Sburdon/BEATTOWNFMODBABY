@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static StateMachine;
 
 public class Punch : MonoBehaviour
 {
@@ -9,11 +10,13 @@ public class Punch : MonoBehaviour
     private PlayerMove playerMove; // Reference to PlayerMove instance
     private PlayerFatigue playerFatigue; // Reference to PlayerFatigue instance
     public int punchDamage = 1; // Damage dealt by punch
+    private StateMachine stateMachine;
 
     private void Awake()
     {
         playerMove = GetComponent<PlayerMove>();
         playerFatigue = GetComponent<PlayerFatigue>();
+        stateMachine = GetComponent<StateMachine>();
     }
 
     void Update()
@@ -95,7 +98,7 @@ public class Punch : MonoBehaviour
                 // Deal damage to the selected enemy
                 enemyScript.TakeDamage(punchDamage); // Punch damage is set through Unity editor
                 Debug.Log($"{selectedEnemy.name} has been punched and took {punchDamage} damage!");
-
+                stateMachine.ChangeState(WrestlerState.Punch);
                 // Deduct fatigue only when a punch is successfully delivered
                 playerFatigue.UseFatigue(playerFatigue.punchFatigueCost);
             }

@@ -238,7 +238,7 @@ public class StateMachine : MonoBehaviour
         return curFrame >= frames.Count - 1;  // returns true if current frame is last frame in animation
     }
 
-    private void ChangeState(WrestlerState newState)
+    public void ChangeState(WrestlerState newState)
     {
         // reset frame counter when changing state
         curFrame = 0;
