@@ -152,11 +152,6 @@ public class Push : MonoBehaviour
         return currentTile;  // Return the last valid tile
     }
 
-    bool IsWithinPushRange(Vector3Int playerPosition, Vector3Int enemyPosition)
-    {
-        // Check if the enemy is within punching range (1 tile in each direction)
-        return (Mathf.Abs(playerPosition.x - enemyPosition.x) + Mathf.Abs(playerPosition.y - enemyPosition.y) == 1);
-    }
 
     // Coroutine for smooth movement of the enemy
     private IEnumerator PushEnemyToTile(Transform enemy, Vector3Int targetTilePosition)             
