@@ -38,7 +38,7 @@ public class Push : MonoBehaviour
         }
     }
 
-    public void OnPushButtonPressed()
+    public void OnPushButtonPressed() // NOTE: PUSH BUTTON AGAIN TO CONFIRM PUSH
     {
         // Cancel any movement when the push button is pressed
         playerMove.CancelMove();
@@ -99,12 +99,67 @@ public class Push : MonoBehaviour
     void TryPushEnemy()
     {
         // Implement push logic here
+        // ensure the enemy is pushed to the furthest tile possible in the direction of the push
+        if (selectedEnemy != null)
+        {
+            // Get the player's current position in grid coordinates
+            Vector3Int playerPosition = playerMove.CurrentTilePosition;
+
+            // Get the enemy's position in grid coordinates
+            Vector3Int enemyPosition = tilemap.WorldToCell(selectedEnemy.position);
+
+            // Determine the push direction (up, down, left, or right)
+            Vector3Int direction = Vector3Int.zero;
+
+            if (playerPosition.x < enemyPosition.x)
+                direction = Vector3Int.right;  // Push right
+            else if (playerPosition.x > enemyPosition.x)
+                direction = Vector3Int.left;   // Push left
+            else if (playerPosition.y < enemyPosition.y)
+                direction = Vector3Int.up;     // Push up
+            else if (playerPosition.y > enemyPosition.y)
+                direction = Vector3Int.down;   // Push down
+
+            // Find the furthest valid tile in the determined direction
+            Vector3Int furthestTile = FindFurthestTile(enemyPosition, direction);
+
+            // Move the enemy if the tile is valid
+            if (furthestTile != enemyPosition)
+            {
+                StartCoroutine(PushEnemyToTile(selectedEnemy, furthestTile));
+                playerFatigue.UseFatigue(1);  // Deduct 1 fatigue for push
+                selectedEnemy = null;
+                isPushing = false;
+            }
+            else
+            {
+                Debug.Log("No valid tile to push to.");
+            }
+        }
+        else
+        {
+            Debug.Log("No enemy selected for push.");
+        }
     }
 
-    
-    
+    Vector3Int FindFurthestTile(Vector3Int startTile, Vector3Int direction)
+    {
+        Vector3Int currentTile = startTile;
+        while (IsTileValid(currentTile + direction))
+        {
+            currentTile += direction;  // Move to the next tile in the direction
+        }
+        return currentTile;  // Return the last valid tile
+    }
+
+    bool IsWithinPushRange(Vector3Int playerPosition, Vector3Int enemyPosition)
+    {
+        // Check if the enemy is within punching range (1 tile in each direction)
+        return (Mathf.Abs(playerPosition.x - enemyPosition.x) + Mathf.Abs(playerPosition.y - enemyPosition.y) == 1);
+    }
+
     // Coroutine for smooth movement of the enemy
-    private IEnumerator PushEnemyToTile(Transform enemy, Vector3Int targetTilePosition)
+    private IEnumerator PushEnemyToTile(Transform enemy, Vector3Int targetTilePosition)             
     {
         Vector3 startPosition = enemy.position;
         Vector3 targetPosition = tilemap.GetCellCenterWorld(targetTilePosition);
@@ -112,10 +167,15 @@ public class Push : MonoBehaviour
         float elapsedTime = 0f;
 
         // Move towards the target position over 'travelTime' seconds
-        
-        // Ensure the enemy ends up exactly at the target position
-        // Enemy should end up at the furthest tile possible in the direction of the push
 
+        while (elapsedTime < travelTime)
+        {
+            enemy.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / travelTime);
+            elapsedTime += Time.deltaTime;
+            yield return null;  // Wait for the next frame
+        }
+
+        enemy.position = targetPosition;  // Ensure the enemy ends at the target tile
         Debug.Log($"{enemy.name} has been pushed to {targetTilePosition}");
     }
 
@@ -123,6 +183,24 @@ public class Push : MonoBehaviour
     {
         // Check if the tile is a valid, empty tile (e.g., not occupied by another enemy or blocked)
         return tilemap.HasTile(tilePosition) && !playerMove.IsTileOccupied(tilePosition);
+    }
+
+    private void CheckEnemiesInRange()
+    {
+        Vector3Int playerCurrentPosition = tilemap.WorldToCell(transform.position);
+
+        // Check each enemy if it is within punching range
+        foreach (GameObject enemyObj in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            Transform enemy = enemyObj.transform;
+            Vector3Int enemyPosition = tilemap.WorldToCell(enemy.position);
+            if (IsWithinPushRange(playerCurrentPosition, enemyPosition))
+            {
+                Debug.Log($"{enemy.name} is within punch range!");
+                selectedEnemy = enemy; // Automatically select the enemy in range
+                break; // Exit loop after selecting the first found enemy
+            }
+        }
     }
 
 }
