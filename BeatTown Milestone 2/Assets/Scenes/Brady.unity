@@ -373,6 +373,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerMove: {fileID: 1977991994}
+  aiUnits:
+  - {fileID: 551773665}
 --- !u!4 &167513598
 Transform:
   m_ObjectHideFlags: 0
@@ -557,6 +559,7 @@ GameObject:
   - component: {fileID: 551773662}
   - component: {fileID: 551773661}
   - component: {fileID: 551773664}
+  - component: {fileID: 551773665}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -680,6 +683,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 3
+--- !u!114 &551773665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551773660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 715af8cee553cb140902d622601819b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerMove: {fileID: 1977991994}
+  tilemap: {fileID: 644845377}
+  moveDistance: 2
+  followPlayer: 0
 --- !u!1 &601855844
 GameObject:
   m_ObjectHideFlags: 0
