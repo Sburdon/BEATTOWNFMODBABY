@@ -8,7 +8,7 @@ public class PlayerFatigue : MonoBehaviour
 
     public int swingFatigueCost = 2; // Fatigue cost for swinging
     public int punchFatigueCost = 1; // Fatigue cost for punching
-
+    public int pushFatigueCost = 1; // Fatigue cost for pushing
     void Start()
     {
         currentFatigue = maxFatigue; // Initialize fatigue to the maximum at the start

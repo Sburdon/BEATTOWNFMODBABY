@@ -11,7 +11,7 @@ public class Push : MonoBehaviour
     private PlayerMove playerMove; // Reference to PlayerMove instance
     private PlayerFatigue playerFatigue; // Reference to PlayerFatigue instance
 
-    private void Awake()
+    private void Awake() // called before Start()
     {
         playerMove = GetComponent<PlayerMove>();
         playerFatigue = GetComponent<PlayerFatigue>();
@@ -127,7 +127,7 @@ public class Push : MonoBehaviour
             if (furthestTile != enemyPosition)
             {
                 StartCoroutine(PushEnemyToTile(selectedEnemy, furthestTile));
-                playerFatigue.UseFatigue(1);  // Deduct 1 fatigue for push
+                playerFatigue.UseFatigue(playerFatigue.pushFatigueCost);  // Deduct 1 fatigue for push
                 selectedEnemy = null;
                 isPushing = false;
             }
@@ -183,24 +183,6 @@ public class Push : MonoBehaviour
     {
         // Check if the tile is a valid, empty tile (e.g., not occupied by another enemy or blocked)
         return tilemap.HasTile(tilePosition) && !playerMove.IsTileOccupied(tilePosition);
-    }
-
-    private void CheckEnemiesInRange()
-    {
-        Vector3Int playerCurrentPosition = tilemap.WorldToCell(transform.position);
-
-        // Check each enemy if it is within punching range
-        foreach (GameObject enemyObj in GameObject.FindGameObjectsWithTag("Enemy"))
-        {
-            Transform enemy = enemyObj.transform;
-            Vector3Int enemyPosition = tilemap.WorldToCell(enemy.position);
-            if (IsWithinPushRange(playerCurrentPosition, enemyPosition))
-            {
-                Debug.Log($"{enemy.name} is within punch range!");
-                selectedEnemy = enemy; // Automatically select the enemy in range
-                break; // Exit loop after selecting the first found enemy
-            }
-        }
     }
 
 }
