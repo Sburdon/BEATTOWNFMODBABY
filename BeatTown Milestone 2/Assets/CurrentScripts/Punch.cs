@@ -12,6 +12,7 @@ public class Punch : MonoBehaviour
     public int punchDamage = 1; // Damage dealt by punch
     private StateMachine stateMachine;
 
+
     private void Awake()
     {
         playerMove = GetComponent<PlayerMove>();
@@ -87,6 +88,8 @@ public class Punch : MonoBehaviour
         }
     }
 
+    
+
     void TryPunchEnemy()
     {
         if (selectedEnemy != null)
@@ -105,6 +108,22 @@ public class Punch : MonoBehaviour
             else
             {
                 Debug.Log("Selected enemy does not have a valid damage method.");
+            }
+            AIMove enemyMove = selectedEnemy.GetComponent<AIMove>();
+            if (enemyMove != null)
+            {
+                enemyMove.SetFollowPlayerTurns(2); // Make enemy follow player for 2 turns
+                Debug.Log($"{selectedEnemy.name} will follow the player for 2 turns.");
+            }
+            else
+            {
+                // Check for BarraAI component
+                BarraAI barraAI = selectedEnemy.GetComponent<BarraAI>();
+                if (barraAI != null)
+                {
+                    barraAI.SetFollowPlayerTurns(2); // Make BarraAI follow player for 2 turns
+                    Debug.Log($"{selectedEnemy.name} will follow the player for 2 turns.");
+                }
             }
 
             // Reset punch state after attempting to punch

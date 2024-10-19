@@ -28,6 +28,9 @@ public class PlayerMove : MonoBehaviour
 
         swingScript = GetComponent<Swing>(); // Get reference to Swing script
         playerFatigue = GetComponent<PlayerFatigue>(); // Get reference to PlayerFatigue script
+
+        // Register the player with the OccupiedTilesManager
+        OccupiedTilesManager.Instance.RegisterPlayer(this);
     }
 
     void Update()
@@ -46,13 +49,13 @@ public class PlayerMove : MonoBehaviour
             int deltaX = Mathf.Abs(clickedTilePosition.x - CurrentTilePosition.x);
             int deltaY = Mathf.Abs(clickedTilePosition.y - CurrentTilePosition.y);
 
-            // Check if the clicked tile is within the allowed move range (up to 2 tiles away)
+            // Check if the clicked tile is within the allowed move range (up to remaining moves)
             if (deltaX + deltaY <= remainingMoves && (deltaX == 0 || deltaY == 0) && remainingMoves > 0)
             {
-                // Check if the target tile is occupied by an enemy
+                // Check if the target tile is occupied
                 if (IsTileOccupied(clickedTilePosition))
                 {
-                    Debug.Log("Cannot move to tile, it is occupied by an enemy.");
+                    Debug.Log("Cannot move to tile, it is occupied.");
                     return; // Prevent movement if the tile is occupied
                 }
 
@@ -68,7 +71,7 @@ public class PlayerMove : MonoBehaviour
                     Debug.Log($"Moving to tile: {clickedTilePosition}");
 
                     // Start movement coroutine
-                    StartCoroutine(MoveToTile(clickedTilePosition));
+                    currentMoveCoroutine = StartCoroutine(MoveToTile(clickedTilePosition));
 
                     // Decrement remainingMoves by the number of tiles moved
                     remainingMoves -= (deltaX + deltaY);
@@ -80,6 +83,13 @@ public class PlayerMove : MonoBehaviour
             }
         }
     }
+
+    public void ResetMoveCount()
+    {
+        remainingMoves = maxMoves; // Reset the remaining moves to the maximum
+        Debug.Log("Player's move count has been reset to maximum.");
+    }
+
 
     public void OnMoveButtonPressed()
     {
@@ -111,6 +121,9 @@ public class PlayerMove : MonoBehaviour
 
     private IEnumerator MoveToTile(Vector3Int targetTilePosition)
     {
+        // Remove current position from occupied positions
+        OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
+
         // Calculate target position
         Vector3 targetPosition = tilemap.GetCellCenterWorld(targetTilePosition);
         float elapsedTime = 0f;
@@ -131,6 +144,9 @@ public class PlayerMove : MonoBehaviour
 
         // Update current tile position after the move
         CurrentTilePosition = targetTilePosition;
+
+        // Add new position to occupied positions
+        OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
 
         // Check if no remaining moves are left
         if (remainingMoves <= 0)
@@ -153,20 +169,15 @@ public class PlayerMove : MonoBehaviour
     {
         // Center the player on the current tile position
         transform.position = tilemap.GetCellCenterWorld(CurrentTilePosition);
+
+        // Add current position to occupied positions
+        OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
     }
 
-    // Check if a tile is occupied by an enemy
+    // Check if a tile is occupied
     public bool IsTileOccupied(Vector3Int position)
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(tilemap.GetCellCenterWorld(position), 0.1f);
-        foreach (Collider2D collider in colliders)
-        {
-            if (collider.CompareTag("Enemy"))
-            {
-                return true; // Tile is occupied by an enemy
-            }
-        }
-        return false; // Tile is not occupied
+        return OccupiedTilesManager.Instance.IsTileOccupied(position);
     }
 
     public ActionType CurrentAction

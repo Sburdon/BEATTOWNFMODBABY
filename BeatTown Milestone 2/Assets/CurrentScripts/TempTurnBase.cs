@@ -1,53 +1,88 @@
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class TempTurnBase : MonoBehaviour
 {
-    public PlayerMove playerMove; // Reference to the PlayerMove script
-    public List<AIMove> aiUnits;  // List of AI units in the scene
-    public List<AIAttack> aiAttackUnits;  // List of AI attack units in the scene
-    private bool playerTurn = true;
+    public List<AIMove> aiUnits;
+    public List<BarraAI> barraUnits; // List for BarraAI units
+
+    public PlayerMove playerMove;
+    public PlayerFatigue playerFatigue;
+
+    private bool isPlayerTurn = true;
+
+    void Start()
+    {
+        // Initialization...
+    }
 
     void Update()
     {
-        if (playerTurn)
+        if (isPlayerTurn)
         {
-            if (Input.GetKeyDown(KeyCode.Space)) // Press Space to end player's turn
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                playerTurn = false;
-                playerMove.RefreshSpaceCount();
-                StartAITurn();
+                EndPlayerTurn();
             }
         }
     }
 
-    void StartAITurn()
+    public void EndPlayerTurn()
     {
+        isPlayerTurn = false;
         StartCoroutine(AITurnRoutine());
     }
 
-    IEnumerator AITurnRoutine()
+    private IEnumerator AITurnRoutine()
     {
-        for (int i = 0; i < aiUnits.Count; i++)
+        // AI units' turns
+        foreach (AIMove ai in aiUnits)
         {
-            // AI Move Logic
-            AIMove aiMove = aiUnits[i];
-            aiMove.TakeTurn();
+            if (ai != null)
+            {
+                ai.TakeTurn();
+                yield return new WaitForSeconds(0.5f);
 
-            // AI Attack Logic
-            AIAttack aiAttack = aiAttackUnits[i];
-            aiAttack.TakeTurn();
-
-            yield return new WaitForSeconds(1f); // Delay between each AI action for clarity
+                // Check if the AI has an attack component
+                AIAttack aiAttack = ai.GetComponent<AIAttack>();
+                if (aiAttack != null)
+                {
+                    aiAttack.AttackIfInRange();
+                    yield return new WaitForSeconds(0.5f);
+                }
+            }
         }
 
-        EndAITurn();
+        // BarraAI units' turns
+        foreach (BarraAI barra in barraUnits)
+        {
+            if (barra != null)
+            {
+                barra.TakeTurn();
+                yield return new WaitForSeconds(0.5f);
+            }
+        }
+
+        // Start player's turn
+        StartPlayerTurn();
     }
 
-    void EndAITurn()
+    public void StartPlayerTurn()
     {
-        playerTurn = true;
-        Debug.Log("AI turn has ended. Player's turn begins.");
+        isPlayerTurn = true;
+        // Reset player's fatigue to maxFatigue at the start of the turn
+        playerFatigue.currentFatigue = playerFatigue.maxFatigue;
+        playerMove.ResetMoveCount();
+        Debug.Log("Player's turn has started. Fatigue reset to maximum.");
+    }
+
+    // Method to add BarraAI units to the list
+    public void AddBarraUnit(BarraAI barraAI)
+    {
+        if (!barraUnits.Contains(barraAI))
+        {
+            barraUnits.Add(barraAI);
+        }
     }
 }

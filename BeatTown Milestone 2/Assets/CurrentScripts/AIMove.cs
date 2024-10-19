@@ -1,190 +1,262 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections;
+using System.Collections.Generic;
 
 public class AIMove : MonoBehaviour
 {
-    public PlayerMove playerMove; // Reference to the player for position checks
-    public Tilemap tilemap; // Reference to the tilemap for grid-based movement
-    public int moveDistance = 2; // AI can move up to this many spaces
-    public float moveSpeed = 1f; // Speed of AI movement (adjustable in the Inspector)
-    public bool followPlayer = false; // Boolean to follow the player
-    private bool hasMoved = false;
+    public Tilemap tilemap;
+    public PlayerMove playerMove;
+    public int moveDistance = 2; // Number of tiles to move per turn
+    public float moveSpeed = 1f;
 
-    private Vector3Int CurrentTilePosition; // AI's current position
-    private Vector3Int playerTilePosition; // Player's current position
+    public Vector3Int CurrentTilePosition;
+
+    private EnemyHealth enemyHealth;
+
+    [Header("AI Behavior Settings")]
+    public bool followPlayerByDefault = false; // Toggle to follow the player or move randomly
+
+    private int followPlayerTurns = 0; // Number of turns to follow the player after being punched
 
     void Start()
     {
-        // Initialize the AI's position on the grid
+        enemyHealth = GetComponent<EnemyHealth>();
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
+        OccupiedTilesManager.Instance.RegisterAI(this);
     }
 
     public void TakeTurn()
     {
-        // Update positions at the start of each turn
-        UpdateAIPosition();
-        UpdatePlayerPosition();
+        if (enemyHealth != null && enemyHealth.IsDead)
+        {
+            return;
+        }
 
-        Debug.Log($"{gameObject.name} is starting its turn.");
+        bool shouldFollowPlayer = followPlayerByDefault || followPlayerTurns > 0;
 
-        if (followPlayer)
+        if (shouldFollowPlayer)
         {
             MoveTowardsPlayer();
         }
         else
         {
-            MoveLogically();
+            MoveRandomly();
         }
 
-        hasMoved = true;
+        // Decrease the followPlayerTurns counter if it's greater than zero
+        if (followPlayerTurns > 0)
+        {
+            followPlayerTurns--;
+            // If followPlayerTurns reaches zero, the enemy will revert to their default behavior
+        }
     }
 
-    private void UpdateAIPosition()
+    public void SetFollowPlayerTurns(int turns)
     {
-        // Recalculate AI position on the grid
-        CurrentTilePosition = tilemap.WorldToCell(transform.position);
-        Debug.Log($"{gameObject.name} position updated to {CurrentTilePosition}.");
-    }
-
-    private void UpdatePlayerPosition()
-    {
-        // Recalculate player's position on the grid
-        playerTilePosition = playerMove.CurrentTilePosition;
-        Debug.Log($"Player position updated to {playerTilePosition}.");
+        followPlayerTurns = turns;
     }
 
     private void MoveTowardsPlayer()
     {
-        // First, try to move the full moveDistance towards the player
-        Vector3Int direction = GetDirectionTowardsPlayer();
+        // Implement movement towards the player
+        Vector3Int targetTilePosition = playerMove.CurrentTilePosition;
 
-        // Try moving two spaces first
-        if (!TryMoveInDirection(direction, moveDistance))
+        // Calculate the path towards the player
+        List<Vector3Int> path = CalculatePath(CurrentTilePosition, targetTilePosition);
+
+        // Move along the path up to moveDistance tiles
+        StartCoroutine(MoveAlongPath(path));
+    }
+
+    private void MoveRandomly()
+    {
+        List<Vector3Int> path = new List<Vector3Int>();
+
+        Vector3Int currentPosition = CurrentTilePosition;
+
+        for (int step = 0; step < moveDistance; step++)
         {
-            // If moving two spaces isn't possible, move one space instead
-            if (!TryMoveInDirection(direction, 1))
+            // Generate possible directions
+            List<Vector3Int> possibleMoves = new List<Vector3Int>();
+
+            Vector3Int[] directions = new Vector3Int[]
             {
-                Debug.Log($"{gameObject.name} cannot move closer to the player.");
+                Vector3Int.up,
+                Vector3Int.down,
+                Vector3Int.left,
+                Vector3Int.right
+            };
+
+            foreach (Vector3Int dir in directions)
+            {
+                Vector3Int nextPosition = currentPosition + dir;
+                if (IsMoveValid(nextPosition) && (path.Count == 0 || nextPosition != path[path.Count - 1]))
+                {
+                    possibleMoves.Add(nextPosition);
+                }
+            }
+
+            if (possibleMoves.Count > 0)
+            {
+                // Randomly select one of the possible moves
+                int randomIndex = Random.Range(0, possibleMoves.Count);
+                Vector3Int targetPosition = possibleMoves[randomIndex];
+
+                path.Add(targetPosition);
+
+                // Update currentPosition for next step
+                currentPosition = targetPosition;
+            }
+            else
+            {
+                // No valid moves from current position
+                break;
             }
         }
-    }
 
-    private bool TryMoveInDirection(Vector3Int direction, int distance)
-    {
-        Vector3Int targetPosition = CurrentTilePosition + direction * distance;
-
-        if (IsMoveValid(targetPosition))
+        if (path.Count > 0)
         {
-            StartCoroutine(MoveToTile(targetPosition));
-            return true;
-        }
-        return false; // Could not move in the specified direction and distance
-    }
-
-    private Vector3Int GetDirectionTowardsPlayer()
-    {
-        int deltaX = playerTilePosition.x - CurrentTilePosition.x;
-        int deltaY = playerTilePosition.y - CurrentTilePosition.y;
-
-        Vector3Int direction = Vector3Int.zero;
-
-        // Prioritize the direction with the largest distance to the player
-        if (Mathf.Abs(deltaX) > Mathf.Abs(deltaY))
-        {
-            direction = deltaX > 0 ? new Vector3Int(1, 0, 0) : new Vector3Int(-1, 0, 0); // Move horizontally
+            // Move along the path
+            StartCoroutine(MoveAlongPath(path));
         }
         else
         {
-            direction = deltaY > 0 ? new Vector3Int(0, 1, 0) : new Vector3Int(0, -1, 0); // Move vertically
+            // No valid moves, do nothing
+            Debug.Log($"{gameObject.name} has no valid moves.");
         }
-
-        Debug.Log($"{gameObject.name} is moving towards the player in direction {direction}.");
-        return direction;
     }
 
-    private void MoveLogically()
+    private List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int end)
     {
-        List<Vector3Int> directions = GetValidDirections();
+        // Simple pathfinding: move in x direction, then y direction
+        List<Vector3Int> path = new List<Vector3Int>();
 
-        if (directions.Count == 0)
+        int dx = end.x - start.x;
+        int dy = end.y - start.y;
+
+        int stepX = dx > 0 ? 1 : -1;
+        int stepY = dy > 0 ? 1 : -1;
+
+        int x = start.x;
+        int y = start.y;
+
+        // Move along x-axis
+        for (int i = 0; i < Mathf.Abs(dx); i++)
         {
-            Debug.Log($"{gameObject.name} cannot move, all directions are blocked.");
-            return; // No valid moves
-        }
-
-        // Randomly choose from valid directions
-        Vector3Int chosenDirection = directions[Random.Range(0, directions.Count)];
-        Vector3Int targetPosition = CurrentTilePosition + chosenDirection * moveDistance;
-
-        Debug.Log($"{gameObject.name} is moving logically to {targetPosition}.");
-        StartCoroutine(MoveToTile(targetPosition));
-    }
-
-    private List<Vector3Int> GetValidDirections()
-    {
-        List<Vector3Int> directions = new List<Vector3Int>
-        {
-            new Vector3Int(1, 0, 0),  // Right
-            new Vector3Int(-1, 0, 0), // Left
-            new Vector3Int(0, 1, 0),  // Up
-            new Vector3Int(0, -1, 0)  // Down
-        };
-
-        List<Vector3Int> validDirections = new List<Vector3Int>();
-
-        // Check which directions are valid
-        foreach (Vector3Int direction in directions)
-        {
-            Vector3Int targetPosition = CurrentTilePosition + direction * moveDistance;
-            if (IsMoveValid(targetPosition))
+            x += stepX;
+            Vector3Int nextPosition = new Vector3Int(x, y, start.z);
+            if (IsMoveValid(nextPosition))
             {
-                validDirections.Add(direction);
+                path.Add(nextPosition);
+                if (path.Count >= moveDistance)
+                {
+                    return path;
+                }
+            }
+            else
+            {
+                break; // Stop if movement is blocked
             }
         }
 
-        return validDirections; // Return only valid directions
-    }
-
-    private bool IsMoveValid(Vector3Int targetTilePosition)
-    {
-        // Check if the tile is valid and not occupied by the player
-        if (!tilemap.HasTile(targetTilePosition) || playerMove.CurrentTilePosition == targetTilePosition)
+        // Move along y-axis
+        for (int i = 0; i < Mathf.Abs(dy); i++)
         {
-            Debug.Log($"{gameObject.name} cannot move to {targetTilePosition}. Tile is invalid or occupied by the player.");
-            return false;
+            y += stepY;
+            Vector3Int nextPosition = new Vector3Int(x, y, start.z);
+            if (IsMoveValid(nextPosition))
+            {
+                path.Add(nextPosition);
+                if (path.Count >= moveDistance)
+                {
+                    return path;
+                }
+            }
+            else
+            {
+                break;
+            }
         }
-        return true;
+
+        return path;
     }
 
-    private bool IsNextToPlayer()
+    private IEnumerator MoveAlongPath(List<Vector3Int> path)
     {
-        int deltaX = Mathf.Abs(CurrentTilePosition.x - playerTilePosition.x);
-        int deltaY = Mathf.Abs(CurrentTilePosition.y - playerTilePosition.y);
+        foreach (Vector3Int targetPosition in path)
+        {
+            // Remove current position from occupied positions
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
 
-        return (deltaX + deltaY == 1); // Return true if the AI is 1 tile away
+            // Move to the target tile
+            yield return MoveToTile(targetPosition);
+
+            // Update current tile position
+            CurrentTilePosition = targetPosition;
+            OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
+
+            // Check for collision with hook
+            if (Hook.Instance != null && Hook.Instance.GetHookPosition() == CurrentTilePosition)
+            {
+                // Handle collision with hook
+                Hook.Instance.HandleEnemyHit(gameObject);
+                yield break; // Stop further movement
+            }
+        }
+
+        // After moving, attempt to attack if in range
+        // AttackIfInRange(); // Uncomment if you have an attack method
     }
 
     private IEnumerator MoveToTile(Vector3Int targetTilePosition)
     {
-        Vector3 targetPosition = tilemap.GetCellCenterWorld(targetTilePosition);
+        Vector3 targetWorldPosition = tilemap.GetCellCenterWorld(targetTilePosition);
         float elapsedTime = 0f;
+        float travelTime = 1f / moveSpeed;
 
-        // Smooth movement over time, based on moveSpeed
         Vector3 startPosition = transform.position;
-        float travelTime = 1f / moveSpeed; // Movement duration is inversely proportional to speed
 
         while (elapsedTime < travelTime)
         {
-            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / travelTime);
+            transform.position = Vector3.Lerp(startPosition, targetWorldPosition, elapsedTime / travelTime);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        transform.position = targetPosition;
-        CurrentTilePosition = targetTilePosition;
+        transform.position = targetWorldPosition;
+    }
 
-        Debug.Log($"{gameObject.name} has moved to {targetTilePosition}.");
+    private bool IsMoveValid(Vector3Int targetTilePosition)
+    {
+        // Check if the tile is valid and within bounds
+        if (!tilemap.HasTile(targetTilePosition))
+        {
+            return false;
+        }
+
+        // Allow moving into the hook's tile
+        if (OccupiedTilesManager.Instance.IsTileOccupied(targetTilePosition))
+        {
+            // Check if the occupied tile is the hook's tile
+            if (Hook.Instance != null && Hook.Instance.GetHookPosition() == targetTilePosition)
+            {
+                // Allow moving into the hook's tile
+                return true;
+            }
+            else
+            {
+                // Tile is occupied by another unit
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void ResetAI()
+    {
+        StopAllCoroutines(); // Stop any active coroutines
+        // Reset other state variables if necessary
     }
 }
