@@ -45,6 +45,13 @@ public class EnemyHealth : MonoBehaviour
         Debug.Log($"{gameObject.name} has died.");
         IsDead = true;
 
+        // Disable the collider
+        Collider2D collider = GetComponent<Collider2D>();
+        if (collider != null)
+        {
+            collider.enabled = false; // Disable the collider
+        }
+
         // Invoke the death event
         OnDeath?.Invoke();
 

@@ -2,24 +2,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement; // For ending the game
+using UnityEngine.UI;
 
 public class Hook : MonoBehaviour
 {
-    public static Hook Instance { get; private set; } // Singleton instance
+    public static Hook Instance { get; private set; }
 
-    public Tilemap tilemap;          // Reference to the tilemap for grid-based positioning
-    public GameObject hookPrefab;    // Hook prefab for respawning hook
-    public GameObject barraPrefab;   // BarraAI prefab
-    public PlayerMove player;        // Reference to the player for position checks
-    public int hookKillCount = 0;    // Counter for how many enemies have died from the hook
+    public Tilemap tilemap;
+    public GameObject hookPrefab;
+    public GameObject barraPrefab;
+    public PlayerMove player;
+    public Text fishCountText; // Reference to the UI Text
+    public int hookKillCount = 0;
 
-    private Vector3Int hookPosition; // Current position of the hook
-    private bool firstBarraSpawned = false; // To ensure the first BarraAI spawns only once
-    private bool secondBarraSpawned = false; // To ensure the second BarraAI spawns only once
+    private Vector3Int hookPosition;
+    private bool firstBarraSpawned = false;
+    private bool secondBarraSpawned = false;
 
     void Awake()
     {
-        // Implement singleton pattern
         if (Instance == null)
         {
             Instance = this;
@@ -32,9 +33,22 @@ public class Hook : MonoBehaviour
 
     void Start()
     {
-        // Initialize hook position on the grid
         hookPosition = tilemap.WorldToCell(transform.position);
-        OccupiedTilesManager.Instance.AddOccupiedPosition(hookPosition); // Register hook's position
+        OccupiedTilesManager.Instance.AddOccupiedPosition(hookPosition);
+        UpdateFishCountText(); // Initialize the text display
+    }
+
+    // Method to update the fish count text
+    private void UpdateFishCountText()
+    {
+        if (fishCountText != null)
+        {
+            fishCountText.text = $"Fish Caught: {hookKillCount}"; // Update text with the count
+        }
+        else
+        {
+            Debug.LogError("FishCountText is not assigned!");
+        }
     }
 
     public Vector3Int GetHookPosition()
@@ -97,6 +111,7 @@ public class Hook : MonoBehaviour
         // Increment the kill count
         hookKillCount++;
         Debug.Log($"Enemies killed by hook: {hookKillCount}");
+        UpdateFishCountText();
 
         // Remove enemy's old position from occupied positions
         AIMove enemyMove = enemy.GetComponent<AIMove>();
