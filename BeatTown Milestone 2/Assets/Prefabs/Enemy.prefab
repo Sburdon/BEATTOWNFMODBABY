@@ -136,7 +136,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 052f36aca447ee949a97fe76c7ef2084, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 3
+  maxHealth: 2
+  health: 2
 --- !u!114 &8827615781386577876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,12 +150,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 715af8cee553cb140902d622601819b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerMove: {fileID: 0}
   tilemap: {fileID: 0}
+  playerMove: {fileID: 0}
   moveDistance: 2
   moveSpeed: 1
-  followPlayer: 0
-  occupiedPositions: []
+  CurrentTilePosition: {x: 0, y: 0, z: 0}
+  followPlayerByDefault: 0
 --- !u!114 &7059847366657219671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,6 +168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 574500f572370284a92b2948ed000236, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerMove: {fileID: 0}
+  playerHealth: {fileID: 0}
+  attackDamage: 1
   attackRange: 1
-  damage: 1

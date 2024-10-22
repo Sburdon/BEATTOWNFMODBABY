@@ -14,7 +14,8 @@ public class Hook : MonoBehaviour
     public int hookKillCount = 0;    // Counter for how many enemies have died from the hook
 
     private Vector3Int hookPosition; // Current position of the hook
-    private bool barraSpawned = false; // To ensure BarraAI spawns only once
+    private bool firstBarraSpawned = false; // To ensure the first BarraAI spawns only once
+    private bool secondBarraSpawned = false; // To ensure the second BarraAI spawns only once
 
     void Awake()
     {
@@ -84,26 +85,12 @@ public class Hook : MonoBehaviour
 
     public void HandleSwingOrPushIntoHook(GameObject enemy)
     {
-        // Check if the enemy is immune to hooks (BarraAI)
-        if (IsEnemyImmuneToHook(enemy))
-        {
-            Debug.Log($"{enemy.name} is immune to hooks!");
-            return;
-        }
-
         Debug.Log($"{enemy.name} was swung/pushed into the hook and died!");
         HandleEnemyHit(enemy);
     }
 
     public void HandleEnemyHit(GameObject enemy)
     {
-        // Check if the enemy is immune to hooks (BarraAI)
-        if (IsEnemyImmuneToHook(enemy))
-        {
-            Debug.Log($"{enemy.name} is immune to hooks!");
-            return;
-        }
-
         // Enemy hits the hook - it dies
         Debug.Log($"{enemy.name} hit the hook and died!");
 
@@ -132,11 +119,18 @@ public class Hook : MonoBehaviour
         // Respawn the hook at a new random location
         RespawnHook();
 
-        // Spawn BarraAI after two kills
-        if (!barraSpawned && hookKillCount >= 2)
+        // Spawn the first BarraAI after 2 kills
+        if (!firstBarraSpawned && hookKillCount >= 2)
         {
             SpawnBarra();
-            barraSpawned = true;
+            firstBarraSpawned = true;
+        }
+
+        // Spawn the second BarraAI after 4 kills
+        if (!secondBarraSpawned && hookKillCount >= 4)
+        {
+            SpawnBarra();
+            secondBarraSpawned = true;
         }
 
         // End game after six kills
@@ -144,12 +138,6 @@ public class Hook : MonoBehaviour
         {
             EndGame();
         }
-    }
-
-    private bool IsEnemyImmuneToHook(GameObject enemy)
-    {
-        // Check if the enemy has the BarraAI component
-        return enemy.GetComponent<BarraAI>() != null;
     }
 
     private void SpawnBarra()

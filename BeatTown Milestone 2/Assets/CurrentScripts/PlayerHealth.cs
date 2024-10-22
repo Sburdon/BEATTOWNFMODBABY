@@ -1,9 +1,12 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 5;   // Maximum health the player can have
     public int currentHealth;   // Current health of the player
+    public bool IsDead { get; private set; }
+
 
     void Start()
     {
@@ -26,7 +29,17 @@ public class PlayerHealth : MonoBehaviour
     // Method to handle player death
     void Die()
     {
-        Debug.Log("Player has died.");
-        // Implement death logic here (e.g., reload scene, show game over screen)
+        IsDead = true;
+        GetComponent<Collider2D>().enabled = false; // Disable collider
+        Debug.Log("Player has died. Ending the game.");
+        EndGame();
+    }
+
+
+    // Method to end the game
+    private void EndGame()
+    {
+        // Implement game over logic (e.g., load a Game Over screen or reset the scene)
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Restart current scene for now
     }
 }

@@ -9,27 +9,29 @@ public class BarraAI : MonoBehaviour
     public PlayerMove playerMove;
     public int moveDistance = 2;
     public float moveSpeed = 1f;
-
+    public int fatigue = 2;  // Fatigue management for movement/attack
 
     public Vector3Int CurrentTilePosition;
 
     private EnemyHealth enemyHealth;
     private EnemyHealth[] allEnemies;
+    private Hook hook; // Reference to the hook object for position checks
 
     public int attackDamage = 2;
     public float attackRange = 1f;
 
     public bool followPlayer = false; // Boolean to determine if BarraAI should follow the player
-    private int followPlayerTurns = 0; // Counter for the number of turns to follow the player
-
+    private int followPlayerTurns = 1; // Counter for the number of turns to follow the player
 
     void Start()
     {
         enemyHealth = GetComponent<EnemyHealth>();
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
         OccupiedTilesManager.Instance.RegisterAI(this);
+        hook = Hook.Instance; // Get reference to the hook
     }
 
+    // Main turn logic
     public void TakeTurn()
     {
         if (enemyHealth != null && enemyHealth.IsDead)
@@ -37,25 +39,61 @@ public class BarraAI : MonoBehaviour
             return;
         }
 
-        // Update the list of all enemies in the scene
         allEnemies = FindObjectsOfType<EnemyHealth>();
 
-        if (followPlayer)
+        // Start by checking if there's an enemy or player nearby
+        if (IsEnemyOrPlayerNearby())
         {
-            MoveTowardsPlayer();
+            AttackIfInRange();  // Attack if possible
+            fatigue--;  // Use one fatigue for attack
 
-            // Decrease the followPlayerTurns counter
-            followPlayerTurns--;
-
-            if (followPlayerTurns <= 0)
+            // Check if the enemy or player has died and respawned (no longer nearby)
+            if (!IsEnemyOrPlayerNearby())
             {
-                followPlayer = false; // Stop following the player after turns expire
+                // If the enemy or player has respawned, use the second fatigue to move
+                MoveTowardsClosestTargetAvoidingHook();
+                fatigue--; // Use fatigue for movement
             }
         }
         else
         {
-            MoveTowardsClosestTarget();
+            // If no enemies or players are nearby, use the first fatigue to move towards the closest target
+            MoveTowardsClosestTargetAvoidingHook();
+            fatigue--;  // Use fatigue for movement
         }
+
+        ResetFatigue();  // Reset fatigue at the end of the turn
+    }
+
+    private bool IsEnemyOrPlayerNearby()
+    {
+        // Check if the AI is next to the player or an enemy
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, attackRange);
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Player"))
+            {
+                PlayerHealth playerHealth = hitCollider.GetComponent<PlayerHealth>();
+                if (playerHealth != null && !playerHealth.IsDead)
+                {
+                    return true;
+                }
+            }
+            else if (hitCollider.CompareTag("Enemy"))
+            {
+                EnemyHealth enemyHealth = hitCollider.GetComponent<EnemyHealth>();
+                if (enemyHealth != null && !enemyHealth.IsDead && enemyHealth.gameObject != this.gameObject)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void ResetFatigue()
+    {
+        fatigue = 2;  // Reset fatigue at the end of each turn
     }
 
     public void SetFollowPlayerTurns(int turns)
@@ -64,19 +102,7 @@ public class BarraAI : MonoBehaviour
         followPlayer = true;
     }
 
-    private void MoveTowardsPlayer()
-    {
-        // Implement movement towards the player
-        Vector3Int targetTilePosition = playerMove.CurrentTilePosition;
-
-        // Calculate the path towards the player
-        List<Vector3Int> path = CalculatePath(CurrentTilePosition, targetTilePosition);
-
-        // Move along the path up to moveDistance tiles
-        StartCoroutine(MoveAlongPath(path));
-    }
-
-    private void MoveTowardsClosestTarget()
+    private void MoveTowardsClosestTargetAvoidingHook()
     {
         Transform closestTarget = GetClosestTarget();
 
@@ -89,11 +115,14 @@ public class BarraAI : MonoBehaviour
         // Implement movement towards the closest target
         Vector3Int targetTilePosition = tilemap.WorldToCell(closestTarget.position);
 
-        // Calculate the path towards the target
-        List<Vector3Int> path = CalculatePath(CurrentTilePosition, targetTilePosition);
+        // Calculate the path towards the target, avoiding the hook
+        List<Vector3Int> path = CalculatePathAvoidingHook(CurrentTilePosition, targetTilePosition);
 
-        // Move along the path up to moveDistance tiles
-        StartCoroutine(MoveAlongPath(path));
+        // Check if the path is valid and initiate movement
+        if (path.Count > 0)
+        {
+            StartCoroutine(MoveAlongPath(path));
+        }
     }
 
     private Transform GetClosestTarget()
@@ -113,6 +142,7 @@ public class BarraAI : MonoBehaviour
             }
         }
 
+        // Find the closest target
         foreach (Transform target in potentialTargets)
         {
             float distance = Vector3.Distance(transform.position, target.position);
@@ -126,9 +156,11 @@ public class BarraAI : MonoBehaviour
         return closestTarget;
     }
 
-    private List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int end)
+    private List<Vector3Int> CalculatePathAvoidingHook(Vector3Int start, Vector3Int end)
     {
-        // Modify the path calculation to stop before the target if necessary
+        // Get the hook position to avoid
+        Vector3Int hookPosition = hook.GetHookPosition();
+
         List<Vector3Int> path = new List<Vector3Int>();
 
         int dx = end.x - start.x;
@@ -142,42 +174,39 @@ public class BarraAI : MonoBehaviour
 
         int maxSteps = moveDistance;
 
-        // Calculate the number of steps needed to reach the target
         int totalSteps = absDx + absDy;
 
-        // If the target is within attack range, we need to stop one tile before
         bool targetWithinAttackRange = totalSteps <= moveDistance;
 
-        // Adjust maxSteps to stop before the target if necessary
         if (targetWithinAttackRange)
         {
             maxSteps = totalSteps - 1; // Stop one tile before the target
         }
 
-        // Move along x-axis
+        // Move along x-axis, avoiding the hook
         int stepsTaken = 0;
         for (int i = 0; i < absDx && stepsTaken < maxSteps; i++)
         {
             Vector3Int nextPosition = new Vector3Int(start.x + stepX * (i + 1), start.y, start.z);
-            if (IsMoveValid(nextPosition))
+            if (IsMoveValid(nextPosition) && nextPosition != hookPosition)
             {
                 path.Add(nextPosition);
                 stepsTaken++;
             }
             else
             {
-                break; // Stop if movement is blocked
+                break; // Stop if movement is blocked or hook is nearby
             }
         }
 
         // Update current x position
         int currentX = start.x + stepX * stepsTaken;
 
-        // Move along y-axis
+        // Move along y-axis, avoiding the hook
         for (int i = 0; i < absDy && stepsTaken < maxSteps; i++)
         {
             Vector3Int nextPosition = new Vector3Int(currentX, start.y + stepY * (i + 1), start.z);
-            if (IsMoveValid(nextPosition))
+            if (IsMoveValid(nextPosition) && nextPosition != hookPosition)
             {
                 path.Add(nextPosition);
                 stepsTaken++;
@@ -270,16 +299,16 @@ public class BarraAI : MonoBehaviour
             if (hitCollider.CompareTag("Player"))
             {
                 PlayerHealth playerHealth = hitCollider.GetComponent<PlayerHealth>();
-                if (playerHealth != null)
+                if (playerHealth != null && !playerHealth.IsDead)
                 {
-                    playerHealth.TakeDamage(attackDamage);
+                    playerHealth.TakeDamage(attackDamage); // Deal damage to the player
                     Debug.Log($"{gameObject.name} attacked the player for {attackDamage} damage.");
                 }
             }
             else if (hitCollider.CompareTag("Enemy"))
             {
                 EnemyHealth otherEnemyHealth = hitCollider.GetComponent<EnemyHealth>();
-                if (otherEnemyHealth != null && otherEnemyHealth.gameObject != this.gameObject)
+                if (otherEnemyHealth != null && !otherEnemyHealth.IsDead && otherEnemyHealth.gameObject != this.gameObject)
                 {
                     otherEnemyHealth.TakeDamage(attackDamage);
                     Debug.Log($"{gameObject.name} attacked {otherEnemyHealth.gameObject.name} for {attackDamage} damage.");
@@ -288,9 +317,9 @@ public class BarraAI : MonoBehaviour
         }
     }
 
+
     public void ResetAI()
     {
         StopAllCoroutines(); // Stop any active coroutines
-        // Reset other state variables if necessary
     }
 }

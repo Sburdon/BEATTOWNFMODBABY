@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 
 public class OccupiedTilesManager : MonoBehaviour
@@ -33,7 +34,18 @@ public class OccupiedTilesManager : MonoBehaviour
         return occupiedPositions.Contains(position);
     }
 
-    // Updated method to accept both AIMove and BarraAI
+    // Ensure no AI or player spawns on an occupied tile
+    public Vector3Int GetRandomAvailablePosition(Tilemap tilemap, Vector3Int playerPosition)
+    {
+        Vector3Int randomPosition;
+        do
+        {
+            randomPosition = new Vector3Int(Random.Range(-10, 10), Random.Range(-10, 10), 0); // Adjust range as needed
+        } while (IsTileOccupied(randomPosition) || !tilemap.HasTile(randomPosition) || randomPosition == playerPosition);
+
+        return randomPosition;
+    }
+
     public void RegisterAI(MonoBehaviour ai)
     {
         if (ai is AIMove aiMove)
@@ -46,7 +58,6 @@ public class OccupiedTilesManager : MonoBehaviour
         }
     }
 
-    // **Added RegisterPlayer method**
     public void RegisterPlayer(PlayerMove player)
     {
         AddOccupiedPosition(player.CurrentTilePosition);

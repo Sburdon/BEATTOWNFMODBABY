@@ -1355,7 +1355,7 @@ PrefabInstance:
         type: 3}
       propertyPath: playerHealth
       value: 
-      objectReference: {fileID: 1977992001}
+      objectReference: {fileID: 0}
     - target: {fileID: 8827615781386577876, guid: b274fc7fb29f2844f8eb8c9eff071847,
         type: 3}
       propertyPath: tilemap
@@ -2401,7 +2401,7 @@ GameObject:
   - component: {fileID: 1977992001}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2816,6 +2816,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 123279437787055045, guid: b274fc7fb29f2844f8eb8c9eff071847,
+        type: 3}
+      propertyPath: health
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 123279437787055045, guid: b274fc7fb29f2844f8eb8c9eff071847,
+        type: 3}
+      propertyPath: maxHealth
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 573249971285888192, guid: b274fc7fb29f2844f8eb8c9eff071847,
         type: 3}
       propertyPath: m_IsTrigger
@@ -2900,7 +2910,7 @@ PrefabInstance:
         type: 3}
       propertyPath: playerHealth
       value: 
-      objectReference: {fileID: 1977992001}
+      objectReference: {fileID: 0}
     - target: {fileID: 8827615781386577876, guid: b274fc7fb29f2844f8eb8c9eff071847,
         type: 3}
       propertyPath: tilemap
