@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections;
+using static StateMachine;
 
 public class Swing : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class Swing : MonoBehaviour
     private bool isSwinging = false;
     private GameObject enemyToSwing;
     private Vector3Int targetTilePosition;
+    private StateMachine stateMachine;
+
 
     private PlayerFatigue playerFatigue;
     public int swingFatigueCost = 2; // Fatigue cost for swinging
@@ -17,6 +20,7 @@ public class Swing : MonoBehaviour
     void Start()
     {
         playerFatigue = GetComponent<PlayerFatigue>();
+        stateMachine = GetComponent<StateMachine>();
     }
 
     // Method to be called when the swing button is pressed
@@ -154,6 +158,7 @@ public class Swing : MonoBehaviour
 
         Vector3 startPos = enemy.transform.position;
         Vector3 endPos = tilemap.GetCellCenterWorld(targetTilePosition);
+        stateMachine.ChangeState(WrestlerState.Swing);
 
         float elapsedTime = 0f;
         float duration = 1f / swingSpeed;

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static StateMachine;
 
 public class Push : MonoBehaviour
 {
@@ -11,11 +12,13 @@ public class Push : MonoBehaviour
     private bool isPushing; // State to track if we are in push mode
     private PlayerMove playerMove; // Reference to PlayerMove instance
     private PlayerFatigue playerFatigue; // Reference to PlayerFatigue instance
+    private StateMachine stateMachine;
 
     private void Awake() // called before Start()
     {
         playerMove = GetComponent<PlayerMove>();
         playerFatigue = GetComponent<PlayerFatigue>();
+        stateMachine = GetComponent<StateMachine>();
     }
 
     void Update()
@@ -157,6 +160,7 @@ public class Push : MonoBehaviour
     // Coroutine for smooth movement of the enemy
     private IEnumerator PushEnemyToTile(Transform enemy, Vector3Int targetTilePosition)
     {
+        stateMachine.ChangeState(WrestlerState.Push);
         Vector3 startPosition = enemy.position;
         Vector3 targetPosition = tilemap.GetCellCenterWorld(targetTilePosition);
         float travelTime = 0.5f; // Set the duration of the travel

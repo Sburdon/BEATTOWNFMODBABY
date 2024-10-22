@@ -2,16 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static StateMachine;
 
 public class PlayerMove : MonoBehaviour
 {
     public Tilemap tilemap; // Reference to the Tilemap
-    public float moveSpeed = 5f; // Speed of movement
+    public float moveSpeed = 1f; // Speed of movement
     public int maxMoves = 2; // Maximum moves allowed in a turn
     public int remainingMoves; // Count of remaining moves in the current turn
     private bool canMove = false; // Flag to control movement
     private ActionType currentAction; // Current action type for the player
     private Swing swingScript; // Reference to the Swing script
+    private StateMachine stateMachine;
     public Vector3Int CurrentTilePosition { get; private set; } // Current tile position in grid coordinates
     private Coroutine currentMoveCoroutine; // Store reference to the current move coroutine
     private PlayerFatigue playerFatigue; // Reference to the PlayerFatigue script
@@ -28,7 +30,7 @@ public class PlayerMove : MonoBehaviour
 
         swingScript = GetComponent<Swing>(); // Get reference to Swing script
         playerFatigue = GetComponent<PlayerFatigue>(); // Get reference to PlayerFatigue script
-
+        stateMachine = GetComponent<StateMachine>();
         // Register the player with the OccupiedTilesManager
         OccupiedTilesManager.Instance.RegisterPlayer(this);
     }
@@ -130,6 +132,8 @@ public class PlayerMove : MonoBehaviour
 
         // Get current position
         Vector3 startPosition = transform.position;
+
+        stateMachine.ChangeState(WrestlerState.Move);
 
         // Move towards the target position
         while (elapsedTime < 1f) // Move for 1 second

@@ -2517,11 +2517,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1977991990}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cac4cad70dfdddd40afddb2287e7e8b0, type: 3}
+  m_Script: {fileID: 11500000, guid: b5ad7cf80efb55443b166d9fe8158dc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 644845377}
-  moveSpeed: 5
+  moveSpeed: 2
   maxMoves: 2
   remainingMoves: 0
   moveFatigueCost: 1
@@ -2534,7 +2534,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1977991990}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2af7732dafaefda4cab8992f93d124c6, type: 3}
+  m_Script: {fileID: 11500000, guid: e688630716e12eb48b845928b9dcc9bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 644845377}
@@ -2566,7 +2566,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de3995850922c81429095e383b6a7b3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxFatigue: 5
+  maxFatigue: 4
   currentFatigue: 0
   swingFatigueCost: 2
   punchFatigueCost: 1
@@ -2613,7 +2613,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1977991990}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8df46c1a06d48d04092db8342e0c3261, type: 3}
+  m_Script: {fileID: 11500000, guid: a74b0e6d8199b8c4ba137cbac3b945c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 644845377}

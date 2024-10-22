@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: WrestlerAnimationSet
   m_EditorClassIdentifier: Assembly-CSharp::WrestlerAnimationSet
   idleTexture: {fileID: 2800000, guid: 261126f2492192e428986a59f10927d6, type: 3}
-  moveTexture: {fileID: 2800000, guid: 261126f2492192e428986a59f10927d6, type: 3}
+  moveTexture: {fileID: 2800000, guid: 2998b448a5c591442957d5734c6fbafd, type: 3}
   punchTexture: {fileID: 2800000, guid: 724b369cb74a65448bbf665f9797c1de, type: 3}
-  swingTexture: {fileID: 2800000, guid: 261126f2492192e428986a59f10927d6, type: 3}
+  swingTexture: {fileID: 2800000, guid: d19fb298a6358e7408ca639ca896c75c, type: 3}
   pushTexture: {fileID: 2800000, guid: 6c69ed2d2f1486f439223738bbb26b2d, type: 3}
   reactTexture: {fileID: 2800000, guid: 47f494b73fda67642b237c4d008bbecc, type: 3}
   sourceTexture: {fileID: 2800000, guid: ebfa436fde026b9429be1a0d13dbcd4c, type: 3}

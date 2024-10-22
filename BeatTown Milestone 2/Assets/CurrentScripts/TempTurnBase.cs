@@ -74,6 +74,7 @@ public class TempTurnBase : MonoBehaviour
         // Reset player's fatigue to maxFatigue at the start of the turn
         playerMove.RefreshSpaceCount();
         playerMove.ResetMoveCount();
+
         Debug.Log("Player's turn has started. Fatigue reset to maximum.");
     }
 
