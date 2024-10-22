@@ -101,10 +101,32 @@ public class PlayerMove : MonoBehaviour
             swingScript.CancelSwing();
         }
 
-        // Allow movement when the Move button is pressed
-        canMove = true;
-        Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
-        CurrentAction = ActionType.Move; // Set current action to Move
+        // If the player has moves remaining, they can move normally
+        if (remainingMoves > 0)
+        {
+            canMove = true;
+            Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
+            CurrentAction = ActionType.Move; // Set current action to Move
+        }
+        // If the player is out of moves, use fatigue to gain additional moves
+        else if (remainingMoves <= 0)
+        {
+            // Check if the player has enough fatigue to gain more moves
+            if (playerFatigue.CanPerformAction(moveFatigueCost))
+            {
+                // Deduct fatigue and give the player new moves
+                playerFatigue.UseFatigue(moveFatigueCost);
+                remainingMoves = maxMoves; // Reset moves to max amount
+                hasFatigueBeenDeductedForMove = true; // Mark that fatigue has been used
+
+                Debug.Log("Fatigue used to gain more moves. You now have " + remainingMoves + " moves.");
+                canMove = true; // Enable movement
+            }
+            else
+            {
+                Debug.Log("Not enough fatigue to gain more moves.");
+            }
+        }
     }
 
     public void CancelMove()
