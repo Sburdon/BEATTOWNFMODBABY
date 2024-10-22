@@ -75,8 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b,
-    type: 3}
+  m_Sprite: {fileID: 21300000, guid: 329b5b25d36a6b048ac3c94b53d876ee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -135,8 +134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 0}
-  enemyPrefab: {fileID: 3104276801109259614, guid: b274fc7fb29f2844f8eb8c9eff071847,
-    type: 3}
   hookPrefab: {fileID: 146274211700111789}
+  barraPrefab: {fileID: 0}
   player: {fileID: 0}
   hookKillCount: 0
