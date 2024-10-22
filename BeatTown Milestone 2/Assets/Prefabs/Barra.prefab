@@ -123,6 +123,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 5
   health: 0
+  fullHealthBarPrefab: {fileID: 5397143593198203743, guid: 51be1fbc4e5094e4db9ed2e8497f317a,
+    type: 3}
+  emptyHealthBarPrefab: {fileID: 2196120353045712488, guid: b7b9401cea1141441946b5aeea418c71,
+    type: 3}
 --- !u!50 &5081536892844149405
 Rigidbody2D:
   serializedVersion: 4
