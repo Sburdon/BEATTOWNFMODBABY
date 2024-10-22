@@ -1,37 +1,51 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerFatigue : MonoBehaviour
 {
     [Header("Fatigue Settings")]
-    public int maxFatigue = 5; // Maximum amount of fatigue the player can have
+    public int maxFatigue = 4; // Maximum amount of fatigue (4/4)
     public int currentFatigue; // Current fatigue level
 
-    public int swingFatigueCost = 2; // Fatigue cost for swinging
-    public int punchFatigueCost = 1; // Fatigue cost for punching
-    public int pushFatigueCost = 1; // Fatigue cost for pushing
+    public int swingFatigueCost = 2;
+    public int punchFatigueCost = 1;
+    public int pushFatigueCost = 1;
+
+    [Header("Fatigue Bar Images")]
+    public Image[] fatigueImages; // Array to hold references to the fatigue images (0/4 to 4/4)
 
     void Start()
     {
         currentFatigue = maxFatigue; // Initialize fatigue to the maximum at the start
+        UpdateFatigueBar(); // Update fatigue bar at the start
     }
 
     public bool CanPerformAction(int fatigueCost)
     {
-        // Check if the player has enough fatigue to perform an action
         return currentFatigue >= fatigueCost;
     }
 
     public void UseFatigue(int fatigueCost)
     {
-        // Reduce the player's fatigue by the specified cost
-        currentFatigue = Mathf.Max(currentFatigue - fatigueCost, 0); // Ensure fatigue doesn't go below 0
+        currentFatigue = Mathf.Max(currentFatigue - fatigueCost, 0); // Reduce fatigue
+        UpdateFatigueBar(); // Update the fatigue bar UI
         Debug.Log("Used " + fatigueCost + " fatigue. Current fatigue: " + currentFatigue);
     }
 
-    public void RecoverFatigue(int amount)
+    public void RecoverFatigue()
     {
-        // Recover fatigue by the specified amount
-        currentFatigue = Mathf.Min(currentFatigue + amount, maxFatigue); // Ensure fatigue doesn't exceed the maximum
-        Debug.Log("Recovered " + amount + " fatigue. Current fatigue: " + currentFatigue);
+        currentFatigue = maxFatigue; // Recover fatigue
+        UpdateFatigueBar(); // Update the fatigue bar UI
+       
+    }
+
+    private void UpdateFatigueBar()
+    {
+        // Loop through the images and update them based on current fatigue
+        for (int i = 0; i < fatigueImages.Length; i++)
+        {
+            // Enable the correct image based on current fatigue level
+            fatigueImages[i].enabled = (i == currentFatigue);
+        }
     }
 }

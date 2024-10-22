@@ -86,11 +86,6 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    public void ResetMoveCount()
-    {
-        playerFatigue.currentFatigue = playerFatigue.maxFatigue;
-        Debug.Log("Player's move count has been reset to maximum.");
-    }
 
 
     public void OnMoveButtonPressed()
