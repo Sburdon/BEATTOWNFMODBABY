@@ -1,21 +1,19 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using System.Collections;
 using static StateMachine;
 
 public class Swing : MonoBehaviour
 {
     public Tilemap tilemap;
     public float swingSpeed = 5f;
-    private bool isSwingMode = false;
-    private bool isSwinging = false;
     private GameObject enemyToSwing;
     private Vector3Int targetTilePosition;
-    private StateMachine stateMachine;
-
-
+    private bool isSwingMode = false;
+    private bool isSwinging = false;
     private PlayerFatigue playerFatigue;
     public int swingFatigueCost = 2; // Fatigue cost for swinging
+    private StateMachine stateMachine;
 
     void Start()
     {
@@ -55,34 +53,18 @@ public class Swing : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0)) // Left mouse button
             {
-                Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
-                Vector3Int playerTilePosition = tilemap.WorldToCell(transform.position);
-
                 if (enemyToSwing == null)
                 {
                     // First click: Select an adjacent enemy
-                    if (IsAdjacent(playerTilePosition, clickedTilePosition))
-                    {
-                        Collider2D collider = Physics2D.OverlapPoint(tilemap.GetCellCenterWorld(clickedTilePosition));
-                        if (collider != null && collider.CompareTag("Enemy"))
-                        {
-                            enemyToSwing = collider.gameObject;
-                            Debug.Log("Enemy selected. Click on a valid adjacent tile to swing the enemy.");
-                        }
-                        else
-                        {
-                            Debug.Log("No enemy at the selected tile or not adjacent.");
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("Selected tile is not adjacent to the player.");
-                    }
+                    SelectEnemy();
                 }
                 else
                 {
                     // Second click: Select a target tile
+                    Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
+                    Vector3Int playerTilePosition = tilemap.WorldToCell(transform.position);
+
                     if (IsAdjacent(playerTilePosition, clickedTilePosition) && clickedTilePosition != playerTilePosition && clickedTilePosition != tilemap.WorldToCell(enemyToSwing.transform.position))
                     {
                         if (IsValidSwingTarget(clickedTilePosition))
@@ -91,7 +73,6 @@ public class Swing : MonoBehaviour
 
                             // Deduct fatigue
                             playerFatigue.UseFatigue(swingFatigueCost);
-
                             StartCoroutine(SwingEnemy(enemyToSwing, targetTilePosition));
 
                             // Reset swing mode
@@ -105,7 +86,7 @@ public class Swing : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("Selected tile is not a valid target. It must be adjacent to the player and not the same as the enemy's current position.");
+                        Debug.Log("Selected tile is not a valid target.");
                     }
                 }
             }
@@ -115,6 +96,33 @@ public class Swing : MonoBehaviour
                 isSwingMode = false;
                 enemyToSwing = null;
             }
+        }
+    }
+
+    private void SelectEnemy()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+        if (hit.collider != null && hit.collider.CompareTag("Enemy"))
+        {
+            Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
+            Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
+
+            // Ensure the enemy is within swinging range (1 tile in each direction)
+            if (IsAdjacent(playerPosition, enemyPosition))
+            {
+                enemyToSwing = hit.collider.gameObject; // Select the enemy
+                Debug.Log($"Selected enemy for swing: {enemyToSwing.name}");
+            }
+            else
+            {
+                Debug.Log("Selected enemy is out of swing range.");
+            }
+        }
+        else
+        {
+            Debug.Log("No enemy selected.");
         }
     }
 
@@ -136,16 +144,13 @@ public class Swing : MonoBehaviour
         // Allow swinging into the hook's tile
         if (OccupiedTilesManager.Instance.IsTileOccupied(targetTilePosition))
         {
-            // Check if the occupied tile is the hook's tile
             if (Hook.Instance != null && Hook.Instance.GetHookPosition() == targetTilePosition)
             {
-                // Allow swinging into the hook's tile
-                return true;
+                return true; // Allow swinging into the hook's tile
             }
             else
             {
-                // Tile is occupied by another unit
-                return false;
+                return false; // Tile is occupied by another unit
             }
         }
 
