@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 123279437787055045}
   - component: {fileID: 8827615781386577876}
   - component: {fileID: 7059847366657219671}
+  - component: {fileID: -4431514041361390980}
+  - component: {fileID: 815736370709410987}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: AI
@@ -174,3 +176,36 @@ MonoBehaviour:
   playerHealth: {fileID: 0}
   attackDamage: 1
   attackRange: 1
+--- !u!114 &-4431514041361390980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3104276801109259614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df4042b1b3b23024b89aaf1545da33a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _texture: {fileID: 0}
+  sourceTexture: {fileID: 0}
+  baseMask: {fileID: 0}
+  sm: {fileID: 0}
+--- !u!114 &815736370709410987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3104276801109259614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f5ecbf9b692daa4cbf4d685027e6e13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentState: 0
+  uvMappingScript: {fileID: -4431514041361390980}
+  moveSpeed: 3
+  actionPlaying: 0
+  animationSet: {fileID: 11400000, guid: 1c57106031e117a4f9ab88f4c10f1e3e, type: 2}
