@@ -18,6 +18,7 @@ public class PlayerMove : MonoBehaviour
     private Coroutine currentMoveCoroutine; // Store reference to the current move coroutine
     private PlayerFatigue playerFatigue; // Reference to the PlayerFatigue script
     public int moveFatigueCost = 1; // Fatigue cost for movement
+    public All_SFX All_SFX; //Reference FMOD Script
 
     private bool hasFatigueBeenDeductedForMove = false; // Flag to ensure fatigue is only deducted once per move action
 
@@ -33,6 +34,9 @@ public class PlayerMove : MonoBehaviour
         stateMachine = GetComponent<StateMachine>();
         // Register the player with the OccupiedTilesManager
         OccupiedTilesManager.Instance.RegisterPlayer(this);
+
+        All_SFX.PlayFishBattle();
+        All_SFX.UpdateCudaCount();
     }
 
     void Update()
@@ -162,6 +166,7 @@ public class PlayerMove : MonoBehaviour
 
         // Ensure the player ends up exactly at the target position
         transform.position = targetPosition;
+        All_SFX.PlayWalkingSound();
 
         // Update current tile position after the move
         CurrentTilePosition = targetTilePosition;

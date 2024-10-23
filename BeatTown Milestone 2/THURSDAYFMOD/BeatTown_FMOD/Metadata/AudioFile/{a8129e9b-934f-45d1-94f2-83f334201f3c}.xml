@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{a8129e9b-934f-45d1-94f2-83f334201f3c}">
+		<property name="assetPath">
+			<value>CUANG.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>2.5013378684807255</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{734611d2-be86-42f5-bf8c-3b966c31cf8a}</destination>
+		</relationship>
+	</object>
+</objects>

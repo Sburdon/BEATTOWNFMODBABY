@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{f7eaa76d-ce57-4ca7-825e-ea1f631a0c13}">
+		<property name="assetPath">
+			<value>game_track_hapopy_V4_Mixed.wav</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>116</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{734611d2-be86-42f5-bf8c-3b966c31cf8a}</destination>
+		</relationship>
+	</object>
+</objects>

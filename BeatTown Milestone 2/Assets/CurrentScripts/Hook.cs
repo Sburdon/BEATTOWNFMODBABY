@@ -19,6 +19,8 @@ public class Hook : MonoBehaviour
     private bool firstBarraSpawned = false;
     private bool secondBarraSpawned = false;
 
+    public All_SFX All_SFX; //Reference FMOD Script
+
     void Awake()
     {
         if (Instance == null)
@@ -37,6 +39,8 @@ public class Hook : MonoBehaviour
         OccupiedTilesManager.Instance.AddOccupiedPosition(hookPosition);
         UpdateFishCountText(); // Initialize the text display
     }
+
+  
 
     // Method to update the fish count text
     private void UpdateFishCountText()
@@ -139,6 +143,8 @@ public class Hook : MonoBehaviour
         {
             SpawnBarra();
             firstBarraSpawned = true;
+            
+
         }
 
         // Spawn the second BarraAI after 4 kills
@@ -162,6 +168,7 @@ public class Hook : MonoBehaviour
 
         GameObject barra = Instantiate(barraPrefab, worldPosition, Quaternion.identity);
         BarraAI barraAI = barra.GetComponent<BarraAI>();
+        All_SFX.PlayCUANG();
 
         if (barraAI != null)
         {

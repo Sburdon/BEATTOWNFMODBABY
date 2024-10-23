@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{02d8136d-14f7-40d3-a50f-fd425a288e81}">
+		<property name="name">
+			<value>Crowd feeling</value>
+		</property>
+		<relationship name="folder">
+			<destination>{7487d79e-a215-4fed-9faf-3b212a705eb9}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{3542322e-c264-494c-9d11-adf166751322}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{3542322e-c264-494c-9d11-adf166751322}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>3</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>Murmur</value>
+			<value>Cheering</value>
+			<value>Ooing maybe</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

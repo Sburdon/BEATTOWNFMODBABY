@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{5c2442d6-7184-47b4-b7fd-643f5f69475f}">
+		<property name="assetPath">
+			<value>uuhh_5.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.84024943310657596</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{734611d2-be86-42f5-bf8c-3b966c31cf8a}</destination>
+		</relationship>
+	</object>
+</objects>

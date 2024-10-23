@@ -23,12 +23,15 @@ public class BarraAI : MonoBehaviour
     public bool followPlayer = false; // Boolean to determine if BarraAI should follow the player
     private int followPlayerTurns = 1; // Counter for the number of turns to follow the player
 
+    
+
     void Start()
     {
         enemyHealth = GetComponent<EnemyHealth>();
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
         OccupiedTilesManager.Instance.RegisterAI(this);
         hook = Hook.Instance; // Get reference to the hook
+        
     }
 
     // Main turn logic

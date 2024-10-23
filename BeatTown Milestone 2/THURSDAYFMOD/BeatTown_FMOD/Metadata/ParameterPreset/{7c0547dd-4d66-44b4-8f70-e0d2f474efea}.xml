@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{7c0547dd-4d66-44b4-8f70-e0d2f474efea}">
+		<property name="name">
+			<value>Cuda_Count</value>
+		</property>
+		<relationship name="folder">
+			<destination>{7487d79e-a215-4fed-9faf-3b212a705eb9}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{75810b50-f747-4364-ab2a-d27f9fc64a44}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{75810b50-f747-4364-ab2a-d27f9fc64a44}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>No Barracuda</value>
+			<value>BARRACUDA</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

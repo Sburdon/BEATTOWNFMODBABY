@@ -109,6 +109,7 @@ MonoBehaviour:
   attackDamage: 2
   attackRange: 1
   followPlayer: 0
+  All_SFX: {fileID: 0}
 --- !u!114 &7323142019123634588
 MonoBehaviour:
   m_ObjectHideFlags: 0
