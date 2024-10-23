@@ -400,6 +400,7 @@ GameObject:
   - component: {fileID: 167513597}
   - component: {fileID: 167513599}
   - component: {fileID: 167513600}
+  - component: {fileID: 167513601}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -466,6 +467,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemap: {fileID: 644845377}
   player: {fileID: 1977991994}
+--- !u!114 &167513601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167513596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b25e7569ca7e6d34992cc3b5aaf13d01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &174669199
 GameObject:
   m_ObjectHideFlags: 0
@@ -825,6 +838,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1977992000}
         m_TargetAssemblyTypeName: Push, Assembly-CSharp
         m_MethodName: CancelPush
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 167513601}
+        m_TargetAssemblyTypeName: All_SFX, Assembly-CSharp
+        m_MethodName: OnUIButtonPressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2093,6 +2118,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 167513601}
+        m_TargetAssemblyTypeName: All_SFX, Assembly-CSharp
+        m_MethodName: OnUIButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &921817471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2797,6 +2834,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 167513601}
+        m_TargetAssemblyTypeName: All_SFX, Assembly-CSharp
+        m_MethodName: OnUIButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1620997632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3245,6 +3294,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 167513601}
+        m_TargetAssemblyTypeName: All_SFX, Assembly-CSharp
+        m_MethodName: OnUIButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1766274696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3464,6 +3525,7 @@ GameObject:
   - component: {fileID: 1977992000}
   - component: {fileID: 1977992001}
   - component: {fileID: 1977992002}
+  - component: {fileID: 1977992003}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3590,6 +3652,7 @@ MonoBehaviour:
   maxMoves: 2
   remainingMoves: 0
   moveFatigueCost: 1
+  All_SFX: {fileID: 1977992003}
 --- !u!114 &1977991995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3717,7 +3780,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1977991990}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
@@ -3729,18 +3792,32 @@ MonoBehaviour:
       Data2: 1276068149
       Data3: 173691825
       Data4: 1017072022
-    Path: event:/Fish Battle
+    Path: event:/Fish_Battle
   Event: 
   PlayEvent: 1
-  StopEvent: 0
+  StopEvent: 2
   AllowFadeout: 1
   TriggerOnce: 0
   Preload: 0
   AllowNonRigidbodyDoppler: 0
-  Params: []
+  Params:
+  - Name: Cuda_Count
+    Value: 0
   OverrideAttenuation: 0
   OverrideMinDistance: 1
   OverrideMaxDistance: 20
+--- !u!114 &1977992003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977991990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b25e7569ca7e6d34992cc3b5aaf13d01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2048281137
 GameObject:
   m_ObjectHideFlags: 0
@@ -3906,6 +3983,11 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1977991994}
+    - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: All_SFX
+      value: 
+      objectReference: {fileID: 167513601}
     - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
         type: 3}
       propertyPath: tilemap
