@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 329b5b25d36a6b048ac3c94b53d876ee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -137,4 +137,6 @@ MonoBehaviour:
   hookPrefab: {fileID: 146274211700111789}
   barraPrefab: {fileID: 0}
   player: {fileID: 0}
+  fishCountText: {fileID: 0}
   hookKillCount: 0
+  All_SFX: {fileID: 0}
