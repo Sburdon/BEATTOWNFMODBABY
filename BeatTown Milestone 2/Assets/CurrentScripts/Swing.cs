@@ -5,6 +5,7 @@ using static StateMachine;
 
 public class Swing : MonoBehaviour
 {
+    public GameObject SwingHighlight;
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
     public Tilemap tilemap;
@@ -40,6 +41,7 @@ public class Swing : MonoBehaviour
     public void OnSwingButtonPressed()
     {
         PPShighlight.SetActive(true);
+        SwingHighlight.SetActive(false);
         moveMentHighlight.SetActive(false);
         if (isSwinging)
         {
@@ -127,7 +129,7 @@ public class Swing : MonoBehaviour
                 targetToSwing = hit.collider.gameObject; // Select the enemy
                 Debug.Log($"Selected enemy for swing: {targetToSwing.name}");
                 PPShighlight.SetActive(false);
-                moveMentHighlight.SetActive(true);
+                SwingHighlight.SetActive(true);
             }
             else
             {
@@ -211,6 +213,7 @@ public class Swing : MonoBehaviour
         Debug.Log("Swing action completed.");
         PPShighlight.SetActive(false);
         moveMentHighlight.SetActive(false);
+        SwingHighlight.SetActive(false);
     }
 
     public bool IsSwinging()

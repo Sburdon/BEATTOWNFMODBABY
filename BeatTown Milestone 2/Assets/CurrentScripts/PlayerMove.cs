@@ -20,6 +20,7 @@ public class PlayerMove : MonoBehaviour
     private PlayerFatigue playerFatigue; // Reference to the PlayerFatigue script
     public int moveFatigueCost = 1; // Fatigue cost for movement
     public All_SFX All_SFX; // Reference to FMOD Script
+    public GameObject SwingHighlight;
 
     private bool hasFatigueBeenDeductedForMove = false; // Flag to ensure fatigue is only deducted once per move action
 
@@ -95,6 +96,7 @@ public class PlayerMove : MonoBehaviour
     public void OnMoveButtonPressed()
     {
         Debug.Log("Move button pressed."); // Log to check if the method is called
+        SwingHighlight.SetActive(false);
         moveMentHighlight.SetActive(true);
         PPShighlight.SetActive(false);
         // Cancel swing mode if active

@@ -4,6 +4,7 @@ using static StateMachine;
 
 public class Punch : MonoBehaviour
 {
+    public GameObject SwingHighlight;
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
     public Tilemap tilemap; // Reference to the Tilemap
@@ -44,6 +45,7 @@ public class Punch : MonoBehaviour
 
     public void OnPunchButtonPressed()
     {
+        SwingHighlight.SetActive(false);
         PPShighlight.SetActive(true);
         moveMentHighlight.SetActive(false);
         isPunching = true; // Activate punching mode

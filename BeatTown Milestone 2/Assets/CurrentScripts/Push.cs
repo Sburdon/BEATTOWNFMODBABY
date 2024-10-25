@@ -6,6 +6,7 @@ using static StateMachine;
 
 public class Push : MonoBehaviour
 {
+    public GameObject SwingHighlight;
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
     public Tilemap tilemap;
@@ -56,6 +57,7 @@ public class Push : MonoBehaviour
 
     public void OnPushButtonPressed()
     {
+        SwingHighlight.SetActive(false);
         PPShighlight.SetActive(true);
         moveMentHighlight.SetActive(false);
         // Cancel any movement when the push button is pressed
