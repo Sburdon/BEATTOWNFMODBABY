@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7323142019123634588}
   - component: {fileID: 5081536892844149405}
   - component: {fileID: 7962051666227067548}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Barra
   m_TagString: Enemy
   m_Icon: {fileID: 0}

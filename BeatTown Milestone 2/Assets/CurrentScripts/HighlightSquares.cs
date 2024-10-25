@@ -5,46 +5,48 @@ using UnityEngine;
 public class HighlightSquares : MonoBehaviour
 {
     public LayerMask wallLayer; // The layer to check for walls
+    public LayerMask enemyLayer; // The layer to check for enemies
+    public LayerMask hook; // The layer to check for the hook
     public float checkRadius = 0.1f; // The radius for the overlap check
     private SpriteRenderer spriteRenderer; // Reference to the SpriteRenderer component
-    private bool isCollidingWithWall = false; // Track collision state
+    private bool isCollidingWithObstacle = false; // Track collision state with wall or enemy
 
     private void Start()
     {
         // Get the SpriteRenderer component attached to this GameObject
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // Check if the square is already colliding with a wall at the time of spawn
-        CheckForWallCollision();
+        // Check if the square is already colliding with a wall or enemy at the time of spawn
+        CheckForObstacleCollision();
     }
 
     private void Update()
     {
-        // Continuously check for wall collisions
-        CheckForWallCollision();
+        // Continuously check for wall and enemy collisions
+        CheckForObstacleCollision();
     }
 
-    private void CheckForWallCollision()
+    private void CheckForObstacleCollision()
     {
-        // Check for collisions within a circle around the object's position
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, checkRadius, wallLayer);
+        // Check for collisions within a circle around the object's position for walls and enemies
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, checkRadius, wallLayer | enemyLayer | hook);
 
-        if (hitColliders.Length > 0) // If any colliders are found in the wall layer
+        if (hitColliders.Length > 0) // If any colliders are found in the wall or enemy layer
         {
-            if (!isCollidingWithWall)
+            if (!isCollidingWithObstacle)
             {
-                Debug.Log("Colliding with Wall! Disabling sprite.");
-                spriteRenderer.enabled = false; // Disable the SpriteRenderer if colliding with a wall
-                isCollidingWithWall = true; // Update the collision state
+                Debug.Log("Colliding with an obstacle! Disabling sprite.");
+                spriteRenderer.enabled = false; // Disable the SpriteRenderer if colliding with a wall or enemy
+                isCollidingWithObstacle = true; // Update the collision state
             }
         }
         else
         {
-            if (isCollidingWithWall)
+            if (isCollidingWithObstacle)
             {
-                Debug.Log("Not colliding with Wall. Re-enabling sprite.");
+                Debug.Log("Not colliding with any obstacles. Re-enabling sprite.");
                 spriteRenderer.enabled = true; // Reactivate the SpriteRenderer if not colliding
-                isCollidingWithWall = false; // Update the collision state
+                isCollidingWithObstacle = false; // Update the collision state
             }
         }
     }

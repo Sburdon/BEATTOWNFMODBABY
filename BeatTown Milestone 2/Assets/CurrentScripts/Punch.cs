@@ -4,6 +4,8 @@ using static StateMachine;
 
 public class Punch : MonoBehaviour
 {
+    public GameObject PPShighlight;
+    public GameObject moveMentHighlight;
     public Tilemap tilemap; // Reference to the Tilemap
     private Transform selectedEnemy; // Currently selected enemy
     private bool isPunching; // State to track if we are in punch mode
@@ -43,6 +45,8 @@ public class Punch : MonoBehaviour
 
     public void OnPunchButtonPressed()
     {
+        PPShighlight.SetActive(true);
+        moveMentHighlight.SetActive(false);
         isPunching = true; // Activate punching mode
         selectedEnemy = null; // Reset selected enemy
         playerMove.CurrentAction = ActionType.Punch; // Set the current action to Punch
@@ -69,7 +73,7 @@ public class Punch : MonoBehaviour
         if (hit.collider != null)
         {
             // Check if the clicked object is tagged as "Enemy"
-            if (hit.collider.CompareTag("Enemy"))
+            if (hit.collider.CompareTag("AI"))
             {
                 Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
                 Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
@@ -88,7 +92,7 @@ public class Punch : MonoBehaviour
         }
     }
 
-    
+
 
     void TryPunchEnemy()
     {
@@ -148,7 +152,7 @@ public class Punch : MonoBehaviour
         Vector3Int playerCurrentPosition = tilemap.WorldToCell(transform.position);
 
         // Check each enemy if it is within punching range
-        foreach (GameObject enemyObj in GameObject.FindGameObjectsWithTag("Enemy"))
+        foreach (GameObject enemyObj in GameObject.FindGameObjectsWithTag("AI"))
         {
             Transform enemy = enemyObj.transform;
             Vector3Int enemyPosition = tilemap.WorldToCell(enemy.position);

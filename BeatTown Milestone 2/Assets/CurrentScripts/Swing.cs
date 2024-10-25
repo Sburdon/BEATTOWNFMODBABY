@@ -5,6 +5,8 @@ using static StateMachine;
 
 public class Swing : MonoBehaviour
 {
+    public GameObject PPShighlight;
+    public GameObject moveMentHighlight;
     public Tilemap tilemap;
     public float swingSpeed = 5f;
     private GameObject enemyToSwing;
@@ -24,6 +26,8 @@ public class Swing : MonoBehaviour
     // Method to be called when the swing button is pressed
     public void OnSwingButtonPressed()
     {
+        PPShighlight.SetActive(true);
+        moveMentHighlight.SetActive(false);
         if (isSwinging)
         {
             Debug.Log("Already swinging.");
@@ -104,7 +108,7 @@ public class Swing : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        if (hit.collider != null && hit.collider.CompareTag("Enemy"))
+        if (hit.collider != null && hit.collider.CompareTag("AI"))
         {
             Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
             Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
@@ -114,6 +118,8 @@ public class Swing : MonoBehaviour
             {
                 enemyToSwing = hit.collider.gameObject; // Select the enemy
                 Debug.Log($"Selected enemy for swing: {enemyToSwing.name}");
+                PPShighlight.SetActive(false);
+                moveMentHighlight.SetActive(true);
             }
             else
             {
@@ -197,6 +203,8 @@ public class Swing : MonoBehaviour
 
         isSwinging = false;
         Debug.Log("Swing action completed.");
+        PPShighlight.SetActive(false);
+        moveMentHighlight.SetActive(false);
     }
 
     public bool IsSwinging()

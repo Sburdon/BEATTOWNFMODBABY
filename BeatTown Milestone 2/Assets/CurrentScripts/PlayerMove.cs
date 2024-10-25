@@ -6,6 +6,8 @@ using static StateMachine;
 
 public class PlayerMove : MonoBehaviour
 {
+    public GameObject PPShighlight;
+    public GameObject moveMentHighlight;
     public Tilemap tilemap; // Reference to the Tilemap
     public float moveSpeed = 1f; // Speed of movement
     public int maxMoves = 2; // Maximum moves allowed in a turn
@@ -94,6 +96,9 @@ public class PlayerMove : MonoBehaviour
 
     public void OnMoveButtonPressed()
     {
+        Debug.Log("Move button pressed."); // Log to check if the method is called
+        moveMentHighlight.SetActive(true);
+        PPShighlight.SetActive(false);
         // Cancel swing mode if active
         if (swingScript != null && swingScript.IsSwinging())
         {
@@ -159,10 +164,12 @@ public class PlayerMove : MonoBehaviour
         // Move towards the target position
         while (elapsedTime < 1f) // Move for 1 second
         {
+            moveMentHighlight.SetActive(false);
             transform.position = Vector3.Lerp(startPosition, targetPosition, (elapsedTime / 1f)); // Lerp for smooth movement
             elapsedTime += Time.deltaTime * moveSpeed; // Increment elapsed time
             yield return null; // Wait for the next frame
         }
+        moveMentHighlight.SetActive(true);
 
         // Ensure the player ends up exactly at the target position
         transform.position = targetPosition;

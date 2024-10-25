@@ -6,6 +6,8 @@ using static StateMachine;
 
 public class Push : MonoBehaviour
 {
+    public GameObject PPShighlight;
+    public GameObject moveMentHighlight;
     public Tilemap tilemap; // Reference to the Tilemap
     public Hook hook; // Reference to the Hook script
     private Transform selectedEnemy; // Currently selected enemy
@@ -44,6 +46,8 @@ public class Push : MonoBehaviour
 
     public void OnPushButtonPressed() // NOTE: PUSH BUTTON AGAIN TO CONFIRM PUSH
     {
+        PPShighlight.SetActive(true);
+        moveMentHighlight.SetActive(false);
         // Cancel any movement when the push button is pressed
         playerMove.CancelMove();
 
@@ -73,7 +77,7 @@ public class Push : MonoBehaviour
         if (hit.collider != null)
         {
             // Check if the clicked object is tagged as "Enemy"
-            if (hit.collider.CompareTag("Enemy"))
+            if (hit.collider.CompareTag("AI"))
             {
                 Transform enemy = hit.collider.transform;
 
