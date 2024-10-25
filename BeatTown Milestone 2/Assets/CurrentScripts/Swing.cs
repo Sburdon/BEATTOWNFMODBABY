@@ -171,6 +171,7 @@ public class Swing : MonoBehaviour
         {
             if (targetDied)
             {
+                SwingHighlight.SetActive(false);
                 Debug.Log("Target died during swing. Stopping movement.");
                 break;
             }
