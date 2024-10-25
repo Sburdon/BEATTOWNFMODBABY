@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static StateMachine;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -160,7 +161,7 @@ public class PlayerMove : MonoBehaviour
         // Get current position
         Vector3 startPosition = transform.position;
 
-        //stateMachine.ChangeState(WrestlerState.Move);
+        stateMachine.ChangeState(WrestlerState.Move);
 
         // Move towards the target position
         while (elapsedTime < 1f) // Move for 1 second
