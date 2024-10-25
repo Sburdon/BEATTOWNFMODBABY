@@ -164,6 +164,7 @@ public class Push : MonoBehaviour
     // Coroutine for smooth movement of the enemy
     private IEnumerator PushEnemyToTile(Transform enemy, Vector3Int targetTilePosition)
     {
+        PPShighlight.SetActive(false);
         stateMachine.ChangeState(WrestlerState.Push);
         Vector3 startPosition = enemy.position;
         Vector3 targetPosition = tilemap.GetCellCenterWorld(targetTilePosition);

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class TempTurnBase : MonoBehaviour
 {
+    public GameObject PPShighlight;
+    public GameObject moveMentHighlight;
     public List<AIMove> aiUnits;
     public List<BarraAI> barraUnits; // List for BarraAI units
 
@@ -30,6 +32,8 @@ public class TempTurnBase : MonoBehaviour
 
     public void EndPlayerTurn()
     {
+        PPShighlight.SetActive(false);
+        moveMentHighlight.SetActive(false);
         isPlayerTurn = false;
         StartCoroutine(AITurnRoutine());
     }

@@ -180,7 +180,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Move
+  m_text: 'Move         COST: 1 Fatigue
 
 '
   m_isRightToLeft: 0
@@ -420,6 +420,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3c278c3eddb1134eabf9ca5d3c77c1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PPShighlight: {fileID: 1563459242}
+  moveMentHighlight: {fileID: 597358265}
   aiUnits:
   - {fileID: 551773665}
   - {fileID: 167178340}
@@ -1353,7 +1355,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Swing
+  m_text: 'Swing         COST: 2 Fatigue
 
 '
   m_isRightToLeft: 0
@@ -2797,7 +2799,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Push
+  m_text: 'Push         COST: 1 Fatgiue'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3622,7 +3624,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Punch
+  m_text: 'Punch         COST: 1 Fatigue
 
 '
   m_isRightToLeft: 0

@@ -72,7 +72,7 @@ public class Punch : MonoBehaviour
         if (hit.collider != null)
         {
             // Check if the clicked object is tagged as "Enemy"
-            if (hit.collider.CompareTag("Enemy"))
+            if (hit.collider.CompareTag("AI"))
             {
                 Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
                 Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
@@ -133,7 +133,7 @@ public class Punch : MonoBehaviour
         Vector3Int playerCurrentPosition = tilemap.WorldToCell(transform.position);
 
         // Check each enemy if it is within punching range
-        foreach (GameObject enemyObj in GameObject.FindGameObjectsWithTag("Enemy"))
+        foreach (GameObject enemyObj in GameObject.FindGameObjectsWithTag("AI"))
         {
             Transform enemy = enemyObj.transform;
             Vector3Int enemyPosition = tilemap.WorldToCell(enemy.position);

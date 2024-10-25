@@ -118,6 +118,7 @@ public class PlayerMove : MonoBehaviour
             // Check if the player has enough fatigue to gain more moves
             if (playerFatigue.CanPerformAction(moveFatigueCost))
             {
+                moveMentHighlight.SetActive(true);
                 // Deduct fatigue and give the player new moves
                 playerFatigue.UseFatigue(moveFatigueCost);
                 remainingMoves = maxMoves; // Reset moves to max amount
@@ -184,6 +185,7 @@ public class PlayerMove : MonoBehaviour
         // Check if no remaining moves are left
         if (remainingMoves <= 0)
         {
+            moveMentHighlight.SetActive(false);
             canMove = false; // Disable further movement until reset
             Debug.Log("Movement complete. No moves remaining.");
         }

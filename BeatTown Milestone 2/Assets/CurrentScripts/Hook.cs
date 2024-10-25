@@ -95,7 +95,7 @@ public class Hook : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy")) // Check if the object that hit the hook is an Enemy
+        if (other.CompareTag("AI")) // Check if the object that hit the hook is an Enemy
         {
             HandleEnemyHit(other.gameObject);
         }
