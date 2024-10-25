@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -45,8 +44,18 @@ public class BarraMove : MonoBehaviour
         for (int i = 0; i < moveDistance && i < path.Count; i++)
         {
             Vector3Int nextTile = path[i];
-            yield return StartCoroutine(MoveToTile(nextTile));
-            CurrentTilePosition = nextTile;
+
+            // Ensure that the next tile is not occupied before moving
+            if (!OccupiedTilesManager.Instance.IsTileOccupied(nextTile))
+            {
+                yield return StartCoroutine(MoveToTile(nextTile));
+                CurrentTilePosition = nextTile;
+            }
+            else
+            {
+                Debug.Log($"Tile {nextTile} is occupied. Skipping move.");
+                break; // Stop moving if the next tile is occupied
+            }
         }
     }
 
@@ -105,7 +114,7 @@ public class BarraMove : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates a simple path towards the target tile.
+    /// Calculates a simple path towards the target tile, avoiding occupied tiles.
     /// </summary>
     private List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int target)
     {
@@ -117,13 +126,29 @@ public class BarraMove : MonoBehaviour
         // Move horizontally first, then vertically
         for (int i = 0; i < Mathf.Abs(dx); i++)
         {
-            path.Add(new Vector3Int(start.x + (dx > 0 ? 1 : -1), start.y, start.z));
-            start = path[path.Count - 1];
+            Vector3Int nextTile = new Vector3Int(start.x + (dx > 0 ? 1 : -1), start.y, start.z);
+            if (!OccupiedTilesManager.Instance.IsTileOccupied(nextTile))
+            {
+                path.Add(nextTile);
+                start = nextTile;
+            }
+            else
+            {
+                break; // Stop if the next tile is occupied
+            }
         }
         for (int i = 0; i < Mathf.Abs(dy); i++)
         {
-            path.Add(new Vector3Int(start.x, start.y + (dy > 0 ? 1 : -1), start.z));
-            start = path[path.Count - 1];
+            Vector3Int nextTile = new Vector3Int(start.x, start.y + (dy > 0 ? 1 : -1), start.z);
+            if (!OccupiedTilesManager.Instance.IsTileOccupied(nextTile))
+            {
+                path.Add(nextTile);
+                start = nextTile;
+            }
+            else
+            {
+                break; // Stop if the next tile is occupied
+            }
         }
 
         return path;

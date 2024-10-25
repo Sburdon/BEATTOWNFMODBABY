@@ -392,7 +392,7 @@ MonoBehaviour:
     type: 3}
   barraAIPrefab: {fileID: 3323733470962230501, guid: 2d372c1d639c4a04eb60dfc7f5da71c0,
     type: 3}
-  initialEnemiesToSpawn: 0
+  initialEnemiesToSpawn: 2
   respawnDelay: 0
 --- !u!114 &167513601
 MonoBehaviour:
@@ -598,15 +598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 644845377}
-  enemiesToSpawn:
-  - enemyPrefab: {fileID: 3104276801109259614, guid: b274fc7fb29f2844f8eb8c9eff071847,
-      type: 3}
-    spawnGridPosition: {x: -1, y: -1, z: 0}
-    shouldRespawn: 1
-  - enemyPrefab: {fileID: 3104276801109259614, guid: b274fc7fb29f2844f8eb8c9eff071847,
-      type: 3}
-    spawnGridPosition: {x: 0, y: -1, z: 0}
-    shouldRespawn: 1
+  enemiesToSpawn: []
   clearExistingEnemies: 0
   playerMove: {fileID: 1977991994}
   tempTurnBase: {fileID: 695007204}
