@@ -9,7 +9,7 @@ public class Swing : MonoBehaviour
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
     public Tilemap tilemap;
-    public Hook hook;
+    public Hook hook; // Hook will be assigned later by RespawnManager
     public float swingSpeed = 5f;
     private GameObject targetToSwing;
     private Vector3Int targetTilePosition;
@@ -23,19 +23,12 @@ public class Swing : MonoBehaviour
     {
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
+    }
 
-        if (hook == null)
-        {
-            hook = Hook.Instance;
-            if (hook == null)
-            {
-                Debug.LogError("Hook instance not found. Ensure Hook is present in the scene.");
-            }
-            else
-            {
-                Debug.Log("Hook instance assigned successfully.");
-            }
-        }
+    public void SetHookReference(Hook hookInstance)
+    {
+        hook = hookInstance;
+        Debug.Log("Hook instance assigned to Swing script successfully.");
     }
 
     public void OnSwingButtonPressed()

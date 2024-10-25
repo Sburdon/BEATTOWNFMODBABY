@@ -10,31 +10,24 @@ public class Push : MonoBehaviour
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
     public Tilemap tilemap;
-    public Hook hook;
-    private Transform selectedTarget; // Now selects both Enemy and Barra
+    public Hook hook; // Hook will be assigned later by RespawnManager
+    private Transform selectedTarget;
     private bool isPushing;
     private PlayerMove playerMove;
     private PlayerFatigue playerFatigue;
     private StateMachine stateMachine;
 
-    private void Awake()
+    void Awake()
     {
         playerMove = GetComponent<PlayerMove>();
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
+    }
 
-        if (hook == null)
-        {
-            hook = Hook.Instance;
-            if (hook == null)
-            {
-                Debug.LogError("Hook instance not found. Ensure Hook is present in the scene.");
-            }
-            else
-            {
-                Debug.Log("Hook instance assigned successfully.");
-            }
-        }
+    public void SetHookReference(Hook hookInstance)
+    {
+        hook = hookInstance;
+        Debug.Log("Hook instance assigned to Push script successfully.");
     }
 
     void Update()

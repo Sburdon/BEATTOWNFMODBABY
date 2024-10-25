@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
@@ -9,18 +11,16 @@ public class RespawnManager : MonoBehaviour
     public static RespawnManager Instance { get; private set; }
 
     [Header("Prefabs")]
-    public GameObject enemyPrefab;       // Prefab for regular enemies
-    public GameObject barraAIPrefab;     // Prefab for Barra enemies
-    public GameObject hookPrefab;        // Prefab for Hook
+    public GameObject enemyPrefab;
+    public GameObject barraAIPrefab;
+    public GameObject hookPrefab;
 
     [Header("Spawn Settings")]
-    public int initialEnemiesToSpawn = 2; // Number of regular enemies to spawn at game start
-    public float respawnDelay = 5f;       // Delay before respawning regular enemies
+    public int initialEnemiesToSpawn = 2;
+    public float respawnDelay = 5f;
 
-    private List<GameObject> enemies = new List<GameObject>(); // List to track active regular enemies
-    private bool barraSpawned = false;    // Track if the Barra has been spawned
-
-    private TempTurnBase tempTurnBase;    // Reference to TempTurnBase for adding units to turn system
+    private List<GameObject> enemies = new List<GameObject>();
+    private TempTurnBase tempTurnBase;
     private Tilemap tilemap;
     private PlayerMove playerMove;
     private Text fishCountText;
@@ -40,20 +40,30 @@ public class RespawnManager : MonoBehaviour
 
     void Start()
     {
-        // Assign TempTurnBase and other references
         tempTurnBase = FindObjectOfType<TempTurnBase>();
         tilemap = FindObjectOfType<Tilemap>();
         playerMove = FindObjectOfType<PlayerMove>();
         fishCountText = GameObject.Find("FISH CAUGHT")?.GetComponent<Text>();
 
-        // Spawn initial hook if hookPrefab is assigned
+        // Check each reference individually to identify the missing component
+        if (tempTurnBase == null) Debug.LogError("RespawnManager: TempTurnBase is missing.");
+        if (tilemap == null) Debug.LogError("RespawnManager: Tilemap is missing.");
+        if (playerMove == null) Debug.LogError("RespawnManager: PlayerMove is missing.");
+        if (fishCountText == null) Debug.LogError("RespawnManager: FishCountText is missing.");
+
+        if (tempTurnBase == null || tilemap == null || playerMove == null || fishCountText == null)
+        {
+            Debug.LogError("RespawnManager: One or more required references are missing.");
+            return;
+        }
+
+        // Spawn the hook and assign it to other scripts
         if (hookPrefab != null)
         {
             Vector3Int hookSpawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
             Vector3 hookWorldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(hookSpawnTile);
             GameObject hookInstance = Instantiate(hookPrefab, hookWorldPosition, Quaternion.identity);
 
-            // Assign references to the Hook instance
             Hook hookScript = hookInstance.GetComponent<Hook>();
             if (hookScript != null)
             {
@@ -62,10 +72,16 @@ public class RespawnManager : MonoBehaviour
                 hookScript.fishCountText = fishCountText;
             }
 
+            // Assign the hook reference to Swing and Push components
+            Swing swingScript = FindObjectOfType<Swing>();
+            Push pushScript = FindObjectOfType<Push>();
+
+            if (swingScript != null) swingScript.hook = hookScript;
+            if (pushScript != null) pushScript.hook = hookScript;
+
             OccupiedTilesManager.Instance.AddOccupiedPosition(hookSpawnTile);
         }
 
-        // Spawn initial regular enemies
         for (int i = 0; i < initialEnemiesToSpawn; i++)
         {
             SpawnEnemy();
@@ -73,10 +89,10 @@ public class RespawnManager : MonoBehaviour
     }
 
 
-/// <summary>
-/// Called when an enemy dies. Determines if the enemy should respawn.
-/// </summary>
-public void EnemyDied(GameObject enemy)
+        /// <summary>
+        /// Called when an enemy dies. Determines if the enemy should respawn.
+        /// </summary>
+        public void EnemyDied(GameObject enemy)
     {
         if (enemy == null)
         {
