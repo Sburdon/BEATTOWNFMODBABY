@@ -17,7 +17,7 @@ public class RespawnManager : MonoBehaviour
     private List<GameObject> enemies = new List<GameObject>(); // List to track active regular enemies
     private bool barraSpawned = false;    // Track if the Barra has been spawned
 
-    private TempTurnBase tempTurnBase; // Reference to TempTurnBase for adding units to turn system
+    private TempTurnBase tempTurnBase;    // Reference to TempTurnBase for adding units to turn system
 
     void Awake()
     {
@@ -56,20 +56,18 @@ public class RespawnManager : MonoBehaviour
         }
 
         enemies.Remove(enemy);
-        Destroy(enemy);
 
-        // Get the tile position of the dead enemy
+        // Ensure proper cleanup of the occupied tile before destroying the enemy
         Vector3Int enemyTilePosition = OccupiedTilesManager.Instance.tilemap.WorldToCell(enemy.transform.position);
-
-        // Remove the occupied position
         OccupiedTilesManager.Instance.RemoveOccupiedPosition(enemyTilePosition);
+
+        Destroy(enemy);
 
         // Check if the dead enemy is NOT a Barra, only regular enemies respawn
         if (!enemy.CompareTag("Barra"))
         {
             StartCoroutine(RespawnCoroutine());
         }
-        // If it's a Barra, do not respawn
     }
 
     /// <summary>
@@ -92,7 +90,6 @@ public class RespawnManager : MonoBehaviour
             return;
         }
 
-        // Find the PlayerMove instance to get the player's tile position
         PlayerMove playerMove = FindObjectOfType<PlayerMove>();
         if (playerMove == null)
         {
@@ -101,25 +98,32 @@ public class RespawnManager : MonoBehaviour
         }
 
         Vector3Int playerTile = playerMove.CurrentTilePosition;
-
-        // Get a random available spawn position
         Vector3Int spawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(playerTile);
+
+        // Ensure that a valid spawn tile is found
         if (spawnTile == Vector3Int.zero)
         {
             Debug.LogWarning("RespawnManager: Unable to spawn enemy due to no available positions.");
             return;
         }
 
+        // Convert spawnTile to world position and spawn the enemy
         Vector3 worldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(spawnTile);
         GameObject newEnemy = Instantiate(enemyPrefab, worldPosition, Quaternion.identity);
+
+        // Register the new enemy
         enemies.Add(newEnemy);
 
-        // Register the new enemy's tile as occupied
         AIMove aiMove = newEnemy.GetComponent<AIMove>();
         if (aiMove != null)
         {
+            aiMove.CurrentTilePosition = spawnTile; // Ensure the AI has the correct tile position
             OccupiedTilesManager.Instance.RegisterAI(aiMove);
             tempTurnBase.AddAIUnit(aiMove); // Add to TempTurnBase for turn management
+        }
+        else
+        {
+            Debug.LogError("RespawnManager: Spawned enemy does not have an AIMove component.");
         }
     }
 
@@ -138,9 +142,9 @@ public class RespawnManager : MonoBehaviour
         }
 
         Vector3Int playerTile = playerMove.CurrentTilePosition;
-
-        // Get a random available spawn position
         Vector3Int spawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(playerTile);
+
+        // Ensure that a valid spawn tile is found
         if (spawnTile == Vector3Int.zero)
         {
             Debug.LogWarning("RespawnManager: Unable to spawn Barra due to no available positions.");
@@ -153,6 +157,7 @@ public class RespawnManager : MonoBehaviour
         BarraMove barraMove = newBarra.GetComponent<BarraMove>();
         if (barraMove != null)
         {
+            barraMove.CurrentTilePosition = spawnTile; // Ensure the Barra has the correct tile position
             OccupiedTilesManager.Instance.RegisterBarraMove(barraMove);
             tempTurnBase.AddBarraUnit(barraMove); // Add to TempTurnBase for turn management
         }

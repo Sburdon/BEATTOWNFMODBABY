@@ -124,8 +124,8 @@ public class Swing : MonoBehaviour
 
             if (AIUtils.IsAdjacent(playerPosition, targetPosition))
             {
-                enemyToSwing = hit.collider.gameObject; // Select the enemy
-                Debug.Log($"Selected enemy for swing: {enemyToSwing.name}");
+                targetToSwing = hit.collider.gameObject; // Select the enemy
+                Debug.Log($"Selected enemy for swing: {targetToSwing.name}");
                 PPShighlight.SetActive(false);
                 moveMentHighlight.SetActive(true);
             }

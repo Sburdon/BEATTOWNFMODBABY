@@ -76,8 +76,11 @@ public class TempTurnBase : MonoBehaviour
         isProcessingTurn = true;
         Debug.Log("AI's turn has started.");
 
+        // Make a copy of the list to avoid modification during iteration
+        List<AIMove> aiUnitsCopy = new List<AIMove>(aiUnits);
+
         // Process each AIMove unit
-        foreach (AIMove ai in aiUnits)
+        foreach (AIMove ai in aiUnitsCopy)
         {
             if (ai != null && ai.gameObject.activeInHierarchy)
             {
@@ -97,12 +100,15 @@ public class TempTurnBase : MonoBehaviour
             }
         }
 
+        // Make a copy of the Barra list to avoid modification during iteration
+        List<BarraMove> barraUnitsCopy = new List<BarraMove>(barraUnits);
+
         // Process each BarraMove unit
-        foreach (BarraMove barra in barraUnits)
+        foreach (BarraMove barra in barraUnitsCopy)
         {
             if (barra != null && barra.gameObject.activeInHierarchy)
             {
-                BarraFatigue barraFatigue = barra.GetComponent<BarraFatigue>(); // Corrected to BarraFatigue
+                BarraFatigue barraFatigue = barra.GetComponent<BarraFatigue>();
 
                 if (barraFatigue != null)
                 {
@@ -122,6 +128,7 @@ public class TempTurnBase : MonoBehaviour
         StartPlayerTurn();
         isProcessingTurn = false;
     }
+
 
     /// <summary>
     /// Initiates the player's turn.

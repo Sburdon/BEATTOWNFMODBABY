@@ -228,4 +228,18 @@ public class OccupiedTilesManager : MonoBehaviour
         Debug.Log($"OccupiedTilesManager: Selected spawn position {selectedPosition}");
         return selectedPosition;
     }
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+
+        foreach (Vector3Int position in occupiedTiles)
+        {
+            if (tilemap != null)
+            {
+                // Get the world position for each occupied tile and draw a cube there
+                Vector3 worldPosition = tilemap.GetCellCenterWorld(position);
+                Gizmos.DrawCube(worldPosition, Vector3.one * 0.5f); // Adjust size as needed
+            }
+        }
+    }
 }

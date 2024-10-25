@@ -113,7 +113,7 @@ public class EnemyHealth : MonoBehaviour
             fullHealthBar.transform.localScale = new Vector3(healthPercentage, 0.24f, 1); // Scale x based on health
 
             // Position the health bars above the enemy
-            Vector3 healthBarPosition = transform.position + new Vector3(0, 0.7f, 0); // Adjust Y offset as needed
+            Vector3 healthBarPosition = transform.position + new Vector3(0, 0.57f, 0); // Adjust Y offset as needed
             fullHealthBar.transform.position = healthBarPosition;
             emptyHealthBar.transform.position = healthBarPosition;
 
