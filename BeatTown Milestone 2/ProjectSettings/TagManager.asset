@@ -7,14 +7,15 @@ TagManager:
   - Enemy
   - AI
   - Barra
+  - Wall
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Wall
   - Water
   - UI
-  - 
+  - hook
   - 
   - 
   - 

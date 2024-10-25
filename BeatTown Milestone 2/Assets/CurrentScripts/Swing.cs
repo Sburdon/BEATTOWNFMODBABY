@@ -5,6 +5,8 @@ using static StateMachine;
 
 public class Swing : MonoBehaviour
 {
+    public GameObject PPShighlight;
+    public GameObject moveMentHighlight;
     public Tilemap tilemap;
     public Hook hook;
     public float swingSpeed = 5f;
@@ -37,6 +39,8 @@ public class Swing : MonoBehaviour
 
     public void OnSwingButtonPressed()
     {
+        PPShighlight.SetActive(true);
+        moveMentHighlight.SetActive(false);
         if (isSwinging)
         {
             Debug.Log("Already swinging.");
@@ -120,8 +124,10 @@ public class Swing : MonoBehaviour
 
             if (AIUtils.IsAdjacent(playerPosition, targetPosition))
             {
-                targetToSwing = hit.collider.gameObject;
-                Debug.Log($"Selected target for swing: {targetToSwing.name}");
+                enemyToSwing = hit.collider.gameObject; // Select the enemy
+                Debug.Log($"Selected enemy for swing: {enemyToSwing.name}");
+                PPShighlight.SetActive(false);
+                moveMentHighlight.SetActive(true);
             }
             else
             {
@@ -203,6 +209,8 @@ public class Swing : MonoBehaviour
 
         isSwinging = false;
         Debug.Log("Swing action completed.");
+        PPShighlight.SetActive(false);
+        moveMentHighlight.SetActive(false);
     }
 
     public bool IsSwinging()

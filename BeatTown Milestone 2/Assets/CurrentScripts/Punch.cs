@@ -4,6 +4,8 @@ using static StateMachine;
 
 public class Punch : MonoBehaviour
 {
+    public GameObject PPShighlight;
+    public GameObject moveMentHighlight;
     public Tilemap tilemap;
     private Transform selectedTarget;
     private bool isPunching;
@@ -39,9 +41,11 @@ public class Punch : MonoBehaviour
 
     public void OnPunchButtonPressed()
     {
-        isPunching = true;
-        selectedTarget = null;
-        playerMove.CurrentAction = ActionType.Punch;
+        PPShighlight.SetActive(true);
+        moveMentHighlight.SetActive(false);
+        isPunching = true; // Activate punching mode
+        selectedEnemy = null; // Reset selected enemy
+        playerMove.CurrentAction = ActionType.Punch; // Set the current action to Punch
         Debug.Log("Punch button pressed, current action: " + playerMove.CurrentAction);
         CheckEnemiesInRange();
     }
@@ -96,6 +100,12 @@ public class Punch : MonoBehaviour
                 Debug.Log($"{selectedTarget.name} will follow the player for 2 turns.");
             }
 
+            else
+            {
+                Debug.Log("Selected enemy does not have a valid damage method.");
+            }
+
+            // Reset punch state after attempting to punch
             isPunching = false;
             selectedTarget = null;
             playerMove.CurrentAction = ActionType.None;
@@ -115,27 +125,16 @@ public class Punch : MonoBehaviour
     {
         Vector3Int playerCurrentPosition = tilemap.WorldToCell(transform.position);
 
-        foreach (GameObject enemyObj in GameObject.FindGameObjectsWithTag("Enemy"))
+        // Check each enemy if it is within punching range
+        foreach (GameObject enemyObj in GameObject.FindGameObjectsWithTag("AI"))
         {
             Transform enemy = enemyObj.transform;
             Vector3Int enemyPosition = tilemap.WorldToCell(enemy.position);
             if (IsWithinPunchRange(playerCurrentPosition, enemyPosition))
             {
                 Debug.Log($"{enemy.name} is within punch range!");
-                selectedTarget = enemy;
-                break;
-            }
-        }
-
-        foreach (GameObject barraObj in GameObject.FindGameObjectsWithTag("Barra"))
-        {
-            Transform barra = barraObj.transform;
-            Vector3Int barraPosition = tilemap.WorldToCell(barra.position);
-            if (IsWithinPunchRange(playerCurrentPosition, barraPosition))
-            {
-                Debug.Log($"{barra.name} is within punch range!");
-                selectedTarget = barra;
-                break;
+                selectedEnemy = enemy; // Automatically select the enemy in range
+                break; // Exit loop after selecting the first found enemy
             }
         }
     }

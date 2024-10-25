@@ -5,6 +5,8 @@ using UnityEngine;
 public class TempTurnBase : MonoBehaviour
 {
     [Header("AI Units")]
+    public GameObject PPShighlight;
+    public GameObject moveMentHighlight;
     public List<AIMove> aiUnits = new List<AIMove>();
     public List<BarraMove> barraUnits = new List<BarraMove>();
 
@@ -60,6 +62,8 @@ public class TempTurnBase : MonoBehaviour
     {
         if (!isPlayerTurn || isProcessingTurn) return;
 
+        PPShighlight.SetActive(false);
+        moveMentHighlight.SetActive(false);
         isPlayerTurn = false;
         StartCoroutine(AITurnRoutine());
     }

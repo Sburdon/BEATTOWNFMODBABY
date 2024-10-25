@@ -6,6 +6,8 @@ using static StateMachine;
 
 public class Push : MonoBehaviour
 {
+    public GameObject PPShighlight;
+    public GameObject moveMentHighlight;
     public Tilemap tilemap;
     public Hook hook;
     private Transform selectedTarget; // Now selects both Enemy and Barra
@@ -54,6 +56,9 @@ public class Push : MonoBehaviour
 
     public void OnPushButtonPressed()
     {
+        PPShighlight.SetActive(true);
+        moveMentHighlight.SetActive(false);
+        // Cancel any movement when the push button is pressed
         playerMove.CancelMove();
         isPushing = true;
         selectedTarget = null;
@@ -151,6 +156,7 @@ public class Push : MonoBehaviour
 
     private IEnumerator PushTargetToTile(Transform target, Vector3Int targetTilePosition)
     {
+        PPShighlight.SetActive(false);
         stateMachine.ChangeState(WrestlerState.Push);
         Vector3 startPosition = target.position;
         Vector3 endPosition = tilemap.GetCellCenterWorld(targetTilePosition);
