@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static StateMachine;
 
 public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 5;   // Maximum health the player can have
     public int currentHealth;   // Current health of the player
+    private StateMachine stateMachine;
     public bool IsDead { get; private set; }
 
     [Header("Health Bar Images")]
@@ -13,6 +15,7 @@ public class PlayerHealth : MonoBehaviour
 
     void Start()
     {
+        stateMachine = GetComponent<StateMachine>();
         currentHealth = maxHealth;
         Debug.Log("Player Health initialized. Current Health: " + currentHealth);
         UpdateHealthBar(); // Update the health bar UI
@@ -21,6 +24,7 @@ public class PlayerHealth : MonoBehaviour
     // Method to reduce the player's health
     public void TakeDamage(int damage)
     {
+        stateMachine.ChangeState(WrestlerState.React);
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Clamp to ensure it doesn't go below 0
         Debug.Log("Player took " + damage + " damage. Current Health: " + currentHealth);
