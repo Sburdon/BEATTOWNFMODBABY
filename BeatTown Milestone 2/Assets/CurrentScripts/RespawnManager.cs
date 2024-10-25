@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class RespawnManager : MonoBehaviour
 {
@@ -9,6 +11,7 @@ public class RespawnManager : MonoBehaviour
     [Header("Prefabs")]
     public GameObject enemyPrefab;       // Prefab for regular enemies
     public GameObject barraAIPrefab;     // Prefab for Barra enemies
+    public GameObject hookPrefab;        // Prefab for Hook
 
     [Header("Spawn Settings")]
     public int initialEnemiesToSpawn = 2; // Number of regular enemies to spawn at game start
@@ -18,6 +21,9 @@ public class RespawnManager : MonoBehaviour
     private bool barraSpawned = false;    // Track if the Barra has been spawned
 
     private TempTurnBase tempTurnBase;    // Reference to TempTurnBase for adding units to turn system
+    private Tilemap tilemap;
+    private PlayerMove playerMove;
+    private Text fishCountText;
 
     void Awake()
     {
@@ -34,8 +40,30 @@ public class RespawnManager : MonoBehaviour
 
     void Start()
     {
-        // Assign TempTurnBase
+        // Assign TempTurnBase and other references
         tempTurnBase = FindObjectOfType<TempTurnBase>();
+        tilemap = FindObjectOfType<Tilemap>();
+        playerMove = FindObjectOfType<PlayerMove>();
+        fishCountText = GameObject.Find("FISH CAUGHT")?.GetComponent<Text>();
+
+        // Spawn initial hook if hookPrefab is assigned
+        if (hookPrefab != null)
+        {
+            Vector3Int hookSpawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
+            Vector3 hookWorldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(hookSpawnTile);
+            GameObject hookInstance = Instantiate(hookPrefab, hookWorldPosition, Quaternion.identity);
+
+            // Assign references to the Hook instance
+            Hook hookScript = hookInstance.GetComponent<Hook>();
+            if (hookScript != null)
+            {
+                hookScript.tilemap = tilemap;
+                hookScript.player = playerMove;
+                hookScript.fishCountText = fishCountText;
+            }
+
+            OccupiedTilesManager.Instance.AddOccupiedPosition(hookSpawnTile);
+        }
 
         // Spawn initial regular enemies
         for (int i = 0; i < initialEnemiesToSpawn; i++)
@@ -44,10 +72,11 @@ public class RespawnManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Called when an enemy dies. Determines if the enemy should respawn.
-    /// </summary>
-    public void EnemyDied(GameObject enemy)
+
+/// <summary>
+/// Called when an enemy dies. Determines if the enemy should respawn.
+/// </summary>
+public void EnemyDied(GameObject enemy)
     {
         if (enemy == null)
         {
@@ -57,13 +86,11 @@ public class RespawnManager : MonoBehaviour
 
         enemies.Remove(enemy);
 
-        // Ensure proper cleanup of the occupied tile before destroying the enemy
         Vector3Int enemyTilePosition = OccupiedTilesManager.Instance.tilemap.WorldToCell(enemy.transform.position);
         OccupiedTilesManager.Instance.RemoveOccupiedPosition(enemyTilePosition);
 
         Destroy(enemy);
 
-        // Check if the dead enemy is NOT a Barra, only regular enemies respawn
         if (!enemy.CompareTag("Barra"))
         {
             StartCoroutine(RespawnCoroutine());
@@ -100,26 +127,24 @@ public class RespawnManager : MonoBehaviour
         Vector3Int playerTile = playerMove.CurrentTilePosition;
         Vector3Int spawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(playerTile);
 
-        // Ensure that a valid spawn tile is found
-        if (spawnTile == Vector3Int.zero)
+        // Ensure that a valid spawn tile is found and is unoccupied
+        if (OccupiedTilesManager.Instance.IsTileOccupied(spawnTile))
         {
-            Debug.LogWarning("RespawnManager: Unable to spawn enemy due to no available positions.");
+            Debug.LogWarning("RespawnManager: Spawn tile is occupied. Trying another position.");
             return;
         }
 
-        // Convert spawnTile to world position and spawn the enemy
         Vector3 worldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(spawnTile);
         GameObject newEnemy = Instantiate(enemyPrefab, worldPosition, Quaternion.identity);
 
-        // Register the new enemy
         enemies.Add(newEnemy);
 
         AIMove aiMove = newEnemy.GetComponent<AIMove>();
         if (aiMove != null)
         {
-            aiMove.CurrentTilePosition = spawnTile; // Ensure the AI has the correct tile position
+            aiMove.CurrentTilePosition = spawnTile;
             OccupiedTilesManager.Instance.RegisterAI(aiMove);
-            tempTurnBase.AddAIUnit(aiMove); // Add to TempTurnBase for turn management
+            tempTurnBase.AddAIUnit(aiMove);
         }
         else
         {
@@ -132,7 +157,7 @@ public class RespawnManager : MonoBehaviour
     /// </summary>
     public void SpawnBarra()
     {
-        if (barraAIPrefab == null || barraSpawned) return;
+        if (barraAIPrefab == null) return; // Ensure prefab exists
 
         PlayerMove playerMove = FindObjectOfType<PlayerMove>();
         if (playerMove == null)
@@ -144,8 +169,8 @@ public class RespawnManager : MonoBehaviour
         Vector3Int playerTile = playerMove.CurrentTilePosition;
         Vector3Int spawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(playerTile);
 
-        // Ensure that a valid spawn tile is found
-        if (spawnTile == Vector3Int.zero)
+        // Ensure that a valid spawn tile is found and is unoccupied
+        if (OccupiedTilesManager.Instance.IsTileOccupied(spawnTile))
         {
             Debug.LogWarning("RespawnManager: Unable to spawn Barra due to no available positions.");
             return;
@@ -157,11 +182,11 @@ public class RespawnManager : MonoBehaviour
         BarraMove barraMove = newBarra.GetComponent<BarraMove>();
         if (barraMove != null)
         {
-            barraMove.CurrentTilePosition = spawnTile; // Ensure the Barra has the correct tile position
+            barraMove.CurrentTilePosition = spawnTile;
             OccupiedTilesManager.Instance.RegisterBarraMove(barraMove);
             tempTurnBase.AddBarraUnit(barraMove); // Add to TempTurnBase for turn management
         }
 
-        barraSpawned = true; // Ensure Barra only spawns once
+        Debug.Log("RespawnManager: Spawned a new Barra at " + spawnTile);
     }
 }

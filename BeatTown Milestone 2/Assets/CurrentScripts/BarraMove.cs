@@ -6,16 +6,15 @@ using UnityEngine.Tilemaps;
 public class BarraMove : MonoBehaviour
 {
     [Header("Barra Move Settings")]
-    public float moveSpeed = 1f;          // Speed at which Barra moves
-    public int moveDistance = 2;          // Number of tiles Barra can move
-    public Tilemap tilemap;               // Reference to the tilemap
-    public PlayerMove playerMove;         // Reference to the PlayerMove script
+    public float moveSpeed = 1f;
+    public int moveDistance = 2;
+    public Tilemap tilemap;
+    public PlayerMove playerMove;
 
     public Vector3Int CurrentTilePosition { get; set; }
 
     void Start()
     {
-        // Auto-assign Tilemap and PlayerMove if not assigned
         if (tilemap == null)
         {
             tilemap = FindObjectOfType<Tilemap>();
@@ -25,13 +24,9 @@ public class BarraMove : MonoBehaviour
             playerMove = FindObjectOfType<PlayerMove>();
         }
 
-        // Set initial position
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
     }
 
-    /// <summary>
-    /// Move the Barra towards the closest non-Barra target (player or enemy).
-    /// </summary>
     public IEnumerator PerformMove()
     {
         GameObject target = FindClosestTarget();
@@ -40,7 +35,6 @@ public class BarraMove : MonoBehaviour
         Vector3Int targetTilePosition = tilemap.WorldToCell(target.transform.position);
         List<Vector3Int> path = CalculatePath(CurrentTilePosition, targetTilePosition);
 
-        // Move up to moveDistance tiles along the path
         for (int i = 0; i < moveDistance && i < path.Count; i++)
         {
             Vector3Int nextTile = path[i];
@@ -48,20 +42,21 @@ public class BarraMove : MonoBehaviour
             // Ensure that the next tile is not occupied before moving
             if (!OccupiedTilesManager.Instance.IsTileOccupied(nextTile))
             {
+                OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
+
                 yield return StartCoroutine(MoveToTile(nextTile));
                 CurrentTilePosition = nextTile;
+
+                OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
             }
             else
             {
                 Debug.Log($"Tile {nextTile} is occupied. Skipping move.");
-                break; // Stop moving if the next tile is occupied
+                break;
             }
         }
     }
 
-    /// <summary>
-    /// Finds the closest target (either Player or Enemy) to pursue.
-    /// </summary>
     private GameObject FindClosestTarget()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -93,9 +88,6 @@ public class BarraMove : MonoBehaviour
         return closestTarget;
     }
 
-    /// <summary>
-    /// Moves the Barra to a specific tile.
-    /// </summary>
     private IEnumerator MoveToTile(Vector3Int targetTile)
     {
         Vector3 targetWorldPosition = tilemap.GetCellCenterWorld(targetTile);
@@ -113,9 +105,6 @@ public class BarraMove : MonoBehaviour
         transform.position = targetWorldPosition;
     }
 
-    /// <summary>
-    /// Calculates a simple path towards the target tile, avoiding occupied tiles.
-    /// </summary>
     private List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int target)
     {
         List<Vector3Int> path = new List<Vector3Int>();
@@ -123,7 +112,6 @@ public class BarraMove : MonoBehaviour
         int dx = target.x - start.x;
         int dy = target.y - start.y;
 
-        // Move horizontally first, then vertically
         for (int i = 0; i < Mathf.Abs(dx); i++)
         {
             Vector3Int nextTile = new Vector3Int(start.x + (dx > 0 ? 1 : -1), start.y, start.z);
@@ -134,7 +122,7 @@ public class BarraMove : MonoBehaviour
             }
             else
             {
-                break; // Stop if the next tile is occupied
+                break;
             }
         }
         for (int i = 0; i < Mathf.Abs(dy); i++)
@@ -147,7 +135,7 @@ public class BarraMove : MonoBehaviour
             }
             else
             {
-                break; // Stop if the next tile is occupied
+                break;
             }
         }
 

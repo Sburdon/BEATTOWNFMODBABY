@@ -392,6 +392,8 @@ MonoBehaviour:
     type: 3}
   barraAIPrefab: {fileID: 3323733470962230501, guid: 2d372c1d639c4a04eb60dfc7f5da71c0,
     type: 3}
+  hookPrefab: {fileID: 146274211700111789, guid: b77ac0510f587904990eefe19e10b817,
+    type: 3}
   initialEnemiesToSpawn: 2
   respawnDelay: 2
 --- !u!114 &167513601
@@ -481,89 +483,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 174669199}
   m_CullTransparentMesh: 1
---- !u!1001 &325089373
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 146274211700111789, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_Name
-      value: Hook
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.55229163
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -1.4506979
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: player
-      value: 
-      objectReference: {fileID: 1977991994}
-    - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: tilemap
-      value: 
-      objectReference: {fileID: 644845377}
-    - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: fishCountText
-      value: 
-      objectReference: {fileID: 1453310170}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b77ac0510f587904990eefe19e10b817, type: 3}
 --- !u!1 &335138831
 GameObject:
   m_ObjectHideFlags: 0
@@ -5563,18 +5482,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1788884810 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
-    type: 3}
-  m_PrefabInstance: {fileID: 325089373}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6c9c54c813a2774eaf8d99ed078607a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1806489237
 GameObject:
   m_ObjectHideFlags: 0
@@ -6257,7 +6164,7 @@ MonoBehaviour:
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}
   tilemap: {fileID: 644845377}
-  hook: {fileID: 1788884810}
+  hook: {fileID: 0}
   swingSpeed: 5
   swingFatigueCost: 2
 --- !u!114 &1977991996
@@ -6349,7 +6256,7 @@ MonoBehaviour:
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}
   tilemap: {fileID: 644845377}
-  hook: {fileID: 1788884810}
+  hook: {fileID: 0}
 --- !u!114 &1977992001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6848,5 +6755,4 @@ SceneRoots:
   - {fileID: 335138833}
   - {fileID: 534074678}
   - {fileID: 1426817632}
-  - {fileID: 325089373}
   - {fileID: 1562467053}

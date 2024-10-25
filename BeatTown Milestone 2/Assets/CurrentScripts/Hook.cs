@@ -77,7 +77,7 @@ public class Hook : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy")| (other.CompareTag("Barra"))) // Check if the object that hit the hook is an Enemy
+        if (other.CompareTag("Enemy") || other.CompareTag("Barra")) // Check if the object that hit the hook is an Enemy or Barra
         {
             HandleEnemyHit(other.gameObject);
         }
@@ -118,7 +118,6 @@ public class Hook : MonoBehaviour
             }
         }
 
-        // Handle enemy's health and destroy it
         EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
         if (enemyHealth != null)
         {
@@ -127,17 +126,14 @@ public class Hook : MonoBehaviour
 
         Destroy(enemy);
 
-        // Respawn the hook at a new location
         RespawnHook();
 
-        // Spawn the Barra after 2 kills if not already spawned
-        if (hookKillCount >= 2 && !barraSpawned)
+        // Adjusted Barra spawning to occur at 2 kills and again at 4 kills
+        if (hookKillCount == 2 || hookKillCount == 4)
         {
             RespawnManager.Instance.SpawnBarra();
-            barraSpawned = true;
         }
 
-        // End game or specific logic after multiple kills
         if (hookKillCount >= 6)
         {
             EndGame();
