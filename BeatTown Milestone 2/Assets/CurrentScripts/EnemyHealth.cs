@@ -1,3 +1,4 @@
+// Assets/CurrentScripts/EnemyHealth.cs
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,8 @@ using System;
 public class EnemyHealth : MonoBehaviour
 {
     public int maxHealth = 3; // Maximum health value
-    public int health;        // Current health
+    [SerializeField]
+    private int health;        // Current health
 
     public GameObject fullHealthBarPrefab; // Reference to the full health bar prefab
     public GameObject emptyHealthBarPrefab; // Reference to the empty health bar prefab
@@ -18,37 +20,55 @@ public class EnemyHealth : MonoBehaviour
     // Event to notify when the enemy dies
     public event Action OnDeath;
 
+    // Reference to RespawnManager
+    private RespawnManager respawnManager;
+
+    // Public property to access current health
+    public int CurrentHealth
+    {
+        get { return health; }
+        private set
+        {
+            health = Mathf.Clamp(value, 0, maxHealth);
+            UpdateHealthBar();
+        }
+    }
+
     void Start()
     {
         health = maxHealth; // Initialize health
+        CurrentHealth = health; // Initialize current health
 
         // Instantiate both health bar prefabs
         fullHealthBar = Instantiate(fullHealthBarPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity, transform);
         emptyHealthBar = Instantiate(emptyHealthBarPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity, transform);
 
         UpdateHealthBar();
+
+        // Find RespawnManager instance
+        respawnManager = RespawnManager.Instance;
+        if (respawnManager == null)
+        {
+            Debug.LogError("RespawnManager instance not found in the scene.");
+        }
     }
 
     public void TakeDamage(int amount)
     {
         if (IsDead) return; // Do nothing if already dead
 
-        health -= amount;
-        Debug.Log($"{gameObject.name} took {amount} damage! Remaining health: {health}");
+        CurrentHealth -= amount;
+        Debug.Log($"{gameObject.name} took {amount} damage! Remaining health: {CurrentHealth}");
 
-        if (health <= 0)
+        if (CurrentHealth <= 0)
         {
             Die(); // Implement death logic
-        }
-        else
-        {
-            UpdateHealthBar(); // Update health bar
         }
     }
 
     public void ResetHealth()
     {
-        health = maxHealth;
+        CurrentHealth = maxHealth;
         IsDead = false;
         UpdateHealthBar(); // Reset health bar
         Debug.Log($"{gameObject.name} has been respawned with full health.");
@@ -71,40 +91,34 @@ public class EnemyHealth : MonoBehaviour
             aiMove.enabled = false;
         }
 
-        // If this is BarraAI, handle accordingly
-        BarraAI barraAI = GetComponent<BarraAI>();
-        if (barraAI != null)
+        
+
+        // Notify RespawnManager
+        if (respawnManager != null)
         {
-            barraAI.enabled = false;
+            respawnManager.EnemyDied(gameObject);
         }
 
-        // Start respawn coroutine
-        StartCoroutine(RespawnEnemy());
-    }
-
-    private IEnumerator RespawnEnemy()
-    {
-        // Wait for a short duration before respawning
-        yield return new WaitForSeconds(0f);
-
-        // Respawn logic
-        RespawnManager.Instance.RespawnEnemy(gameObject);
+        // Removed the RespawnEnemy coroutine call as RespawnManager handles respawning
     }
 
     private void UpdateHealthBar()
     {
-        // Calculate the health percentage
-        float healthPercentage = (float)health / maxHealth;
+        if (fullHealthBar != null)
+        {
+            // Calculate the health percentage
+            float healthPercentage = (float)CurrentHealth / maxHealth;
 
-        // Update full health bar's scale based on current health
-        fullHealthBar.transform.localScale = new Vector3(healthPercentage, .24f, 1); // Scale x based on health
+            // Update full health bar's scale based on current health
+            fullHealthBar.transform.localScale = new Vector3(healthPercentage, 0.24f, 1); // Scale x based on health
 
-        // Position the health bars above the enemy
-        Vector3 healthBarPosition = transform.position + new Vector3(0, .7f, 0); // Adjust Y offset as needed
-        fullHealthBar.transform.position = healthBarPosition;
-        emptyHealthBar.transform.position = healthBarPosition;
+            // Position the health bars above the enemy
+            Vector3 healthBarPosition = transform.position + new Vector3(0, 0.7f, 0); // Adjust Y offset as needed
+            fullHealthBar.transform.position = healthBarPosition;
+            emptyHealthBar.transform.position = healthBarPosition;
 
-        // Optionally adjust empty health bar size
-        emptyHealthBar.transform.localScale = new Vector3(1f, .24f, 1); // Set to the full size
+            // Optionally adjust empty health bar size
+            emptyHealthBar.transform.localScale = new Vector3(1f, 0.24f, 1); // Set to the full size
+        }
     }
 }

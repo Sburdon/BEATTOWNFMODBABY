@@ -10,13 +10,15 @@ GameObject:
   m_Component:
   - component: {fileID: 7517187612870421689}
   - component: {fileID: 8302444445652309810}
-  - component: {fileID: 6160441288278821060}
   - component: {fileID: 7323142019123634588}
   - component: {fileID: 5081536892844149405}
   - component: {fileID: 7962051666227067548}
+  - component: {fileID: -2457691626137159801}
+  - component: {fileID: 3033900995475806439}
+  - component: {fileID: -1942732356278275659}
   m_Layer: 0
   m_Name: Barra
-  m_TagString: Enemy
+  m_TagString: Barra
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -88,28 +90,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6160441288278821060
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3323733470962230501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f33dd48706780249972d9daee689fd1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tilemap: {fileID: 0}
-  playerMove: {fileID: 0}
-  moveDistance: 2
-  moveSpeed: 5
-  fatigue: 2
-  CurrentTilePosition: {x: 0, y: 0, z: 0}
-  attackDamage: 2
-  attackRange: 1
-  followPlayer: 0
-  All_SFX: {fileID: 0}
 --- !u!114 &7323142019123634588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,3 +170,46 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 2}
   m_Direction: 0
+--- !u!114 &-2457691626137159801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3323733470962230501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 211cfdf8e9077254b8112e8e94309b99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackDamage: 2
+  attackRange: 1
+--- !u!114 &3033900995475806439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3323733470962230501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08cc3bd0e8d51384682e67cd763901dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxFatigue: 2
+--- !u!114 &-1942732356278275659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3323733470962230501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de5eef5ed30cbd941ad40f7c174f57a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 1
+  moveDistance: 2
+  tilemap: {fileID: 0}
+  playerMove: {fileID: 0}

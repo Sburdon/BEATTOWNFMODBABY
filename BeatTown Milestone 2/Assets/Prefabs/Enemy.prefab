@@ -16,9 +16,11 @@ GameObject:
   - component: {fileID: 7059847366657219671}
   - component: {fileID: -4431514041361390980}
   - component: {fileID: 815736370709410987}
+  - component: {fileID: -883356109429129754}
+  - component: {fileID: -7287659099874763}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: AI
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -158,8 +160,7 @@ MonoBehaviour:
   tilemap: {fileID: 0}
   playerMove: {fileID: 0}
   moveDistance: 2
-  moveSpeed: 1
-  CurrentTilePosition: {x: 0, y: 0, z: 0}
+  moveSpeed: 5
   followPlayerByDefault: 0
 --- !u!114 &7059847366657219671
 MonoBehaviour:
@@ -173,9 +174,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 574500f572370284a92b2948ed000236, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHealth: {fileID: 0}
-  attackDamage: 1
   attackRange: 1
+  attackDamage: 0
+  playerHealth: {fileID: 0}
 --- !u!114 &-4431514041361390980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,3 +210,43 @@ MonoBehaviour:
   moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 0}
+--- !u!114 &-883356109429129754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3104276801109259614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f486380804f20d4fb7b2515a72ab1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxFatigue: 2
+--- !u!50 &-7287659099874763
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3104276801109259614}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

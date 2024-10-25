@@ -1,31 +1,30 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEngine.SceneManagement; // For ending the game
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Hook : MonoBehaviour
 {
     public static Hook Instance { get; private set; }
 
+    [Header("References")]
     public Tilemap tilemap;
-    public GameObject hookPrefab;
-    public GameObject barraPrefab;
     public PlayerMove player;
-    public Text fishCountText; // Reference to the UI Text
+    public Text fishCountText;
     public int hookKillCount = 0;
 
-    private Vector3Int hookPosition;
-    private bool firstBarraSpawned = false;
-    private bool secondBarraSpawned = false;
+    [Header("Audio")]
+    public All_SFX All_SFX;
 
-    public All_SFX All_SFX; //Reference FMOD Script
+    private Vector3Int hookPosition;
+    private bool barraSpawned = false;
 
     void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(this.gameObject);
         }
         else
         {
@@ -37,17 +36,14 @@ public class Hook : MonoBehaviour
     {
         hookPosition = tilemap.WorldToCell(transform.position);
         OccupiedTilesManager.Instance.AddOccupiedPosition(hookPosition);
-        UpdateFishCountText(); // Initialize the text display
+        UpdateFishCountText();
     }
 
-  
-
-    // Method to update the fish count text
     private void UpdateFishCountText()
     {
         if (fishCountText != null)
         {
-            fishCountText.text = $"Fish Caught: {hookKillCount}"; // Update text with the count
+            fishCountText.text = $"Fish Caught: {hookKillCount}";
         }
         else
         {
@@ -60,42 +56,28 @@ public class Hook : MonoBehaviour
         return tilemap.WorldToCell(transform.position);
     }
 
-    private Vector3Int GetRandomAvailablePosition()
-    {
-        Vector3Int randomPosition;
-        do
-        {
-            randomPosition = new Vector3Int(Random.Range(-10, 10), Random.Range(-10, 10), 0); // Adjust range as needed
-        }
-        while (OccupiedTilesManager.Instance.IsTileOccupied(randomPosition)
-               || !tilemap.HasTile(randomPosition)
-               || randomPosition == player.CurrentTilePosition); // Ensure the position is available and not occupied by the player or other units
-
-        return randomPosition;
-    }
-
     private void RespawnHook()
     {
-        // Remove old hook position from occupied positions
         Vector3Int oldHookPosition = tilemap.WorldToCell(transform.position);
         OccupiedTilesManager.Instance.RemoveOccupiedPosition(oldHookPosition);
 
-        // Set a new random position for the hook
-        hookPosition = GetRandomAvailablePosition();
+        Vector3Int newHookPosition = OccupiedTilesManager.Instance.GetRandomAvailablePosition(player.CurrentTilePosition);
+        if (newHookPosition == Vector3Int.zero)
+        {
+            Debug.LogWarning("Hook: Unable to respawn due to no available positions.");
+            return;
+        }
 
-        // Move the hook to the new position
-        Vector3 worldPosition = tilemap.GetCellCenterWorld(hookPosition);
+        Vector3 worldPosition = tilemap.GetCellCenterWorld(newHookPosition);
         transform.position = worldPosition;
+        OccupiedTilesManager.Instance.AddOccupiedPosition(newHookPosition);
 
-        // Add new hook position to occupied positions
-        OccupiedTilesManager.Instance.AddOccupiedPosition(hookPosition);
-
-        Debug.Log($"Hook respawned at {hookPosition}");
+        Debug.Log($"Hook respawned at {newHookPosition}");
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy")) // Check if the object that hit the hook is an Enemy
+        if (other.CompareTag("Enemy") || other.CompareTag("Barra"))
         {
             HandleEnemyHit(other.gameObject);
         }
@@ -109,95 +91,62 @@ public class Hook : MonoBehaviour
 
     public void HandleEnemyHit(GameObject enemy)
     {
-        // Enemy hits the hook - it dies
-        Debug.Log($"{enemy.name} hit the hook and died!");
-
-        // Increment the kill count
-        hookKillCount++;
-        Debug.Log($"Enemies killed by hook: {hookKillCount}");
-        UpdateFishCountText();
-
-        // Remove enemy's old position from occupied positions
-        AIMove enemyMove = enemy.GetComponent<AIMove>();
-        if (enemyMove != null)
+        if (enemy == null)
         {
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(enemyMove.CurrentTilePosition);
+            Debug.LogError("HandleEnemyHit called with a null enemy.");
+            return;
         }
 
-        // Get EnemyHealth component and set health to zero
+        hookKillCount++;
+        UpdateFishCountText();
+
+        AIMove aiMove = enemy.GetComponent<AIMove>();
+        BarraMove barraMove = enemy.GetComponent<BarraMove>();
+
+        TempTurnBase tempTurnBase = FindObjectOfType<TempTurnBase>();
+        if (tempTurnBase != null)
+        {
+            if (aiMove != null)
+            {
+                tempTurnBase.RemoveAIUnit(aiMove);
+                OccupiedTilesManager.Instance.RemoveOccupiedPosition(aiMove.CurrentTilePosition);
+            }
+            else if (barraMove != null)
+            {
+                tempTurnBase.RemoveBarraUnit(barraMove);
+                OccupiedTilesManager.Instance.RemoveOccupiedPosition(barraMove.CurrentTilePosition);
+            }
+        }
+
+        // Handle enemy's health and destroy it
         EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
         if (enemyHealth != null)
         {
-            enemyHealth.TakeDamage(enemyHealth.health); // Reduce health to zero
-        }
-        else
-        {
-            Debug.LogError("EnemyHealth component not found on enemy.");
+            enemyHealth.TakeDamage(enemyHealth.maxHealth);
         }
 
-        // Respawn the hook at a new random location
+        Destroy(enemy);
+
+        // Respawn the hook at a new location
         RespawnHook();
 
-        // Spawn the first BarraAI after 2 kills
-        if (!firstBarraSpawned && hookKillCount >= 2)
+        // Spawn the Barra after 2 kills if not already spawned
+        if (hookKillCount >= 2 && !barraSpawned)
         {
-            SpawnBarra();
-            firstBarraSpawned = true;
-            
-
+            RespawnManager.Instance.SpawnBarra();
+            barraSpawned = true;
         }
 
-        // Spawn the second BarraAI after 4 kills
-        if (!secondBarraSpawned && hookKillCount >= 4)
-        {
-            SpawnBarra();
-            secondBarraSpawned = true;
-        }
-
-        // End game after six kills
+        // End game or specific logic after multiple kills
         if (hookKillCount >= 6)
         {
             EndGame();
         }
     }
 
-    private void SpawnBarra()
-    {
-        Vector3Int spawnPosition = GetRandomAvailablePosition();
-        Vector3 worldPosition = tilemap.GetCellCenterWorld(spawnPosition);
-
-        GameObject barra = Instantiate(barraPrefab, worldPosition, Quaternion.identity);
-        BarraAI barraAI = barra.GetComponent<BarraAI>();
-        All_SFX.PlayCUANG();
-
-        if (barraAI != null)
-        {
-            barraAI.CurrentTilePosition = spawnPosition;
-            barraAI.playerMove = player; // Assign the player reference
-            barraAI.tilemap = tilemap;
-            barraAI.followPlayer = false; // Set as needed
-        }
-
-        // Register BarraAI's position
-        OccupiedTilesManager.Instance.AddOccupiedPosition(spawnPosition);
-
-        // Add BarraAI to the turn system
-        TempTurnBase turnBase = FindObjectOfType<TempTurnBase>();
-        if (turnBase != null)
-        {
-            turnBase.AddBarraUnit(barraAI);
-        }
-
-        Debug.Log("BarraAI has spawned!");
-    }
-
     private void EndGame()
     {
         Debug.Log("Game Over! You've caught 6 enemies.");
-        // Implement your game over logic here
-        // For example, load a game over scene or display a message
-
-        // Example: Reload the current scene (replace with your game over logic)
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

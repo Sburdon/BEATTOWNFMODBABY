@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using static StateMachine;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -18,7 +17,7 @@ public class PlayerMove : MonoBehaviour
     private Coroutine currentMoveCoroutine; // Store reference to the current move coroutine
     private PlayerFatigue playerFatigue; // Reference to the PlayerFatigue script
     public int moveFatigueCost = 1; // Fatigue cost for movement
-    public All_SFX All_SFX; //Reference FMOD Script
+    public All_SFX All_SFX; // Reference to FMOD Script
 
     private bool hasFatigueBeenDeductedForMove = false; // Flag to ensure fatigue is only deducted once per move action
 
@@ -32,6 +31,7 @@ public class PlayerMove : MonoBehaviour
         swingScript = GetComponent<Swing>(); // Get reference to Swing script
         playerFatigue = GetComponent<PlayerFatigue>(); // Get reference to PlayerFatigue script
         stateMachine = GetComponent<StateMachine>();
+
         // Register the player with the OccupiedTilesManager
         OccupiedTilesManager.Instance.RegisterPlayer(this);
 
@@ -90,8 +90,6 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-
-
     public void OnMoveButtonPressed()
     {
         // Cancel swing mode if active
@@ -105,7 +103,7 @@ public class PlayerMove : MonoBehaviour
         {
             canMove = true;
             Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
-            CurrentAction = ActionType.Move; // Set current action to Move
+            currentAction = ActionType.Move; // Set current action to Move
         }
         // If the player is out of moves, use fatigue to gain additional moves
         else if (remainingMoves <= 0)
@@ -154,7 +152,7 @@ public class PlayerMove : MonoBehaviour
         // Get current position
         Vector3 startPosition = transform.position;
 
-        stateMachine.ChangeState(WrestlerState.Move);
+        //stateMachine.ChangeState(WrestlerState.Move);
 
         // Move towards the target position
         while (elapsedTime < 1f) // Move for 1 second

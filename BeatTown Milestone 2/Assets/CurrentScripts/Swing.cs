@@ -6,22 +6,35 @@ using static StateMachine;
 public class Swing : MonoBehaviour
 {
     public Tilemap tilemap;
+    public Hook hook;
     public float swingSpeed = 5f;
-    private GameObject enemyToSwing;
+    private GameObject targetToSwing;
     private Vector3Int targetTilePosition;
     private bool isSwingMode = false;
     private bool isSwinging = false;
     private PlayerFatigue playerFatigue;
-    public int swingFatigueCost = 2; // Fatigue cost for swinging
+    public int swingFatigueCost = 2;
     private StateMachine stateMachine;
 
-    void Start()
+    void Awake()
     {
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
+
+        if (hook == null)
+        {
+            hook = Hook.Instance;
+            if (hook == null)
+            {
+                Debug.LogError("Hook instance not found. Ensure Hook is present in the scene.");
+            }
+            else
+            {
+                Debug.Log("Hook instance assigned successfully.");
+            }
+        }
     }
 
-    // Method to be called when the swing button is pressed
     public void OnSwingButtonPressed()
     {
         if (isSwinging)
@@ -36,7 +49,6 @@ public class Swing : MonoBehaviour
             return;
         }
 
-        // Check if the player has enough fatigue
         if (!playerFatigue.CanPerformAction(swingFatigueCost))
         {
             Debug.Log("Not enough fatigue to swing.");
@@ -44,40 +56,37 @@ public class Swing : MonoBehaviour
         }
 
         isSwingMode = true;
-        Debug.Log("Swing mode activated. Click on an adjacent enemy to swing.");
+        Debug.Log("Swing mode activated. Click on an adjacent enemy or Barra to swing.");
     }
 
     void Update()
     {
         if (isSwingMode && !isSwinging)
         {
-            if (Input.GetMouseButtonDown(0)) // Left mouse button
+            if (Input.GetMouseButtonDown(0))
             {
-                if (enemyToSwing == null)
+                if (targetToSwing == null)
                 {
-                    // First click: Select an adjacent enemy
-                    SelectEnemy();
+                    SelectTarget();
                 }
                 else
                 {
-                    // Second click: Select a target tile
                     Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
                     Vector3Int playerTilePosition = tilemap.WorldToCell(transform.position);
 
-                    if (IsAdjacent(playerTilePosition, clickedTilePosition) && clickedTilePosition != playerTilePosition && clickedTilePosition != tilemap.WorldToCell(enemyToSwing.transform.position))
+                    if (AIUtils.IsAdjacent(playerTilePosition, clickedTilePosition) &&
+                        clickedTilePosition != playerTilePosition &&
+                        clickedTilePosition != tilemap.WorldToCell(targetToSwing.transform.position))
                     {
-                        if (IsValidSwingTarget(clickedTilePosition))
+                        if (AIUtils.IsTileValid(tilemap, OccupiedTilesManager.Instance, clickedTilePosition, hook))
                         {
                             targetTilePosition = clickedTilePosition;
-
-                            // Deduct fatigue
                             playerFatigue.UseFatigue(swingFatigueCost);
-                            StartCoroutine(SwingEnemy(enemyToSwing, targetTilePosition));
+                            StartCoroutine(SwingTarget(targetToSwing, targetTilePosition));
 
-                            // Reset swing mode
                             isSwingMode = false;
-                            enemyToSwing = null;
+                            targetToSwing = null;
                         }
                         else
                         {
@@ -90,109 +99,106 @@ public class Swing : MonoBehaviour
                     }
                 }
             }
-            else if (Input.GetMouseButtonDown(1)) // Right mouse button to cancel
+            else if (Input.GetMouseButtonDown(1))
             {
                 Debug.Log("Swing action canceled.");
                 isSwingMode = false;
-                enemyToSwing = null;
+                targetToSwing = null;
             }
         }
     }
 
-    private void SelectEnemy()
+    private void SelectTarget()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        if (hit.collider != null && hit.collider.CompareTag("Enemy"))
+        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra")))
         {
-            Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
+            Vector3Int targetPosition = tilemap.WorldToCell(hit.collider.transform.position);
             Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
 
-            // Ensure the enemy is within swinging range (1 tile in each direction)
-            if (IsAdjacent(playerPosition, enemyPosition))
+            if (AIUtils.IsAdjacent(playerPosition, targetPosition))
             {
-                enemyToSwing = hit.collider.gameObject; // Select the enemy
-                Debug.Log($"Selected enemy for swing: {enemyToSwing.name}");
+                targetToSwing = hit.collider.gameObject;
+                Debug.Log($"Selected target for swing: {targetToSwing.name}");
             }
             else
             {
-                Debug.Log("Selected enemy is out of swing range.");
+                Debug.Log("Selected target is out of swing range.");
             }
         }
         else
         {
-            Debug.Log("No enemy selected.");
+            Debug.Log("No enemy or Barra selected.");
         }
     }
 
-    private bool IsAdjacent(Vector3Int origin, Vector3Int target)
-    {
-        int dx = Mathf.Abs(origin.x - target.x);
-        int dy = Mathf.Abs(origin.y - target.y);
-        return (dx + dy == 1);
-    }
-
-    private bool IsValidSwingTarget(Vector3Int targetTilePosition)
-    {
-        // Check if the tile is within bounds
-        if (!tilemap.HasTile(targetTilePosition))
-        {
-            return false;
-        }
-
-        // Allow swinging into the hook's tile
-        if (OccupiedTilesManager.Instance.IsTileOccupied(targetTilePosition))
-        {
-            if (Hook.Instance != null && Hook.Instance.GetHookPosition() == targetTilePosition)
-            {
-                return true; // Allow swinging into the hook's tile
-            }
-            else
-            {
-                return false; // Tile is occupied by another unit
-            }
-        }
-
-        return true;
-    }
-
-    private IEnumerator SwingEnemy(GameObject enemy, Vector3Int targetTilePosition)
+    private IEnumerator SwingTarget(GameObject target, Vector3Int targetTilePosition)
     {
         isSwinging = true;
 
-        Vector3 startPos = enemy.transform.position;
+        Vector3 startPos = target.transform.position;
         Vector3 endPos = tilemap.GetCellCenterWorld(targetTilePosition);
         stateMachine.ChangeState(WrestlerState.Swing);
 
         float elapsedTime = 0f;
         float duration = 1f / swingSpeed;
 
+        EnemyHealth targetHealth = target.GetComponent<EnemyHealth>();
+
+        bool targetDied = false;
+
+        void OnTargetDeath()
+        {
+            targetDied = true;
+        }
+
+        if (targetHealth != null)
+        {
+            targetHealth.OnDeath += OnTargetDeath;
+        }
+
         while (elapsedTime < duration)
         {
-            enemy.transform.position = Vector3.Lerp(startPos, endPos, elapsedTime / duration);
+            if (targetDied)
+            {
+                Debug.Log("Target died during swing. Stopping movement.");
+                break;
+            }
+
+            target.transform.position = Vector3.Lerp(startPos, endPos, elapsedTime / duration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        enemy.transform.position = endPos;
-
-        // Handle occupied positions
-        AIMove enemyMove = enemy.GetComponent<AIMove>();
-        if (enemyMove != null)
+        if (targetHealth != null)
         {
-            // Remove old position
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(enemyMove.CurrentTilePosition);
-            // Update position
-            enemyMove.CurrentTilePosition = targetTilePosition;
-            // Add new position
-            OccupiedTilesManager.Instance.AddOccupiedPosition(enemyMove.CurrentTilePosition);
+            targetHealth.OnDeath -= OnTargetDeath;
         }
 
-        // Check for collision with hook
-        if (Hook.Instance != null && Hook.Instance.GetHookPosition() == targetTilePosition)
+        if (targetDied)
         {
-            Hook.Instance.HandleSwingOrPushIntoHook(enemy);
+            yield break;
+        }
+
+        target.transform.position = endPos;
+        Debug.Log($"{target.name} has been swung to {targetTilePosition}");
+
+        AIMove targetMove = target.GetComponent<AIMove>();
+        if (targetMove != null)
+        {
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetMove.CurrentTilePosition);
+            targetMove.CurrentTilePosition = targetTilePosition;
+            OccupiedTilesManager.Instance.AddOccupiedPosition(targetMove.CurrentTilePosition);
+        }
+
+        Vector3Int targetTilePos = targetTilePosition;
+        Vector3Int hookTilePos = hook != null ? hook.GetHookPosition() : new Vector3Int();
+
+        if (hook != null && targetTilePos == hookTilePos)
+        {
+            hook.HandleSwingOrPushIntoHook(target);
         }
 
         isSwinging = false;
@@ -208,7 +214,31 @@ public class Swing : MonoBehaviour
     {
         isSwingMode = false;
         isSwinging = false;
-        enemyToSwing = null;
+        targetToSwing = null;
         Debug.Log("Swing action canceled.");
+    }
+}
+
+// Utility Class for AI-related Functions
+public static class AIUtils
+{
+    public static bool IsAdjacent(Vector3Int origin, Vector3Int target)
+    {
+        int dx = Mathf.Abs(origin.x - target.x);
+        int dy = Mathf.Abs(origin.y - target.y);
+        return (dx + dy == 1);
+    }
+
+    public static bool IsTileValid(Tilemap tilemap, OccupiedTilesManager occupiedManager, Vector3Int tilePosition, Hook hook = null)
+    {
+        bool hasTile = tilemap.HasTile(tilePosition);
+        bool isOccupied = occupiedManager.IsTileOccupied(tilePosition);
+
+        if (hook != null && tilePosition == hook.GetHookPosition())
+        {
+            isOccupied = false;
+        }
+
+        return hasTile && !isOccupied;
     }
 }

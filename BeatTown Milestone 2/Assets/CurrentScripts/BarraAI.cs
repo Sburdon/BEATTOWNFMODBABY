@@ -1,73 +1,62 @@
-using UnityEngine;
+/*
 using UnityEngine.Tilemaps;
+
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class BarraAI : MonoBehaviour
 {
+    [Header("References")]
     public Tilemap tilemap;
     public PlayerMove playerMove;
     public int moveDistance = 2;
     public float moveSpeed = 1f;
-    public int fatigue = 2;  // Fatigue management for movement/attack
 
-    public Vector3Int CurrentTilePosition;
-
-    private EnemyHealth enemyHealth;
-    private EnemyHealth[] allEnemies;
-    private Hook hook; // Reference to the hook object for position checks
-
+    [Header("Attack Settings")]
     public int attackDamage = 2;
     public float attackRange = 1f;
 
-    public bool followPlayer = false; // Boolean to determine if BarraAI should follow the player
-    private int followPlayerTurns = 1; // Counter for the number of turns to follow the player
+    [Header("Behavior Settings")]
+    public bool followPlayer = false; // Determines if BarraAI should follow the player
+    private int followPlayerTurns = 1; // Number of turns to follow the player
 
-    
+    [HideInInspector]
+    public Vector3Int CurrentTilePosition { get; set; }
+
+    private EnemyHealth enemyHealth;
+    private Hook hook; // Reference to the hook object for position checks
 
     void Start()
     {
         enemyHealth = GetComponent<EnemyHealth>();
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
-        OccupiedTilesManager.Instance.RegisterAI(this);
+        OccupiedTilesManager.Instance.RegisterBarraAI(this); // Corrected method call
         hook = Hook.Instance; // Get reference to the hook
-        
+
+        // Ensure AIFatigue component is present
+        AIFatigue aiFatigue = GetComponent<AIFatigue>();
+        if (aiFatigue == null)
+        {
+            aiFatigue = gameObject.AddComponent<AIFatigue>();
+            aiFatigue.maxFatigue = 2; // Set as needed
+        }
+
+        // Ensure AIAttack component is present
+        AIAttack aiAttack = GetComponent<AIAttack>();
+        if (aiAttack == null)
+        {
+            aiAttack = gameObject.AddComponent<AIAttack>();
+            aiAttack.playerHealth = playerMove.GetComponent<PlayerHealth>();
+            aiAttack.attackDamage = attackDamage;
+            aiAttack.attackRange = attackRange;
+        }
     }
 
-    // Main turn logic
-    public void TakeTurn()
-    {
-        if (enemyHealth != null && enemyHealth.IsDead)
-        {
-            return;
-        }
-
-        allEnemies = FindObjectsOfType<EnemyHealth>();
-
-        // Start by checking if there's an enemy or player nearby
-        if (IsEnemyOrPlayerNearby())
-        {
-            AttackIfInRange();  // Attack if possible
-            fatigue--;  // Use one fatigue for attack
-
-            // Check if the enemy or player has died and respawned (no longer nearby)
-            if (!IsEnemyOrPlayerNearby())
-            {
-                // If the enemy or player has respawned, use the second fatigue to move
-                MoveTowardsClosestTargetAvoidingHook();
-                fatigue--; // Use fatigue for movement
-            }
-        }
-        else
-        {
-            // If no enemies or players are nearby, use the first fatigue to move towards the closest target
-            MoveTowardsClosestTargetAvoidingHook();
-            fatigue--;  // Use fatigue for movement
-        }
-
-        ResetFatigue();  // Reset fatigue at the end of the turn
-    }
-
+    /// <summary>
+    /// Determines if the player or any other enemy is nearby within attack range.
+    /// </summary>
+    /// <returns>True if a target is nearby; otherwise, false.</returns>
     private bool IsEnemyOrPlayerNearby()
     {
         // Check if the AI is next to the player or an enemy
@@ -94,40 +83,20 @@ public class BarraAI : MonoBehaviour
         return false;
     }
 
-    private void ResetFatigue()
-    {
-        fatigue = 2;  // Reset fatigue at the end of each turn
-    }
-
+    /// <summary>
+    /// Sets the number of turns the BarraAI will follow the player.
+    /// </summary>
+    /// <param name="turns">Number of turns to follow the player.</param>
     public void SetFollowPlayerTurns(int turns)
     {
         followPlayerTurns = turns;
         followPlayer = true;
     }
 
-    private void MoveTowardsClosestTargetAvoidingHook()
-    {
-        Transform closestTarget = GetClosestTarget();
-
-        if (closestTarget == null)
-        {
-            // No targets found; do nothing
-            return;
-        }
-
-        // Implement movement towards the closest target
-        Vector3Int targetTilePosition = tilemap.WorldToCell(closestTarget.position);
-
-        // Calculate the path towards the target, avoiding the hook
-        List<Vector3Int> path = CalculatePathAvoidingHook(CurrentTilePosition, targetTilePosition);
-
-        // Check if the path is valid and initiate movement
-        if (path.Count > 0)
-        {
-            StartCoroutine(MoveAlongPath(path));
-        }
-    }
-
+    /// <summary>
+    /// Determines the closest target (player or enemy) for movement.
+    /// </summary>
+    /// <returns>The Transform of the closest target.</returns>
     private Transform GetClosestTarget()
     {
         Transform closestTarget = null;
@@ -137,6 +106,7 @@ public class BarraAI : MonoBehaviour
         List<Transform> potentialTargets = new List<Transform> { playerMove.transform };
 
         // Add other enemies to potential targets
+        EnemyHealth[] allEnemies = FindObjectsOfType<EnemyHealth>();
         foreach (EnemyHealth enemy in allEnemies)
         {
             if (enemy != null && enemy.gameObject != this.gameObject && !enemy.IsDead)
@@ -159,6 +129,12 @@ public class BarraAI : MonoBehaviour
         return closestTarget;
     }
 
+    /// <summary>
+    /// Calculates a simple path towards the target while avoiding the hook.
+    /// </summary>
+    /// <param name="start">Starting tile position.</param>
+    /// <param name="end">Target tile position.</param>
+    /// <returns>A list of tile positions representing the path.</returns>
     private List<Vector3Int> CalculatePathAvoidingHook(Vector3Int start, Vector3Int end)
     {
         // Get the hook position to avoid
@@ -223,6 +199,11 @@ public class BarraAI : MonoBehaviour
         return path;
     }
 
+    /// <summary>
+    /// Moves the BarraAI along the specified path.
+    /// </summary>
+    /// <param name="path">List of tile positions to move through.</param>
+    /// <returns>Coroutine.</returns>
     private IEnumerator MoveAlongPath(List<Vector3Int> path)
     {
         int steps = Mathf.Min(moveDistance, path.Count);
@@ -235,7 +216,7 @@ public class BarraAI : MonoBehaviour
             OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
 
             // Move to the target tile
-            yield return MoveToTile(targetPosition);
+            yield return StartCoroutine(MoveToTile(targetPosition));
 
             // Update current tile position
             CurrentTilePosition = targetPosition;
@@ -246,6 +227,11 @@ public class BarraAI : MonoBehaviour
         AttackIfInRange();
     }
 
+    /// <summary>
+    /// Moves the BarraAI to a specific tile position over time.
+    /// </summary>
+    /// <param name="targetTilePosition">Target tile position.</param>
+    /// <returns>Coroutine.</returns>
     private IEnumerator MoveToTile(Vector3Int targetTilePosition)
     {
         Vector3 targetWorldPosition = tilemap.GetCellCenterWorld(targetTilePosition);
@@ -264,6 +250,11 @@ public class BarraAI : MonoBehaviour
         transform.position = targetWorldPosition;
     }
 
+    /// <summary>
+    /// Checks if moving to the target tile is valid.
+    /// </summary>
+    /// <param name="targetTilePosition">Target tile position.</param>
+    /// <returns>True if move is valid; otherwise, false.</returns>
     private bool IsMoveValid(Vector3Int targetTilePosition)
     {
         // Check if the tile is valid, not occupied by another unit, and within bounds
@@ -276,6 +267,11 @@ public class BarraAI : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Checks if the player or any other enemy is at the given tile position.
+    /// </summary>
+    /// <param name="position">Tile position to check.</param>
+    /// <returns>True if player or enemy is present; otherwise, false.</returns>
     private bool IsPlayerOrEnemyAtPosition(Vector3Int position)
     {
         // Check if the player or an enemy is at the given position
@@ -292,6 +288,9 @@ public class BarraAI : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Attacks all targets within attack range.
+    /// </summary>
     private void AttackIfInRange()
     {
         // Check for targets within attack range
@@ -320,9 +319,26 @@ public class BarraAI : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Resets the BarraAI by stopping all coroutines.
+    /// </summary>
     public void ResetAI()
     {
         StopAllCoroutines(); // Stop any active coroutines
     }
+
+    /// <summary>
+    /// Example method to perform BarraAI's turn logic.
+    /// </summary>
+    public void PerformTurn()
+    {
+        if (enemyHealth != null && enemyHealth.CurrentHealth > 0)
+        {
+            // Example: Move towards the player
+            Vector3Int targetTile = tilemap.WorldToCell(playerMove.transform.position);
+            List<Vector3Int> path = CalculatePathAvoidingHook(CurrentTilePosition, targetTile);
+            StartCoroutine(MoveAlongPath(path));
+        }
+    }
 }
+*/
