@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using static StateMachine;
 
-public class Punch : MonoBehaviour
+public class Punchs : MonoBehaviour
 {
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
