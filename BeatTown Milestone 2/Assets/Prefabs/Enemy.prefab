@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 8827615781386577876}
   - component: {fileID: 7059847366657219671}
   - component: {fileID: -4431514041361390980}
-  - component: {fileID: 815736370709410987}
   - component: {fileID: -883356109429129754}
   - component: {fileID: -7287659099874763}
+  - component: {fileID: 2913830033829259250}
   m_Layer: 22
   m_Name: Enemy
   m_TagString: Enemy
@@ -184,7 +184,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3104276801109259614}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df4042b1b3b23024b89aaf1545da33a2, type: 3}
   m_Name: 
@@ -193,23 +193,6 @@ MonoBehaviour:
   sourceTexture: {fileID: 0}
   baseMask: {fileID: 0}
   sm: {fileID: 0}
---- !u!114 &815736370709410987
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3104276801109259614}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f5ecbf9b692daa4cbf4d685027e6e13, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentState: 0
-  uvMappingScript: {fileID: -4431514041361390980}
-  moveSpeed: 3
-  actionPlaying: 0
-  animationSet: {fileID: 0}
 --- !u!114 &-883356109429129754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,3 +233,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &2913830033829259250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3104276801109259614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e2de496606c5e247b1c7c40b7fb76ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentState: 0
+  uvMappingScript: {fileID: -4431514041361390980}
+  moveSpeed: 3
+  actionPlaying: 0
+  animationSet: {fileID: 11400000, guid: 783f22c8736450d4db0bb121ed8cfa5d, type: 2}

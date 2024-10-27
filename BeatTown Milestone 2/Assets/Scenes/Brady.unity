@@ -4126,6 +4126,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 14.440136, y: 3.7465749}
   m_EdgeRadius: 0
+--- !u!114 &1396119307 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
+    type: 3}
+  m_PrefabInstance: {fileID: 628628110}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6c9c54c813a2774eaf8d99ed078607a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1419105442
 GameObject:
   m_ObjectHideFlags: 0
@@ -6185,7 +6197,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 7.5, y: 7.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -6246,7 +6258,7 @@ MonoBehaviour:
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}
   tilemap: {fileID: 644845377}
-  hook: {fileID: 0}
+  hook: {fileID: 1396119307}
   swingSpeed: 5
   swingFatigueCost: 2
 --- !u!114 &1977991996
@@ -6321,7 +6333,7 @@ MonoBehaviour:
   uvMappingScript: {fileID: 1977991998}
   moveSpeed: 3
   actionPlaying: 0
-  animationSet: {fileID: 11400000, guid: 7012d047a49269c43b1a58aa6f6c3a79, type: 2}
+  animationSet: {fileID: 11400000, guid: 36c53ef0f8fd3a44b90117861879bbd6, type: 2}
 --- !u!114 &1977992000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6338,7 +6350,7 @@ MonoBehaviour:
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}
   tilemap: {fileID: 644845377}
-  hook: {fileID: 0}
+  hook: {fileID: 1396119307}
 --- !u!114 &1977992001
 MonoBehaviour:
   m_ObjectHideFlags: 0
