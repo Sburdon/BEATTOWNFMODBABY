@@ -16,6 +16,7 @@ public class Push : MonoBehaviour
     private PlayerMove playerMove;
     private PlayerFatigue playerFatigue;
     private StateMachine stateMachine;
+    public All_SFX All_SFX;
 
     void Awake()
     {
@@ -77,12 +78,14 @@ public class Push : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
+
         if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra")))
         {
             Transform target = hit.collider.transform;
 
             Vector3Int playerPosition = playerMove.CurrentTilePosition;
             Vector3Int targetPosition = tilemap.WorldToCell(target.position);
+
 
             int deltaX = Mathf.Abs(targetPosition.x - playerPosition.x);
             int deltaY = Mathf.Abs(targetPosition.y - playerPosition.y);
@@ -97,6 +100,7 @@ public class Push : MonoBehaviour
                 Debug.Log("Target is not adjacent to the player (1 tile away in cardinal directions).");
             }
         }
+        
     }
 
     void TryPushTarget()
@@ -137,6 +141,7 @@ public class Push : MonoBehaviour
         {
             Debug.Log("No target selected for push.");
         }
+        All_SFX.PlayPush();
     }
 
     Vector3Int FindFurthestTile(Vector3Int startTile, Vector3Int direction)

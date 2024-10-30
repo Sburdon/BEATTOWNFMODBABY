@@ -18,6 +18,7 @@ public class Swing : MonoBehaviour
     private PlayerFatigue playerFatigue;
     public int swingFatigueCost = 2;
     private StateMachine stateMachine;
+    public All_SFX All_SFX;
 
     void Awake()
     {
@@ -142,6 +143,8 @@ public class Swing : MonoBehaviour
         Vector3 startPos = target.transform.position;
         Vector3 endPos = tilemap.GetCellCenterWorld(targetTilePosition);
         stateMachine.ChangeState(WrestlerState.Swing);
+        All_SFX.PlaySwing();
+
 
         float elapsedTime = 0f;
         float duration = 1f / swingSpeed;
@@ -185,6 +188,7 @@ public class Swing : MonoBehaviour
         }
 
         target.transform.position = endPos;
+        
         Debug.Log($"{target.name} has been swung to {targetTilePosition}");
 
         AIMove targetMove = target.GetComponent<AIMove>();

@@ -9,6 +9,10 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance UISelect;
     FMOD.Studio.EventInstance CUANG;
     FMOD.Studio.EventInstance FishBattle;
+    FMOD.Studio.EventInstance FishSlap;
+    FMOD.Studio.EventInstance Swing;
+    FMOD.Studio.EventInstance Push;
+    FMOD.Studio.EventInstance PlayerHurt;
 
     int Cuda_Count = 0;
 
@@ -22,8 +26,11 @@ public class All_SFX : MonoBehaviour
         walking = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/RingStep");
         CUANG = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/CUANG");
         FishBattle = FMODUnity.RuntimeManager.CreateInstance("event:/Fish_Battle");
+        FishSlap = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Fish Slap Hit");
+        Swing = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Carry");
+        Push = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Push");
+        PlayerHurt = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Player Hurt");
 
-        
     }
 
     public void UpdateCudaCount()
@@ -55,6 +62,26 @@ public class All_SFX : MonoBehaviour
     public void PlayFishBattle()
     {
         FishBattle.start();
+    }
+
+    public void PlayFishSlap()
+    {
+        FishSlap.start();
+    }
+
+    public void PlaySwing()
+    {
+        Swing.start();
+    }
+
+    public void PlayPush()
+    {
+        Push.start();
+    }
+
+    public void PlayPlayerHurt()
+    {
+        PlayerHurt.start();
     }
 
 

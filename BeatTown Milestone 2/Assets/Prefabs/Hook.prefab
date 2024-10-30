@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6442724387357253408}
   - component: {fileID: 7373458579028444798}
   - component: {fileID: 8739481648317724055}
+  - component: {fileID: -1357578508250428005}
   m_Layer: 6
   m_Name: Hook
   m_TagString: Untagged
@@ -134,9 +135,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 0}
-  hookPrefab: {fileID: 146274211700111789}
-  barraPrefab: {fileID: 0}
   player: {fileID: 0}
   fishCountText: {fileID: 0}
   hookKillCount: 0
-  All_SFX: {fileID: 0}
+  All_SFX: {fileID: -1357578508250428005}
+--- !u!114 &-1357578508250428005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146274211700111789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b25e7569ca7e6d34992cc3b5aaf13d01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

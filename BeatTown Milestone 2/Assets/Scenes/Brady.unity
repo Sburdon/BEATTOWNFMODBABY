@@ -395,6 +395,7 @@ MonoBehaviour:
   hookPrefab: {fileID: 0}
   initialEnemiesToSpawn: 2
   respawnDelay: 2
+  All_SFX: {fileID: 0}
 --- !u!114 &167513601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1613,89 +1614,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1001 &628628110
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 146274211700111789, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_Name
-      value: Hook
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.46031505
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -1.447654
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: player
-      value: 
-      objectReference: {fileID: 1977991994}
-    - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: tilemap
-      value: 
-      objectReference: {fileID: 644845377}
-    - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
-        type: 3}
-      propertyPath: fishCountText
-      value: 
-      objectReference: {fileID: 1453310170}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b77ac0510f587904990eefe19e10b817, type: 3}
 --- !u!1 &637987710
 GameObject:
   m_ObjectHideFlags: 0
@@ -4126,18 +4044,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 14.440136, y: 3.7465749}
   m_EdgeRadius: 0
---- !u!114 &1396119307 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
-    type: 3}
-  m_PrefabInstance: {fileID: 628628110}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6c9c54c813a2774eaf8d99ed078607a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1419105442
 GameObject:
   m_ObjectHideFlags: 0
@@ -4323,6 +4229,89 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1427997650}
   m_CullTransparentMesh: 1
+--- !u!1001 &1431981146
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 146274211700111789, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_Name
+      value: Hook
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.39
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.24
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2402430748034149301, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1977991994}
+    - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: tilemap
+      value: 
+      objectReference: {fileID: 644845377}
+    - target: {fileID: 8739481648317724055, guid: b77ac0510f587904990eefe19e10b817,
+        type: 3}
+      propertyPath: fishCountText
+      value: 
+      objectReference: {fileID: 1453310170}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b77ac0510f587904990eefe19e10b817, type: 3}
 --- !u!1 &1435945461
 GameObject:
   m_ObjectHideFlags: 0
@@ -6258,9 +6247,10 @@ MonoBehaviour:
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}
   tilemap: {fileID: 644845377}
-  hook: {fileID: 1396119307}
+  hook: {fileID: 0}
   swingSpeed: 5
   swingFatigueCost: 2
+  All_SFX: {fileID: 1977992003}
 --- !u!114 &1977991996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6278,6 +6268,7 @@ MonoBehaviour:
   moveMentHighlight: {fileID: 597358265}
   tilemap: {fileID: 644845377}
   punchDamage: 1
+  All_SFX: {fileID: 1977992003}
 --- !u!114 &1977991997
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6350,7 +6341,8 @@ MonoBehaviour:
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}
   tilemap: {fileID: 644845377}
-  hook: {fileID: 1396119307}
+  hook: {fileID: 0}
+  All_SFX: {fileID: 1977992003}
 --- !u!114 &1977992001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6365,6 +6357,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 5
   currentHealth: 0
+  All_SFX: {fileID: 1977992003}
   healthImages:
   - {fileID: 174669201}
   - {fileID: 861092646}
@@ -6850,4 +6843,4 @@ SceneRoots:
   - {fileID: 534074678}
   - {fileID: 1426817632}
   - {fileID: 1562467053}
-  - {fileID: 628628110}
+  - {fileID: 1431981146}

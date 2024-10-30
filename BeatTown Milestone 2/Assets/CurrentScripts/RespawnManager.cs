@@ -24,6 +24,7 @@ public class RespawnManager : MonoBehaviour
     private Tilemap tilemap;
     private PlayerMove playerMove;
     private Text fishCountText;
+    public All_SFX All_SFX;
 
     void Awake()
     {
@@ -204,5 +205,6 @@ public class RespawnManager : MonoBehaviour
         }
 
         Debug.Log("RespawnManager: Spawned a new Barra at " + spawnTile);
+        
     }
 }

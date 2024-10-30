@@ -132,6 +132,7 @@ public class Hook : MonoBehaviour
         if (hookKillCount == 2 || hookKillCount == 4)
         {
             RespawnManager.Instance.SpawnBarra();
+            All_SFX.PlayCUANG();
         }
 
         if (hookKillCount >= 6)

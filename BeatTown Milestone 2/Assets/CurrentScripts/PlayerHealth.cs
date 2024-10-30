@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
     public int currentHealth;   // Current health of the player
     private StateMachine stateMachine;
     public bool IsDead { get; private set; }
+    public All_SFX All_SFX;
 
     [Header("Health Bar Images")]
     public Image[] healthImages; // Array to hold references to health images (0/5 to 5/5)
@@ -28,6 +29,7 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Clamp to ensure it doesn't go below 0
         Debug.Log("Player took " + damage + " damage. Current Health: " + currentHealth);
+        All_SFX.PlayPlayerHurt();
 
         UpdateHealthBar(); // Update the health bar UI after taking damage
 

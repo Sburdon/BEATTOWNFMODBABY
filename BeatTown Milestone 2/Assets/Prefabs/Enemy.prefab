@@ -125,7 +125,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0.06880342, y: -0.0709542}
-  m_Size: {x: 0.7849879, y: 2.1419065}
+  m_Size: {x: 0.42, y: 0.91}
   m_Direction: 0
 --- !u!114 &123279437787055045
 MonoBehaviour:
@@ -161,7 +161,7 @@ MonoBehaviour:
   playerMove: {fileID: 0}
   moveDistance: 2
   moveSpeed: 5
-  followPlayerByDefault: 0
+  followPlayerByDefault: 1
 --- !u!114 &7059847366657219671
 MonoBehaviour:
   m_ObjectHideFlags: 0
