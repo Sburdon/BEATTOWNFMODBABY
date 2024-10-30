@@ -1,4 +1,3 @@
-// Assets/CurrentScripts/EnemyHealth.cs
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,7 +38,7 @@ public class EnemyHealth : MonoBehaviour
         health = maxHealth; // Initialize health
         CurrentHealth = health; // Initialize current health
 
-        // Instantiate both health bar prefabs
+        // Instantiate both health bars as children of the enemy
         fullHealthBar = Instantiate(fullHealthBarPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity, transform);
         emptyHealthBar = Instantiate(emptyHealthBarPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity, transform);
 
@@ -51,6 +50,14 @@ public class EnemyHealth : MonoBehaviour
         {
             Debug.LogError("RespawnManager instance not found in the scene.");
         }
+    }
+
+    void Update()
+    {
+        // Keep the health bars hovering above the enemy at a fixed position
+        Vector3 healthBarPosition = transform.position + new Vector3(0, 0.5f, 0); // Adjust Y offset as needed
+        fullHealthBar.transform.position = healthBarPosition;
+        emptyHealthBar.transform.position = healthBarPosition;
     }
 
     public void TakeDamage(int amount)
@@ -91,34 +98,26 @@ public class EnemyHealth : MonoBehaviour
             aiMove.enabled = false;
         }
 
-        
-
         // Notify RespawnManager
         if (respawnManager != null)
         {
             respawnManager.EnemyDied(gameObject);
         }
-
-        // Removed the RespawnEnemy coroutine call as RespawnManager handles respawning
     }
 
     private void UpdateHealthBar()
     {
         if (fullHealthBar != null)
         {
-            // Calculate the health percentage
+            // Calculate the health percentage and apply it only to the X scale, while keeping fixed Y scale
             float healthPercentage = (float)CurrentHealth / maxHealth;
+            fullHealthBar.transform.localScale = new Vector3(healthPercentage * 0.5f, 0.09f, 1); // Adjusted to use .5f and .09f for full bar
+        }
 
-            // Update full health bar's scale based on current health
-            fullHealthBar.transform.localScale = new Vector3(healthPercentage, 0.24f, 1); // Scale x based on health
-
-            // Position the health bars above the enemy
-            Vector3 healthBarPosition = transform.position + new Vector3(0, 0.57f, 0); // Adjust Y offset as needed
-            fullHealthBar.transform.position = healthBarPosition;
-            emptyHealthBar.transform.position = healthBarPosition;
-
-            // Optionally adjust empty health bar size
-            emptyHealthBar.transform.localScale = new Vector3(1f, 0.24f, 1); // Set to the full size
+        if (emptyHealthBar != null)
+        {
+            // Keep the empty health bar at a fixed scale of 0.5 on X and 0.09 on Y
+            emptyHealthBar.transform.localScale = new Vector3(0.5f, 0.09f, 1);
         }
     }
 }
