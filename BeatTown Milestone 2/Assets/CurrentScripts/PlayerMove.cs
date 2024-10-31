@@ -157,6 +157,16 @@ public class PlayerMove : MonoBehaviour
         // Calculate target position
         Vector3 targetPosition = tilemap.GetCellCenterWorld(targetTilePosition);
         float elapsedTime = 0f;
+        if (targetTilePosition.x < CurrentTilePosition.x)
+        {
+            // Moving left, flip the player
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
+        else if (targetTilePosition.x > CurrentTilePosition.x)
+        {
+            // Moving right, reset flip
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
 
         // Get current position
         Vector3 startPosition = transform.position;

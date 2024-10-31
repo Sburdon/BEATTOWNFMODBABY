@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: cfb1fd60721bd5e44ac4de5a00b86dce
+  - enabled: 1
     path: Assets/Scenes/Brady.unity
     guid: 47a4aec2329d44f478e0df3720128cbe
   m_configObjects: {}
