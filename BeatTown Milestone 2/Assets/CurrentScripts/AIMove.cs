@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections;
 using System.Collections.Generic;
+using static StateMachine;
 
 public class AIMove : MonoBehaviour
 {
@@ -28,9 +29,13 @@ public class AIMove : MonoBehaviour
     public bool followPlayerByDefault = false;
 
     private int followPlayerTurns = 0; // Number of turns to follow the player after being punched
+    private StateMachine stateMachine;
+    private SpriteRenderer spriteRenderer;
+
 
     void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         // Get EnemyHealth component
         enemyHealth = GetComponent<EnemyHealth>();
 
@@ -65,6 +70,8 @@ public class AIMove : MonoBehaviour
 
     void Start()
     {
+        stateMachine = GetComponent<StateMachine>();
+
         // Ensure tilemap and playerMove are assigned before using them
         if (tilemap == null || playerMove == null)
         {
@@ -292,13 +299,25 @@ public class AIMove : MonoBehaviour
 
         Vector3 startPosition = transform.position;
 
+        //FOR FLIPPING WHEN THEY WALK LEFT OR RIGHT
+        if (targetTilePosition.x < CurrentTilePosition.x)
+        {
+            // Moving left
+            spriteRenderer.flipX = true;
+        }
+        else if (targetTilePosition.x > CurrentTilePosition.x)
+        {
+            // Moving right
+            spriteRenderer.flipX = false;
+        }
+
+        stateMachine.ChangeState(WrestlerState.Move);
         while (elapsedTime < travelTime)
         {
             transform.position = Vector3.Lerp(startPosition, targetWorldPosition, elapsedTime / travelTime);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-
         transform.position = targetWorldPosition;
     }
 

@@ -160,8 +160,8 @@ MonoBehaviour:
   tilemap: {fileID: 0}
   playerMove: {fileID: 0}
   moveDistance: 2
-  moveSpeed: 5
-  followPlayerByDefault: 1
+  moveSpeed: 2.4
+  followPlayerByDefault: 0
 --- !u!114 &7059847366657219671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,7 +192,7 @@ MonoBehaviour:
   _texture: {fileID: 0}
   sourceTexture: {fileID: 0}
   baseMask: {fileID: 0}
-  sm: {fileID: 0}
+  sm: {fileID: 2913830033829259250}
 --- !u!114 &-883356109429129754
 MonoBehaviour:
   m_ObjectHideFlags: 0
