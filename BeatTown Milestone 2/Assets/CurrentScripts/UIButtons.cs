@@ -16,8 +16,6 @@ public class UIButtons : MonoBehaviour
     // This function will quit the application
     public void QuitGame()
     {
-        UnityEditor.EditorApplication.isPlaying = false;
-
         Application.Quit();
     }
     public void ResetToSceneZero()
