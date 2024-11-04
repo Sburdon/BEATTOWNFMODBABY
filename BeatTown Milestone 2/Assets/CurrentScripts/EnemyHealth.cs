@@ -55,7 +55,7 @@ public class EnemyHealth : MonoBehaviour
     void Update()
     {
         // Keep the health bars hovering above the enemy at a fixed position
-        Vector3 healthBarPosition = transform.position + new Vector3(0, 0.5f, 0); // Adjust Y offset as needed
+        Vector3 healthBarPosition = transform.position + new Vector3(0, 0.45f, 0); // Adjust Y offset as needed
         fullHealthBar.transform.position = healthBarPosition;
         emptyHealthBar.transform.position = healthBarPosition;
     }
@@ -111,13 +111,13 @@ public class EnemyHealth : MonoBehaviour
         {
             // Calculate the health percentage and apply it only to the X scale, while keeping fixed Y scale
             float healthPercentage = (float)CurrentHealth / maxHealth;
-            fullHealthBar.transform.localScale = new Vector3(healthPercentage * 0.5f, 0.09f, 1); // Adjusted to use .5f and .09f for full bar
+            fullHealthBar.transform.localScale = new Vector3(healthPercentage * 0.3f, 0.05f, 1); // Adjusted to use .5f and .09f for full bar
         }
 
         if (emptyHealthBar != null)
         {
             // Keep the empty health bar at a fixed scale of 0.5 on X and 0.09 on Y
-            emptyHealthBar.transform.localScale = new Vector3(0.5f, 0.09f, 1);
+            emptyHealthBar.transform.localScale = new Vector3(0.3f, 0.05f, 1);
         }
     }
 }

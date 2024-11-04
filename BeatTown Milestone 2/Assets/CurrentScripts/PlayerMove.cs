@@ -45,46 +45,53 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        // Update CurrentTilePosition based on the player's position
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
 
-        // Check for mouse input only if canMove is true
         if (canMove && Input.GetMouseButtonDown(0)) // Left mouse button
         {
-            // Get the mouse position and convert it to a world position
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
 
-            // Calculate the distance in terms of grid coordinates
             int deltaX = Mathf.Abs(clickedTilePosition.x - CurrentTilePosition.x);
             int deltaY = Mathf.Abs(clickedTilePosition.y - CurrentTilePosition.y);
+            bool isDiagonalMove = (deltaX == 1 && deltaY == 1);
 
-            // Check if the clicked tile is within the allowed move range (up to remaining moves)
-            if (deltaX + deltaY <= remainingMoves && (deltaX == 0 || deltaY == 0) && remainingMoves > 0)
+            // Validate move range
+            if ((deltaX + deltaY <= remainingMoves && (deltaX == 0 || deltaY == 0)) || (isDiagonalMove && remainingMoves >= 2))
             {
-                // Check if the target tile is occupied
-                if (IsTileOccupied(clickedTilePosition))
+                bool moveAllowed = false;
+
+                // Check if the move is valid
+                if (isDiagonalMove)
                 {
-                    Debug.Log("Cannot move to tile, it is occupied.");
-                    return; // Prevent movement if the tile is occupied
+                    Vector3Int? clearIntermediateTile = CheckDiagonalPaths(CurrentTilePosition, clickedTilePosition);
+                    if (clearIntermediateTile.HasValue)
+                    {
+                        moveAllowed = true;
+                        Vector3Int intermediateTile = clearIntermediateTile.Value;
+                        currentMoveCoroutine = StartCoroutine(MoveAlongPath(intermediateTile, clickedTilePosition));
+
+                    }
                 }
-
-                // Only deduct fatigue once per movement session
-                if (!hasFatigueBeenDeductedForMove && playerFatigue.CanPerformAction(moveFatigueCost))
+                else if (IsPathClear(CurrentTilePosition, clickedTilePosition))
                 {
-                    playerFatigue.UseFatigue(moveFatigueCost); // Deduct fatigue
-                    hasFatigueBeenDeductedForMove = true; // Mark that fatigue has been deducted for this action
-                }
-
-                if (hasFatigueBeenDeductedForMove)
-                {
-                    Debug.Log($"Moving to tile: {clickedTilePosition}");
-
-                    // Start movement coroutine
+                    moveAllowed = true;
                     currentMoveCoroutine = StartCoroutine(MoveToTile(clickedTilePosition));
 
-                    // Decrement remainingMoves by the number of tiles moved
-                    remainingMoves -= (deltaX + deltaY);
+                }
+
+                if (moveAllowed)
+                {
+                    // Deduct fatigue if the move is allowed
+                    if (!hasFatigueBeenDeductedForMove && playerFatigue.CanPerformAction(moveFatigueCost))
+                    {
+                        playerFatigue.UseFatigue(moveFatigueCost);
+                        hasFatigueBeenDeductedForMove = true;
+                    }
+                }
+                else
+                {
+                    Debug.Log("Move is blocked; no movement executed.");
                 }
             }
             else
@@ -94,39 +101,134 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    // Helper method to check both diagonal paths and ensure one is clear
+    private Vector3Int? CheckDiagonalPaths(Vector3Int startTile, Vector3Int endTile)
+    {
+        Vector3Int intermediateTile1 = new Vector3Int(endTile.x, startTile.y, 0); // Horizontal first
+        Vector3Int intermediateTile2 = new Vector3Int(startTile.x, endTile.y, 0); // Vertical first
+
+        // Check each path individually; return the intermediate tile if one is clear
+        if (IsPathClear(startTile, intermediateTile1) && !IsTileOccupied(endTile))
+        {
+            return intermediateTile1;
+        }
+        else if (IsPathClear(startTile, intermediateTile2) && !IsTileOccupied(endTile))
+        {
+            return intermediateTile2;
+        }
+
+        // If both paths are blocked, return null
+        return null;
+    }
+
+    // Helper method to check if all tiles along the path are unoccupied
+    private bool IsPathClear(Vector3Int startTile, Vector3Int endTile)
+    {
+        // Directly check if moving only one tile
+        if (Mathf.Abs(startTile.x - endTile.x) + Mathf.Abs(startTile.y - endTile.y) == 1)
+        {
+            return !IsTileOccupied(endTile);
+        }
+
+        // For diagonal moves, check both intermediate tiles if moving two tiles
+        if (Mathf.Abs(startTile.x - endTile.x) + Mathf.Abs(startTile.y - endTile.y) == 2)
+        {
+            // Determine the intermediate tile based on the direction of movement
+            Vector3Int intermediateTile = new Vector3Int((startTile.x + endTile.x) / 2, (startTile.y + endTile.y) / 2, 0);
+
+            // Check if the path is clear by checking the intermediate and target tiles
+            return !IsTileOccupied(intermediateTile) && !IsTileOccupied(endTile);
+        }
+
+        // If more than two tiles are moved, get all intermediate tiles
+        List<Vector3Int> pathTiles = GetTilesInPath(startTile, endTile);
+        foreach (Vector3Int tile in pathTiles)
+        {
+            if (IsTileOccupied(tile))
+            {
+                return false; // Path is blocked if any tile is occupied
+            }
+        }
+        return true;
+    }
+
+    // Gets the list of intermediate tiles between the start and end tiles (excluding start and end)
+    private List<Vector3Int> GetTilesInPath(Vector3Int startTile, Vector3Int endTile)
+    {
+        List<Vector3Int> pathTiles = new List<Vector3Int>();
+
+        if (startTile.x == endTile.x)
+        {
+            int yMin = Mathf.Min(startTile.y, endTile.y) + 1;
+            int yMax = Mathf.Max(startTile.y, endTile.y) - 1;
+            for (int y = yMin; y <= yMax; y++)
+            {
+                pathTiles.Add(new Vector3Int(startTile.x, y, 0));
+            }
+        }
+        else if (startTile.y == endTile.y)
+        {
+            int xMin = Mathf.Min(startTile.x, endTile.x) + 1;
+            int xMax = Mathf.Max(startTile.x, endTile.x) - 1;
+            for (int x = xMin; x <= xMax; x++)
+            {
+                pathTiles.Add(new Vector3Int(x, startTile.y, 0));
+            }
+        }
+
+        return pathTiles;
+    }
+
+    private IEnumerator MoveAlongPath(Vector3Int intermediateTilePosition, Vector3Int targetTilePosition)
+    {
+        if (IsTileOccupied(intermediateTilePosition))
+        {
+            Debug.Log("Path blocked by an enemy at " + intermediateTilePosition);
+            yield break; // Stop movement if path is blocked
+        }
+
+        yield return MoveToTile(intermediateTilePosition);
+
+        if (IsTileOccupied(targetTilePosition))
+        {
+            Debug.Log("Path blocked by an enemy at " + targetTilePosition);
+            yield break;
+        }
+
+        yield return MoveToTile(targetTilePosition);
+    }
+
     public void OnMoveButtonPressed()
     {
-        Debug.Log("Move button pressed."); // Log to check if the method is called
+        Debug.Log("Move button pressed.");
         SwingHighlight.SetActive(false);
         moveMentHighlight.SetActive(true);
         PPShighlight.SetActive(false);
-        // Cancel swing mode if active
+
         if (swingScript != null && swingScript.IsSwinging())
         {
             swingScript.CancelSwing();
         }
 
-        // If the player has moves remaining, they can move normally
+        // Check if the player has moves left
         if (remainingMoves > 0)
         {
             canMove = true;
             Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
-            currentAction = ActionType.Move; // Set current action to Move
+            currentAction = ActionType.Move;
         }
-        // If the player is out of moves, use fatigue to gain additional moves
-        else if (remainingMoves <= 0)
+        else if (remainingMoves <= 0 && !hasFatigueBeenDeductedForMove)
         {
-            // Check if the player has enough fatigue to gain more moves
+            // Deduct fatigue if player wants to gain more moves
             if (playerFatigue.CanPerformAction(moveFatigueCost))
             {
                 moveMentHighlight.SetActive(true);
-                // Deduct fatigue and give the player new moves
                 playerFatigue.UseFatigue(moveFatigueCost);
-                remainingMoves = maxMoves; // Reset moves to max amount
-                hasFatigueBeenDeductedForMove = true; // Mark that fatigue has been used
+                remainingMoves = maxMoves;
+                hasFatigueBeenDeductedForMove = true;
 
                 Debug.Log("Fatigue used to gain more moves. You now have " + remainingMoves + " moves.");
-                canMove = true; // Enable movement
+                canMove = true;
             }
             else
             {
@@ -137,92 +239,94 @@ public class PlayerMove : MonoBehaviour
 
     public void CancelMove()
     {
-        // Stop current move coroutine if active
         if (currentMoveCoroutine != null)
         {
             StopCoroutine(currentMoveCoroutine);
             currentMoveCoroutine = null;
         }
-
-        // Reset movement state, but allow further movement without fatigue deduction
         canMove = false;
         Debug.Log("Move action canceled, but further movement is allowed if remaining moves exist.");
     }
 
     private IEnumerator MoveToTile(Vector3Int targetTilePosition)
     {
-        // Remove current position from occupied positions
         OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
-
-        // Calculate target position
         Vector3 targetPosition = tilemap.GetCellCenterWorld(targetTilePosition);
         float elapsedTime = 0f;
+        if (IsTileOccupied(targetTilePosition))
+        {
+            Debug.Log("Target tile is occupied by an enemy.");
+            yield break; // Stop movement if the target tile is occupied
+        }
         if (targetTilePosition.x < CurrentTilePosition.x)
         {
-            // Moving left, flip the player
             transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
         else if (targetTilePosition.x > CurrentTilePosition.x)
         {
-            // Moving right, reset flip
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
-        // Get current position
         Vector3 startPosition = transform.position;
-
         stateMachine.ChangeState(WrestlerState.Move);
 
-        // Move towards the target position
-        while (elapsedTime < 1f) // Move for 1 second
+        while (elapsedTime < 1f)
         {
             moveMentHighlight.SetActive(false);
-            transform.position = Vector3.Lerp(startPosition, targetPosition, (elapsedTime / 1f)); // Lerp for smooth movement
-            elapsedTime += Time.deltaTime * moveSpeed; // Increment elapsed time
-            yield return null; // Wait for the next frame
+            transform.position = Vector3.Lerp(startPosition, targetPosition, (elapsedTime / 1f));
+            elapsedTime += Time.deltaTime * moveSpeed;
+            yield return null;
         }
-        moveMentHighlight.SetActive(true);
 
-        // Ensure the player ends up exactly at the target position
         transform.position = targetPosition;
         All_SFX.PlayWalkingSound();
 
-        // Update current tile position after the move
         CurrentTilePosition = targetTilePosition;
-
-        // Add new position to occupied positions
         OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
 
-        // Check if no remaining moves are left
+        int deltaX = Mathf.Abs(targetTilePosition.x - tilemap.WorldToCell(startPosition).x);
+        int deltaY = Mathf.Abs(targetTilePosition.y - tilemap.WorldToCell(startPosition).y);
+
+        if (deltaX + deltaY == 1)
+        {
+            remainingMoves -= 1;
+        }
+        else if (deltaX + deltaY == 2)
+        {
+            remainingMoves -= 2;
+        }
+
         if (remainingMoves <= 0)
         {
             moveMentHighlight.SetActive(false);
-            canMove = false; // Disable further movement until reset
+            canMove = false;
+            hasFatigueBeenDeductedForMove = false;
             Debug.Log("Movement complete. No moves remaining.");
+        }
+        else
+        {
+            moveMentHighlight.SetActive(true);
+            Debug.Log($"Remaining moves: {remainingMoves}");
         }
     }
 
-    // This function can be called from another script to refresh movement count
     public void RefreshSpaceCount()
     {
-        remainingMoves = maxMoves; // Reset remaining moves to max
-        canMove = true; // Allow movement again
-        hasFatigueBeenDeductedForMove = false; // Reset the fatigue deduction flag
+        remainingMoves = maxMoves;
+        canMove = true;
+        hasFatigueBeenDeductedForMove = false;
         Debug.Log("Movement reset for the next turn.");
     }
 
     void UpdatePlayerPosition()
     {
-        // Center the player on the current tile position
         transform.position = tilemap.GetCellCenterWorld(CurrentTilePosition);
-
-        // Add current position to occupied positions
         OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
     }
 
-    // Check if a tile is occupied
     public bool IsTileOccupied(Vector3Int position)
     {
+        // Check for player, enemies, or any object on the tile.
         return OccupiedTilesManager.Instance.IsTileOccupied(position);
     }
 

@@ -51,7 +51,7 @@ public class PlayerHealth : MonoBehaviour
     // Method to end the game
     private void EndGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Restart current scene for now
+        SceneManager.LoadScene(0); // Restart current scene for now
     }
 
     // Update the health bar UI based on the current health
