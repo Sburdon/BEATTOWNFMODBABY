@@ -36,7 +36,7 @@ public class Push : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (isPushing)
+            if (isPushing && playerFatigue.currentFatigue > 0)
             {
                 if (selectedTarget != null)
                 {
@@ -46,6 +46,10 @@ public class Push : MonoBehaviour
                 {
                     SelectTarget();
                 }
+            }else if(isPushing && playerFatigue.currentFatigue <= 0)
+            {
+                Debug.Log("No Fatigue to Push");
+                CancelPush();
             }
         }
     }
