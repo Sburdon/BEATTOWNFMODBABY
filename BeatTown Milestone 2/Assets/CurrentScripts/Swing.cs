@@ -19,6 +19,7 @@ public class Swing : MonoBehaviour
     public int swingFatigueCost = 2;
     private StateMachine stateMachine;
     public All_SFX All_SFX;
+    public GameObject RealMoveHighlight;
 
     void Awake()
     {
@@ -34,6 +35,7 @@ public class Swing : MonoBehaviour
 
     public void OnSwingButtonPressed()
     {
+        RealMoveHighlight.SetActive(false);
         PPShighlight.SetActive(true);
         SwingHighlight.SetActive(false);
         moveMentHighlight.SetActive(false);

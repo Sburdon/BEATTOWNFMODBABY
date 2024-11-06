@@ -15,6 +15,7 @@ public class Punch : MonoBehaviour
     public int punchDamage = 1; // Damage dealt by punch
     private StateMachine stateMachine;
     public All_SFX All_SFX;
+    public GameObject RealMoveHighlight;
 
     private void Awake()
     {
@@ -46,6 +47,7 @@ public class Punch : MonoBehaviour
 
     public void OnPunchButtonPressed()
     {
+        RealMoveHighlight.SetActive(false);
         SwingHighlight.SetActive(false);
         PPShighlight.SetActive(true);
         moveMentHighlight.SetActive(false);

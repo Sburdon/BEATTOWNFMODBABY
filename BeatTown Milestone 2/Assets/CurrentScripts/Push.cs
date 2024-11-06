@@ -17,6 +17,7 @@ public class Push : MonoBehaviour
     private PlayerFatigue playerFatigue;
     private StateMachine stateMachine;
     public All_SFX All_SFX;
+    public GameObject RealMoveHighlight;
 
     void Awake()
     {
@@ -51,6 +52,7 @@ public class Push : MonoBehaviour
 
     public void OnPushButtonPressed()
     {
+        RealMoveHighlight.SetActive(false);
         SwingHighlight.SetActive(false);
         PPShighlight.SetActive(true);
         moveMentHighlight.SetActive(false);
