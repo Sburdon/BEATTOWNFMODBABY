@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static StateMachine;
 
 public class BarraMove : MonoBehaviour
 {
@@ -10,11 +11,16 @@ public class BarraMove : MonoBehaviour
     public int moveDistance = 2;
     public Tilemap tilemap;
     public PlayerMove playerMove;
+    private StateMachine stateMachine;
+    private bool facingRight = true;
+
 
     public Vector3Int CurrentTilePosition { get; set; }
 
     void Start()
     {
+        stateMachine = GetComponent<StateMachine>();
+
         if (tilemap == null)
         {
             tilemap = FindObjectOfType<Tilemap>();
@@ -34,6 +40,7 @@ public class BarraMove : MonoBehaviour
 
         Vector3Int targetTilePosition = tilemap.WorldToCell(target.transform.position);
         List<Vector3Int> path = CalculatePath(CurrentTilePosition, targetTilePosition);
+
 
         for (int i = 0; i < moveDistance && i < path.Count; i++)
         {
@@ -94,6 +101,16 @@ public class BarraMove : MonoBehaviour
         float elapsedTime = 0f;
         float travelTime = 1f / moveSpeed;
         Vector3 startPosition = transform.position;
+        stateMachine.ChangeState(WrestlerState.Move);
+
+        if (targetWorldPosition.x < startPosition.x && facingRight)
+        {
+            Flip();
+        }
+        else if (targetWorldPosition.x > startPosition.x && !facingRight)
+        {
+            Flip();
+        }
 
         while (elapsedTime < travelTime)
         {
@@ -103,6 +120,13 @@ public class BarraMove : MonoBehaviour
         }
 
         transform.position = targetWorldPosition;
+    }
+    private void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
     }
 
     private List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int target)

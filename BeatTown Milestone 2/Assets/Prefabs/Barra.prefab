@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: -2457691626137159801}
   - component: {fileID: 3033900995475806439}
   - component: {fileID: -1942732356278275659}
+  - component: {fileID: 3584107739911414736}
+  - component: {fileID: -9014424349289359115}
   m_Layer: 22
   m_Name: Barra
   m_TagString: Barra
@@ -79,7 +81,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: 27b09776eac330049928e75d43563a6d, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -87,7 +89,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &7323142019123634588
@@ -167,8 +169,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.00027109592, y: -0.0022883974}
-  m_Size: {x: 0.49468908, y: 0.5055441}
+  m_Offset: {x: 0.020298816, y: -0.02594385}
+  m_Size: {x: 0.28076142, y: 0.48703104}
   m_Direction: 0
 --- !u!114 &-2457691626137159801
 MonoBehaviour:
@@ -213,3 +215,36 @@ MonoBehaviour:
   moveDistance: 2
   tilemap: {fileID: 0}
   playerMove: {fileID: 0}
+--- !u!114 &3584107739911414736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3323733470962230501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df4042b1b3b23024b89aaf1545da33a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _texture: {fileID: 0}
+  sourceTexture: {fileID: 0}
+  baseMask: {fileID: 0}
+  sm: {fileID: -9014424349289359115}
+--- !u!114 &-9014424349289359115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3323733470962230501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e2de496606c5e247b1c7c40b7fb76ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentState: 0
+  uvMappingScript: {fileID: 3584107739911414736}
+  moveSpeed: 3
+  actionPlaying: 0
+  animationSet: {fileID: 11400000, guid: 1b61796a7dbbd61458e9191ecfedcd73, type: 2}

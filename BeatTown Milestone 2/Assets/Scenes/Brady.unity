@@ -681,7 +681,7 @@ MonoBehaviour:
   hookPrefab: {fileID: 146274211700111789, guid: b77ac0510f587904990eefe19e10b817,
     type: 3}
   initialEnemiesToSpawn: 2
-  respawnDelay: 2
+  respawnDelay: 0.5
   All_SFX: {fileID: 167513601}
 --- !u!114 &167513601
 MonoBehaviour:
