@@ -145,12 +145,10 @@ public class Swing : MonoBehaviour
         stateMachine.ChangeState(WrestlerState.Swing);
         All_SFX.PlaySwing();
 
-
         float elapsedTime = 0f;
         float duration = 1f / swingSpeed;
 
         EnemyHealth targetHealth = target.GetComponent<EnemyHealth>();
-
         bool targetDied = false;
 
         void OnTargetDeath()
@@ -188,15 +186,22 @@ public class Swing : MonoBehaviour
         }
 
         target.transform.position = endPos;
-        
+
         Debug.Log($"{target.name} has been swung to {targetTilePosition}");
 
-        AIMove targetMove = target.GetComponent<AIMove>();
-        if (targetMove != null)
+        AIMove targetAIMove = target.GetComponent<AIMove>();
+        BarraMove targetBarraMove = target.GetComponent<BarraMove>();
+        if (targetAIMove != null)
         {
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetMove.CurrentTilePosition);
-            targetMove.CurrentTilePosition = targetTilePosition;
-            OccupiedTilesManager.Instance.AddOccupiedPosition(targetMove.CurrentTilePosition);
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetAIMove.CurrentTilePosition);
+            targetAIMove.CurrentTilePosition = targetTilePosition;
+            OccupiedTilesManager.Instance.AddOccupiedPosition(targetAIMove.CurrentTilePosition);
+        }
+        else if (targetBarraMove != null)
+        {
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetBarraMove.CurrentTilePosition);
+            targetBarraMove.CurrentTilePosition = targetTilePosition;
+            OccupiedTilesManager.Instance.AddOccupiedPosition(targetBarraMove.CurrentTilePosition);
         }
 
         Vector3Int targetTilePos = targetTilePosition;

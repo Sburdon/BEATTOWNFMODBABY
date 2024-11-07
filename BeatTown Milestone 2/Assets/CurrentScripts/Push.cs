@@ -54,7 +54,6 @@ public class Push : MonoBehaviour
         SwingHighlight.SetActive(false);
         PPShighlight.SetActive(true);
         moveMentHighlight.SetActive(false);
-        // Cancel any movement when the push button is pressed
         playerMove.CancelMove();
         isPushing = true;
         selectedTarget = null;
@@ -78,14 +77,12 @@ public class Push : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-
         if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra")))
         {
             Transform target = hit.collider.transform;
 
             Vector3Int playerPosition = playerMove.CurrentTilePosition;
             Vector3Int targetPosition = tilemap.WorldToCell(target.position);
-
 
             int deltaX = Mathf.Abs(targetPosition.x - playerPosition.x);
             int deltaY = Mathf.Abs(targetPosition.y - playerPosition.y);
@@ -100,7 +97,6 @@ public class Push : MonoBehaviour
                 Debug.Log("Target is not adjacent to the player (1 tile away in cardinal directions).");
             }
         }
-        
     }
 
     void TryPushTarget()
@@ -164,7 +160,6 @@ public class Push : MonoBehaviour
         float elapsedTime = 0f;
 
         EnemyHealth targetHealth = target.GetComponent<EnemyHealth>();
-
         bool targetDied = false;
         void OnTargetDeath() { targetDied = true; }
 
@@ -199,12 +194,19 @@ public class Push : MonoBehaviour
         target.position = endPosition;
         Debug.Log($"{target.name} has been pushed to {targetTilePosition}");
 
-        AIMove targetMove = target.GetComponent<AIMove>();
-        if (targetMove != null)
+        AIMove targetAIMove = target.GetComponent<AIMove>();
+        BarraMove targetBarraMove = target.GetComponent<BarraMove>();
+        if (targetAIMove != null)
         {
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetMove.CurrentTilePosition);
-            targetMove.CurrentTilePosition = targetTilePosition;
-            OccupiedTilesManager.Instance.AddOccupiedPosition(targetMove.CurrentTilePosition);
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetAIMove.CurrentTilePosition);
+            targetAIMove.CurrentTilePosition = targetTilePosition;
+            OccupiedTilesManager.Instance.AddOccupiedPosition(targetAIMove.CurrentTilePosition);
+        }
+        else if (targetBarraMove != null)
+        {
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetBarraMove.CurrentTilePosition);
+            targetBarraMove.CurrentTilePosition = targetTilePosition;
+            OccupiedTilesManager.Instance.AddOccupiedPosition(targetBarraMove.CurrentTilePosition);
         }
 
         Vector3Int targetTilePos = targetTilePosition;
@@ -213,29 +215,6 @@ public class Push : MonoBehaviour
         if (hook != null && targetTilePos == hookTilePos)
         {
             hook.HandleSwingOrPushIntoHook(target.gameObject);
-        }
-    }
-
-    public static class AIUtils
-    {
-        public static bool IsAdjacent(Vector3Int origin, Vector3Int target)
-        {
-            int dx = Mathf.Abs(origin.x - target.x);
-            int dy = Mathf.Abs(origin.y - target.y);
-            return (dx + dy == 1);
-        }
-
-        public static bool IsTileValid(Tilemap tilemap, OccupiedTilesManager occupiedManager, Vector3Int tilePosition, Hook hook = null)
-        {
-            bool hasTile = tilemap.HasTile(tilePosition);
-            bool isOccupied = occupiedManager.IsTileOccupied(tilePosition);
-
-            if (hook != null && tilePosition == hook.GetHookPosition())
-            {
-                isOccupied = false;
-            }
-
-            return hasTile && !isOccupied;
         }
     }
 }
