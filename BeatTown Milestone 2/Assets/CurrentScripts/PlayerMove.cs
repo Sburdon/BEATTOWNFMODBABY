@@ -22,16 +22,26 @@ public class PlayerMove : MonoBehaviour
     public int moveFatigueCost = 1; // Fatigue cost for movement
     public All_SFX All_SFX; // Reference to FMOD Script
     public GameObject SwingHighlight;
+    public GameObject RealMoveHighlight;
 
     private bool hasFatigueBeenDeductedForMove = false; // Flag to ensure fatigue is only deducted once per move action
 
+    public GameObject noMoveImage;    // Image for no moves left
+    public GameObject oneMoveImage;   // Image for one move left
+    public GameObject twoMoveImage;   // Image for both moves left
+
+    private void Awake()
+    {
+        CurrentTilePosition = tilemap.WorldToCell(transform.position);
+        UpdatePlayerPosition();
+    }
     void Start()
     {
         // Initialize the current tile position based on the player's starting position
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
         UpdatePlayerPosition();
         remainingMoves = maxMoves; // Initialize remaining moves
-
+        UpdateMoveImages();
         swingScript = GetComponent<Swing>(); // Get reference to Swing script
         playerFatigue = GetComponent<PlayerFatigue>(); // Get reference to PlayerFatigue script
         stateMachine = GetComponent<StateMachine>();
@@ -99,6 +109,12 @@ public class PlayerMove : MonoBehaviour
                 Debug.Log("Clicked tile is out of range or no moves remaining.");
             }
         }
+    }
+    private void UpdateMoveImages()
+    {
+        noMoveImage.SetActive(remainingMoves == 0);
+        oneMoveImage.SetActive(remainingMoves == 1);
+        twoMoveImage.SetActive(remainingMoves == 2);
     }
 
     // Helper method to check both diagonal paths and ensure one is clear
@@ -202,8 +218,9 @@ public class PlayerMove : MonoBehaviour
     {
         Debug.Log("Move button pressed.");
         SwingHighlight.SetActive(false);
-        moveMentHighlight.SetActive(true);
+        RealMoveHighlight.SetActive(true);
         PPShighlight.SetActive(false);
+        moveMentHighlight.SetActive(false);
 
         if (swingScript != null && swingScript.IsSwinging())
         {
@@ -222,9 +239,10 @@ public class PlayerMove : MonoBehaviour
             // Deduct fatigue if player wants to gain more moves
             if (playerFatigue.CanPerformAction(moveFatigueCost))
             {
-                moveMentHighlight.SetActive(true);
+                RealMoveHighlight.SetActive(true);
                 playerFatigue.UseFatigue(moveFatigueCost);
                 remainingMoves = maxMoves;
+                UpdateMoveImages();
                 hasFatigueBeenDeductedForMove = true;
 
                 Debug.Log("Fatigue used to gain more moves. You now have " + remainingMoves + " moves.");
@@ -272,7 +290,7 @@ public class PlayerMove : MonoBehaviour
 
         while (elapsedTime < 1f)
         {
-            moveMentHighlight.SetActive(false);
+            RealMoveHighlight.SetActive(false);
             transform.position = Vector3.Lerp(startPosition, targetPosition, (elapsedTime / 1f));
             elapsedTime += Time.deltaTime * moveSpeed;
             yield return null;
@@ -295,17 +313,17 @@ public class PlayerMove : MonoBehaviour
         {
             remainingMoves -= 2;
         }
-
+        UpdateMoveImages();
         if (remainingMoves <= 0)
         {
-            moveMentHighlight.SetActive(false);
+            RealMoveHighlight.SetActive(false);
             canMove = false;
             hasFatigueBeenDeductedForMove = false;
             Debug.Log("Movement complete. No moves remaining.");
         }
         else
         {
-            moveMentHighlight.SetActive(true);
+            RealMoveHighlight.SetActive(true);
             Debug.Log($"Remaining moves: {remainingMoves}");
         }
     }
@@ -315,6 +333,7 @@ public class PlayerMove : MonoBehaviour
         remainingMoves = maxMoves;
         canMove = true;
         hasFatigueBeenDeductedForMove = false;
+        UpdateMoveImages();
         Debug.Log("Movement reset for the next turn.");
     }
 

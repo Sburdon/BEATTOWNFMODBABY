@@ -16,6 +16,8 @@ public class TempTurnBase : MonoBehaviour
 
     private bool isPlayerTurn = true;
     private bool isProcessingTurn = false;
+    public GameObject RealMoveHighlight;
+
 
     void Start()
     {
@@ -64,6 +66,7 @@ public class TempTurnBase : MonoBehaviour
 
         PPShighlight.SetActive(false);
         moveMentHighlight.SetActive(false);
+        RealMoveHighlight.SetActive(false);
         isPlayerTurn = false;
         StartCoroutine(AITurnRoutine());
     }
