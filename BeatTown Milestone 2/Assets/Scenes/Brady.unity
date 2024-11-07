@@ -7423,6 +7423,7 @@ MonoBehaviour:
   barraUnits: []
   playerMove: {fileID: 1977991994}
   playerFatigue: {fileID: 1977991997}
+  RealMoveHighlight: {fileID: 1253888467}
 --- !u!4 &1562467053
 Transform:
   m_ObjectHideFlags: 0
