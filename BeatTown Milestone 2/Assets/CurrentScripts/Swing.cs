@@ -35,33 +35,34 @@ public class Swing : MonoBehaviour
 
     public void OnSwingButtonPressed()
     {
-        RealMoveHighlight.SetActive(false);
-        PPShighlight.SetActive(true);
-        SwingHighlight.SetActive(false);
-        moveMentHighlight.SetActive(false);
-        if (isSwinging)
+        if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost))
         {
-            Debug.Log("Already swinging.");
-            return;
-        }
+            RealMoveHighlight.SetActive(false);
+            PPShighlight.SetActive(true);
+            SwingHighlight.SetActive(false);
+            moveMentHighlight.SetActive(false);
+            if (isSwinging)
+            {
+                Debug.Log("Already swinging.");
+                return;
+            }
 
-        if (isSwingMode)
-        {
-            Debug.Log("Swing mode already active.");
-            return;
-        }
+            if (isSwingMode)
+            {
+                Debug.Log("Swing mode already active.");
+                return;
+            }
 
-        if (!playerFatigue.CanPerformAction(swingFatigueCost))
+            isSwingMode = true;
+            Debug.Log("Swing mode activated. Click on an adjacent enemy or Barra to swing.");
+        }
+        else
         {
             Debug.Log("Not enough fatigue to swing.");
-            return;
         }
-
-        isSwingMode = true;
-        Debug.Log("Swing mode activated. Click on an adjacent enemy or Barra to swing.");
     }
 
-    void Update()
+        void Update()
     {
         if (isSwingMode && !isSwinging)
         {

@@ -10,6 +10,7 @@ public class PlayerFatigue : MonoBehaviour
     public int swingFatigueCost = 2;
     public int punchFatigueCost = 1;
     public int pushFatigueCost = 1;
+    public int moveFatigueCost = 1;
 
     [Header("Fatigue Bar Images")]
     public Image[] fatigueImages; // Array to hold references to the fatigue images (0/4 to 4/4)

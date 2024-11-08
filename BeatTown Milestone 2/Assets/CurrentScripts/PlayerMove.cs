@@ -229,43 +229,54 @@ public class PlayerMove : MonoBehaviour
 
     public void OnMoveButtonPressed()
     {
-        Debug.Log("Move button pressed.");
-        SwingHighlight.SetActive(false);
-        RealMoveHighlight.SetActive(true);
-        PPShighlight.SetActive(false);
-        moveMentHighlight.SetActive(false);
+        
+            Debug.Log("Move button pressed.");
+            SwingHighlight.SetActive(false);
+            RealMoveHighlight.SetActive(false);
+            PPShighlight.SetActive(false);
+            moveMentHighlight.SetActive(false);
 
-        if (swingScript != null && swingScript.IsSwinging())
-        {
-            swingScript.CancelSwing();
-        }
-
-        // Check if the player has moves left
-        if (remainingMoves > 0)
-        {
-            canMove = true;
-            Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
-            currentAction = ActionType.Move;
-        }
-        else if (remainingMoves <= 0 && !hasFatigueBeenDeductedForMove)
-        {
-            // Deduct fatigue if player wants to gain more moves
-            if (playerFatigue.CanPerformAction(moveFatigueCost))
+            if (swingScript != null && swingScript.IsSwinging())
             {
-                RealMoveHighlight.SetActive(true);
-                playerFatigue.UseFatigue(moveFatigueCost);
-                remainingMoves = maxMoves;
-                UpdateMoveImages();
-                hasFatigueBeenDeductedForMove = true;
+                swingScript.CancelSwing();
+            }
 
-                Debug.Log("Fatigue used to gain more moves. You now have " + remainingMoves + " moves.");
+            // Check if the player has moves left
+            if (remainingMoves > 0)
+            {
                 canMove = true;
+                Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
+                currentAction = ActionType.Move;
+            }
+            else if (remainingMoves <= 0 && !hasFatigueBeenDeductedForMove)
+            {
+                // Deduct fatigue if player wants to gain more moves
+                if (playerFatigue.CanPerformAction(moveFatigueCost))
+                {
+                    playerFatigue.UseFatigue(moveFatigueCost);
+                    remainingMoves = maxMoves;
+                    UpdateMoveImages();
+                    hasFatigueBeenDeductedForMove = true;
+
+                    Debug.Log("Fatigue used to gain more moves. You now have " + remainingMoves + " moves.");
+                    canMove = true;
+                }
             }
             else
             {
                 Debug.Log("Not enough fatigue to gain more moves.");
             }
-        }
+            if (remainingMoves == 1)
+            {
+                moveMentHighlight.SetActive(true);
+                RealMoveHighlight.SetActive(false);
+            }
+            if (remainingMoves == 2)
+            {
+                moveMentHighlight.SetActive(false);
+                RealMoveHighlight.SetActive(true);
+            }
+        
     }
 
     public void CancelMove()
@@ -304,6 +315,7 @@ public class PlayerMove : MonoBehaviour
         while (elapsedTime < 1f)
         {
             RealMoveHighlight.SetActive(false);
+            moveMentHighlight.SetActive(false);
             transform.position = Vector3.Lerp(startPosition, targetPosition, (elapsedTime / 1f));
             elapsedTime += Time.deltaTime * moveSpeed;
             yield return null;
@@ -330,13 +342,23 @@ public class PlayerMove : MonoBehaviour
         if (remainingMoves <= 0)
         {
             RealMoveHighlight.SetActive(false);
+            moveMentHighlight.SetActive(false);
             canMove = false;
             hasFatigueBeenDeductedForMove = false;
             Debug.Log("Movement complete. No moves remaining.");
         }
         else
         {
-            RealMoveHighlight.SetActive(true);
+            if (remainingMoves == 1)
+            {
+                moveMentHighlight.SetActive(true);
+                RealMoveHighlight.SetActive(false);
+            }
+            if (remainingMoves == 2)
+            {
+                moveMentHighlight.SetActive(false);
+                RealMoveHighlight.SetActive(true);
+            }
             Debug.Log($"Remaining moves: {remainingMoves}");
         }
     }

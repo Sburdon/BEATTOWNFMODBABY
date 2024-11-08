@@ -56,14 +56,21 @@ public class Push : MonoBehaviour
 
     public void OnPushButtonPressed()
     {
-        RealMoveHighlight.SetActive(false);
-        SwingHighlight.SetActive(false);
-        PPShighlight.SetActive(true);
-        moveMentHighlight.SetActive(false);
-        playerMove.CancelMove();
-        isPushing = true;
-        selectedTarget = null;
-        Debug.Log("Push button pressed, current action: " + playerMove.CurrentAction);
+        if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
+        {
+            RealMoveHighlight.SetActive(false);
+            SwingHighlight.SetActive(false);
+            PPShighlight.SetActive(true);
+            moveMentHighlight.SetActive(false);
+            playerMove.CancelMove();
+            isPushing = true;
+            selectedTarget = null;
+            Debug.Log("Push button pressed, current action: " + playerMove.CurrentAction);
+        }
+        else
+        {
+            Debug.Log("Not enough fatigue to push.");
+        }
     }
 
     public void CancelPush()
