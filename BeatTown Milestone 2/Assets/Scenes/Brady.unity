@@ -1530,6 +1530,7 @@ GameObject:
   - component: {fileID: 539697140}
   - component: {fileID: 539697139}
   - component: {fileID: 539697138}
+  - component: {fileID: 539697141}
   m_Layer: 5
   m_Name: Punch Button
   m_TagString: Untagged
@@ -1699,6 +1700,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 539697136}
   m_CullTransparentMesh: 1
+--- !u!114 &539697141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 539697136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99634edca86565b4a96a0b7b261787f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  simpleTooltipStyle: {fileID: 11400000, guid: a104288cd74ebc84d80f27ae9b51d26c, type: 2}
+  infoLeft: "\t\t\tDescription:\nPunch an enemy for **1 DMG\n_Taunt `the enemy for
+    **1 Round\n\n_Taunt: `Taunted enemies chase the unit that taunted them and **attacks
+    `if available"
+  infoRight: '##Cost: 1 Fatigue
+
+'
 --- !u!1 &559996908
 GameObject:
   m_ObjectHideFlags: 0
@@ -7701,6 +7721,7 @@ GameObject:
   - component: {fileID: 1620997633}
   - component: {fileID: 1620997632}
   - component: {fileID: 1620997631}
+  - component: {fileID: 1620997635}
   m_Layer: 5
   m_Name: Move Button
   m_TagString: Untagged
@@ -7870,6 +7891,21 @@ RectTransform:
   m_AnchoredPosition: {x: -2230.92, y: -656}
   m_SizeDelta: {x: 595.22, y: 111.61}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1620997635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620997630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99634edca86565b4a96a0b7b261787f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  simpleTooltipStyle: {fileID: 11400000, guid: a104288cd74ebc84d80f27ae9b51d26c, type: 2}
+  infoLeft: "Move: \n\t\tDescription: \nMove an enemy"
+  infoRight: 'Fatigue: 1'
 --- !u!1 &1701395953
 GameObject:
   m_ObjectHideFlags: 0
@@ -9901,6 +9937,7 @@ MonoBehaviour:
   swingFatigueCost: 2
   punchFatigueCost: 1
   pushFatigueCost: 1
+  moveFatigueCost: 1
   fatigueImages:
   - {fileID: 1852065843}
   - {fileID: 1419105445}
