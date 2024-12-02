@@ -264,6 +264,7 @@ public class PlayerMove : MonoBehaviour
             }
             else
             {
+                canMove = false;
                 Debug.Log("Not enough fatigue to gain more moves.");
             }
             if (remainingMoves == 1)
