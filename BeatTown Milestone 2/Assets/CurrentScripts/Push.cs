@@ -46,7 +46,8 @@ public class Push : MonoBehaviour
                 {
                     SelectTarget();
                 }
-            }else if(isPushing && playerFatigue.currentFatigue <= 0)
+            }
+            else if (isPushing && playerFatigue.currentFatigue <= 0)
             {
                 Debug.Log("No Fatigue to Push");
                 CancelPush();
@@ -129,6 +130,9 @@ public class Push : MonoBehaviour
                 direction = Vector3Int.up;
             else if (playerPosition.y > targetPosition.y)
                 direction = Vector3Int.down;
+
+            // Flip the player if they are not facing the correct direction
+            FlipPlayerIfNeeded(direction);
 
             Vector3Int furthestTile = FindFurthestTile(targetPosition, direction);
 
@@ -229,5 +233,35 @@ public class Push : MonoBehaviour
         {
             hook.HandleSwingOrPushIntoHook(target.gameObject);
         }
+    }
+
+    // Function to flip the player sprite based on push direction
+    private void FlipPlayerIfNeeded(Vector3Int direction)
+    {
+        if (direction == Vector3Int.left && transform.localScale.x > 0)
+        {
+            FlipPlayer();
+        }
+        else if (direction == Vector3Int.right && transform.localScale.x < 0)
+        {
+            FlipPlayer();
+        }
+        else if (direction == Vector3Int.up && transform.localScale.y < 0)
+        {
+            FlipPlayer();
+        }
+        else if (direction == Vector3Int.down && transform.localScale.y > 0)
+        {
+            FlipPlayer();
+        }
+    }
+
+    // Function to flip the player sprite
+    private void FlipPlayer()
+    {
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1; // Flip the player horizontally
+        localScale.y *= -1; // Flip the player vertically (if needed)
+        transform.localScale = localScale;
     }
 }

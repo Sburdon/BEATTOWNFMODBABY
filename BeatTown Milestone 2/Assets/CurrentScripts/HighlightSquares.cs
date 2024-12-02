@@ -6,8 +6,7 @@ public class HighlightSquares : MonoBehaviour
 {
     public LayerMask wallLayer; // The layer to check for walls
     public LayerMask enemyLayer; // The layer to check for enemies
-    public LayerMask hook; // The layer to check for the hook
-    public float checkRadius = 0.1f; // The radius for the overlap check
+    public LayerMask hookLayer; // The layer to check for the hook
     private SpriteRenderer spriteRenderer; // Reference to the SpriteRenderer component
     private bool isCollidingWithObstacle = false; // Track collision state with wall or enemy
 
@@ -15,46 +14,33 @@ public class HighlightSquares : MonoBehaviour
     {
         // Get the SpriteRenderer component attached to this GameObject
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        // Check if the square is already colliding with a wall or enemy at the time of spawn
-        CheckForObstacleCollision();
     }
 
-    private void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Continuously check for wall and enemy collisions
-        CheckForObstacleCollision();
-    }
-
-    private void CheckForObstacleCollision()
-    {
-        // Check for collisions within a circle around the object's position for walls and enemies
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, checkRadius, wallLayer | enemyLayer | hook);
-
-        if (hitColliders.Length > 0) // If any colliders are found in the wall or enemy layer
+        // Check if the colliding object is in the specified layers
+        if (IsInLayerMask(collision.gameObject, wallLayer | enemyLayer | hookLayer))
         {
-            if (!isCollidingWithObstacle)
-            {
-                Debug.Log("Colliding with an obstacle! Disabling sprite.");
-                spriteRenderer.enabled = false; // Disable the SpriteRenderer if colliding with a wall or enemy
-                isCollidingWithObstacle = true; // Update the collision state
-            }
-        }
-        else
-        {
-            if (isCollidingWithObstacle)
-            {
-                Debug.Log("Not colliding with any obstacles. Re-enabling sprite.");
-                spriteRenderer.enabled = true; // Reactivate the SpriteRenderer if not colliding
-                isCollidingWithObstacle = false; // Update the collision state
-            }
+            Debug.Log("Colliding with an obstacle! Disabling sprite.");
+            spriteRenderer.enabled = false; // Disable the SpriteRenderer
+            isCollidingWithObstacle = true;
         }
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnTriggerExit2D(Collider2D collision)
     {
-        // Draw a wire sphere in the editor for visual debugging
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, checkRadius);
+        // Check if the colliding object was in the specified layers
+        if (IsInLayerMask(collision.gameObject, wallLayer | enemyLayer | hookLayer))
+        {
+            Debug.Log("No longer colliding with obstacles. Re-enabling sprite.");
+            spriteRenderer.enabled = true; // Re-enable the SpriteRenderer
+            isCollidingWithObstacle = false;
+        }
+    }
+
+    private bool IsInLayerMask(GameObject obj, LayerMask layerMask)
+    {
+        // Check if the object's layer is in the specified LayerMask
+        return (layerMask.value & (1 << obj.layer)) > 0;
     }
 }

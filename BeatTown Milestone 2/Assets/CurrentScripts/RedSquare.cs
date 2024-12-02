@@ -8,7 +8,7 @@ public class RedSquare : MonoBehaviour
     public LayerMask hook; // The layer for hook
     public float checkRadius = 0.1f; // The radius for the overlap check
     private SpriteRenderer spriteRenderer; // Reference to the SpriteRenderer component
-    private bool isCollidingWithEnemy = false; // Track collision state with enemy
+    public bool isCollidingWithEnemy = false; // Track collision state with enemy
 
     private void Start()
     {
