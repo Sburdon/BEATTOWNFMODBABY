@@ -13,8 +13,12 @@ public enum TutorialState
 
 // Plan for implementing tutorial boxes:
 // When transitioning to the next tutorial box, fire an event.
-// The event will be listened to by the PauseManager, which will then set the next tutorial state depending on the tutorial box.
+// The event will be listened to by this script, which will then set the next tutorial state depending on the tutorial box (move on to next box or unpause/exit pause state.).
 // All components that need to react to pause (e.g., character controllers, interaction scripts) can subscribe to these events and handle pausing.
+
+
+// Use Unity Events for advancing the tutorial boxes
+// Use a custom script to manage the timing (e.g., unscaled time) and track the current tutorial state.
 
 
 public class TutorialStateManager : MonoBehaviour
