@@ -23,23 +23,17 @@ public class AIMove : MonoBehaviour
     public Vector3Int CurrentTilePosition { get; set; }
 
     private EnemyHealth enemyHealth;
-
-    [Header("AI Behavior Settings")]
-    [Tooltip("If true, the AI will follow the player by default.")]
-    public bool followPlayerByDefault = false;
-
-    private int followPlayerTurns = 0; // Number of turns to follow the player after being punched
     private StateMachine stateMachine;
     private SpriteRenderer spriteRenderer;
 
+    // Number of turns the AI will follow the player after being punched
+    private int followPlayerTurns = 0; 
 
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        // Get EnemyHealth component
         enemyHealth = GetComponent<EnemyHealth>();
 
-        // Ensure tilemap is assigned
         if (tilemap == null)
         {
             tilemap = FindObjectOfType<Tilemap>();
@@ -53,7 +47,6 @@ public class AIMove : MonoBehaviour
             }
         }
 
-        // Ensure playerMove is assigned
         if (playerMove == null)
         {
             playerMove = FindObjectOfType<PlayerMove>();
@@ -72,17 +65,14 @@ public class AIMove : MonoBehaviour
     {
         stateMachine = GetComponent<StateMachine>();
 
-        // Ensure tilemap and playerMove are assigned before using them
         if (tilemap == null || playerMove == null)
         {
             Debug.LogError($"AIMove: Unable to initialize {gameObject.name} due to missing references.");
             return;
         }
 
-        // Set current tile position based on the tilemap
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
 
-        // Register AI with OccupiedTilesManager
         if (OccupiedTilesManager.Instance != null)
         {
             OccupiedTilesManager.Instance.RegisterAI(this);
@@ -107,65 +97,79 @@ public class AIMove : MonoBehaviour
 
         List<Vector3Int> path = new List<Vector3Int>();
 
-        bool shouldFollowPlayer = followPlayerByDefault || followPlayerTurns > 0;
+        // If followPlayerTurns > 0, follow the player. Otherwise, move randomly.
+        bool shouldFollowPlayer = (followPlayerTurns > 0);
 
         if (shouldFollowPlayer)
         {
             Vector3Int targetTilePosition = playerMove.CurrentTilePosition;
-
-            // Calculate the path towards the player
+            // Calculate a strictly orthogonal path towards the player
             List<Vector3Int> calculatedPath = CalculatePath(CurrentTilePosition, targetTilePosition);
             path.AddRange(calculatedPath);
         }
         else
         {
-            // Generate a random path
+            // Generate a random orthogonal path
             path = GenerateRandomPath();
         }
 
         if (path.Count > 0)
         {
-            // Move along the path
             yield return StartCoroutine(MoveAlongPath(path));
         }
         else
         {
-            // No valid moves, do nothing
             Debug.Log($"{gameObject.name} has no valid moves.");
-        }
-
-        // Decrease the followPlayerTurns counter if it's greater than zero
-        if (followPlayerTurns > 0)
-        {
-            followPlayerTurns--;
-            // If followPlayerTurns reaches zero, the enemy will revert to their default behavior
         }
 
         yield return null;
     }
 
     /// <summary>
-    /// Generates a random path based on moveDistance.
+    /// Sets the number of turns the AI will follow the player.
     /// </summary>
-    /// <returns>List of Vector3Int positions to move to.</returns>
+    /// <param name="turns">Number of turns to follow the player.</param>
+    public void SetFollowPlayerForTurns(int turns)
+    {
+        followPlayerTurns = turns;
+    }
+
+    /// <summary>
+    /// Decrements the follow turns by 1. If it hits zero, AI stops following the player.
+    /// </summary>
+    public void DecrementFollowTurns()
+    {
+        if (followPlayerTurns > 0)
+        {
+            followPlayerTurns--;
+        }
+    }
+
+    public bool IsFollowingPlayer()
+    {
+        return followPlayerTurns > 0;
+    }
+
+    /// <summary>
+    /// Generates a random orthogonal path (no diagonals).
+    /// </summary>
     private List<Vector3Int> GenerateRandomPath()
     {
         List<Vector3Int> path = new List<Vector3Int>();
-
         Vector3Int currentPosition = CurrentTilePosition;
+
+        // Only orthogonal directions
+        Vector3Int[] directions = new Vector3Int[]
+        {
+            Vector3Int.up,
+            Vector3Int.down,
+            Vector3Int.left,
+            Vector3Int.right
+        };
 
         for (int step = 0; step < moveDistance; step++)
         {
-            // Generate possible directions
             List<Vector3Int> possibleMoves = new List<Vector3Int>();
-
-            Vector3Int[] directions = new Vector3Int[]
-            {
-                Vector3Int.up,
-                Vector3Int.down,
-                Vector3Int.left,
-                Vector3Int.right
-            };
 
             foreach (Vector3Int dir in directions)
             {
@@ -178,18 +182,13 @@ public class AIMove : MonoBehaviour
 
             if (possibleMoves.Count > 0)
             {
-                // Randomly select one of the possible moves
                 int randomIndex = Random.Range(0, possibleMoves.Count);
                 Vector3Int targetPosition = possibleMoves[randomIndex];
-
                 path.Add(targetPosition);
-
-                // Update currentPosition for next step
                 currentPosition = targetPosition;
             }
             else
             {
-                // No valid moves from current position
                 break;
             }
         }
@@ -198,14 +197,10 @@ public class AIMove : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates a simple path towards the target position.
+    /// Calculates a strictly orthogonal path towards the target position by first moving along x, then along y.
     /// </summary>
-    /// <param name="start">Starting tile position.</param>
-    /// <param name="end">Target tile position.</param>
-    /// <returns>List of Vector3Int positions to move to.</returns>
     private List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int end)
     {
-        // Simple pathfinding: move in x direction, then y direction
         List<Vector3Int> path = new List<Vector3Int>();
 
         int dx = end.x - start.x;
@@ -217,11 +212,12 @@ public class AIMove : MonoBehaviour
         int x = start.x;
         int y = start.y;
 
-        // Move along x-axis
+        // Move horizontally first
         for (int i = 0; i < Mathf.Abs(dx); i++)
         {
             x += stepX;
             Vector3Int nextPosition = new Vector3Int(x, y, start.z);
+            // Each move changes either x or y by 1, never both - no diagonals
             if (IsMoveValid(nextPosition))
             {
                 path.Add(nextPosition);
@@ -232,15 +228,16 @@ public class AIMove : MonoBehaviour
             }
             else
             {
-                break; // Stop if movement is blocked
+                break;
             }
         }
 
-        // Move along y-axis
+        // Then move vertically
         for (int i = 0; i < Mathf.Abs(dy); i++)
         {
             y += stepY;
             Vector3Int nextPosition = new Vector3Int(x, y, start.z);
+            // Still only changing one coordinate at a time
             if (IsMoveValid(nextPosition))
             {
                 path.Add(nextPosition);
@@ -258,39 +255,23 @@ public class AIMove : MonoBehaviour
         return path;
     }
 
-    /// <summary>
-    /// Moves the AI along the specified path.
-    /// </summary>
-    /// <param name="path">List of tile positions to move through.</param>
     private IEnumerator MoveAlongPath(List<Vector3Int> path)
     {
         foreach (Vector3Int targetPosition in path)
         {
-            // Remove current position from occupied positions
             OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
-
-            // Move to the target tile
             yield return StartCoroutine(MoveToTile(targetPosition));
-
-            // Update current tile position
             CurrentTilePosition = targetPosition;
             OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
 
-            // Check for collision with hook
             if (Hook.Instance != null && Hook.Instance.GetHookPosition() == CurrentTilePosition)
             {
-                // Handle collision with hook
                 Hook.Instance.HandleEnemyHit(gameObject);
-                yield break; // Stop further movement
+                yield break;
             }
         }
     }
 
-    /// <summary>
-    /// Moves the AI to a specific tile position over time.
-    /// </summary>
-    /// <param name="targetTilePosition">Target tile position.</param>
-    /// <returns>Coroutine.</returns>
     private IEnumerator MoveToTile(Vector3Int targetTilePosition)
     {
         Vector3 targetWorldPosition = tilemap.GetCellCenterWorld(targetTilePosition);
@@ -299,19 +280,20 @@ public class AIMove : MonoBehaviour
 
         Vector3 startPosition = transform.position;
 
-        //FOR FLIPPING WHEN THEY WALK LEFT OR RIGHT
+        // Flip sprite if moving horizontally
         if (targetTilePosition.x < CurrentTilePosition.x)
         {
-            // Moving left
             spriteRenderer.flipX = true;
         }
         else if (targetTilePosition.x > CurrentTilePosition.x)
         {
-            // Moving right
             spriteRenderer.flipX = false;
         }
 
         stateMachine.ChangeState(WrestlerState.Move);
+
+        // The movement is always from one tile to an orthogonally adjacent tile,
+        // so no diagonal lines will be drawn by Lerp.
         while (elapsedTime < travelTime)
         {
             transform.position = Vector3.Lerp(startPosition, targetWorldPosition, elapsedTime / travelTime);
@@ -321,14 +303,8 @@ public class AIMove : MonoBehaviour
         transform.position = targetWorldPosition;
     }
 
-    /// <summary>
-    /// Checks if moving to the target tile is valid.
-    /// </summary>
-    /// <param name="targetTilePosition">Target tile position.</param>
-    /// <returns>True if move is valid; otherwise, false.</returns>
     private bool IsMoveValid(Vector3Int targetTilePosition)
     {
-        // Check if the tile is valid, not occupied by another unit, and within bounds
         if (!tilemap.HasTile(targetTilePosition)
             || OccupiedTilesManager.Instance.IsTileOccupied(targetTilePosition)
             || IsPlayerOrEnemyAtPosition(targetTilePosition))
@@ -338,14 +314,8 @@ public class AIMove : MonoBehaviour
         return true;
     }
 
-    /// <summary>
-    /// Checks if the player or any other enemy is at the given tile position.
-    /// </summary>
-    /// <param name="position">Tile position to check.</param>
-    /// <returns>True if player or enemy is present; otherwise, false.</returns>
     private bool IsPlayerOrEnemyAtPosition(Vector3Int position)
     {
-        // Check if the player or an enemy is at the given position
         Vector3 worldPosition = tilemap.GetCellCenterWorld(position);
         Collider2D[] colliders = Physics2D.OverlapPointAll(worldPosition);
 
@@ -359,21 +329,8 @@ public class AIMove : MonoBehaviour
         return false;
     }
 
-    /// <summary>
-    /// Sets the number of turns the AI will follow the player.
-    /// </summary>
-    /// <param name="turns">Number of turns to follow the player.</param>
-    public void SetFollowPlayerTurns(int turns)
-    {
-        followPlayerTurns = turns;
-    }
-
-    /// <summary>
-    /// Resets the AI by stopping all coroutines.
-    /// </summary>
     public void ResetAI()
     {
-        StopAllCoroutines(); // Stop any active coroutines
-        // Reset other state variables if necessary
+        StopAllCoroutines();
     }
 }

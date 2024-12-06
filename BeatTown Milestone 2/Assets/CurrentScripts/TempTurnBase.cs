@@ -18,7 +18,6 @@ public class TempTurnBase : MonoBehaviour
     private bool isProcessingTurn = false;
     public GameObject RealMoveHighlight;
 
-
     void Start()
     {
         if (playerMove == null)
@@ -34,6 +33,12 @@ public class TempTurnBase : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                // Decrease followPlayerTurns for all AI when space is pressed
+                foreach (AIMove ai in aiUnits)
+                {
+                    ai.DecrementFollowTurns();
+                }
+
                 EndPlayerTurn();
             }
         }
@@ -57,9 +62,6 @@ public class TempTurnBase : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Ends the player's turn and initiates the AI's turn.
-    /// </summary>
     public void EndPlayerTurn()
     {
         if (!isPlayerTurn || isProcessingTurn) return;
@@ -71,18 +73,13 @@ public class TempTurnBase : MonoBehaviour
         StartCoroutine(AITurnRoutine());
     }
 
-    /// <summary>
-    /// Coroutine that handles the AI's turn.
-    /// </summary>
     private IEnumerator AITurnRoutine()
     {
         isProcessingTurn = true;
         Debug.Log("AI's turn has started.");
 
-        // Make a copy of the list to avoid modification during iteration
         List<AIMove> aiUnitsCopy = new List<AIMove>(aiUnits);
 
-        // Process each AIMove unit
         foreach (AIMove ai in aiUnitsCopy)
         {
             if (ai != null && ai.gameObject.activeInHierarchy)
@@ -99,14 +96,12 @@ public class TempTurnBase : MonoBehaviour
                     Debug.LogWarning($"AI {ai.gameObject.name} lacks AIFatigue component.");
                 }
 
-                yield return new WaitForSeconds(0.2f); // Delay between AI units
+                yield return new WaitForSeconds(0.2f);
             }
         }
 
-        // Make a copy of the Barra list to avoid modification during iteration
         List<BarraMove> barraUnitsCopy = new List<BarraMove>(barraUnits);
 
-        // Process each BarraMove unit
         foreach (BarraMove barra in barraUnitsCopy)
         {
             if (barra != null && barra.gameObject.activeInHierarchy)
@@ -123,7 +118,7 @@ public class TempTurnBase : MonoBehaviour
                     Debug.LogWarning($"Barra {barra.gameObject.name} lacks BarraFatigue component.");
                 }
 
-                yield return new WaitForSeconds(1f); // Delay between Barra units
+                yield return new WaitForSeconds(1f);
             }
         }
 
@@ -132,17 +127,10 @@ public class TempTurnBase : MonoBehaviour
         isProcessingTurn = false;
     }
 
-
-    /// <summary>
-    /// Initiates the player's turn.
-    /// </summary>
     public void StartPlayerTurn()
     {
         isPlayerTurn = true;
-
-        // Reset player's fatigue to maxFatigue at the start of the turn
         playerFatigue.RecoverFatigue();
-
         Debug.Log("Player's turn has started. Fatigue reset to maximum.");
     }
 

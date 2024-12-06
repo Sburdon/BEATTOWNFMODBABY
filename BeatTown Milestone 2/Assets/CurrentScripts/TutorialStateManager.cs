@@ -1,3 +1,4 @@
+/*
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,7 +22,7 @@ public enum TutorialState
 // Use a custom script to manage the timing (e.g., unscaled time) and track the current tutorial state.
 
 
-public class TutorialStateManager : MonoBehaviour
+/public class TutorialStateManager : MonoBehaviour
 {
       public static TutorialState currentTutorialState = TutorialState.None;
 
@@ -63,7 +64,7 @@ public class TutorialStateManager : MonoBehaviour
     }
 
 
-
+*/
 
     // Old way of pausing the game
     /*public void TogglePause()
@@ -123,4 +124,4 @@ public class TutorialStateManager : MonoBehaviour
         // Disable all other UI buttons except the tutorial box next button
     }*/
     
-}
+
