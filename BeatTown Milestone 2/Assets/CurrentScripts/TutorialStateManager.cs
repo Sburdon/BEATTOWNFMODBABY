@@ -66,39 +66,6 @@ public enum TutorialState
 
 */
 
-    // Old way of pausing the game
-    /*public void TogglePause()
-    {
-        if (Time.timeScale > 0)
-        {
-            // Pausing
-            previousTimeScale = Time.timeScale; 
-            Time.timeScale = 0f;
-            isPaused = true;
-        }
-        else
-        {
-            // Unpausing
-            Time.timeScale = previousTimeScale;
-            isPaused = false;
-        }
-    }
-
-    public void SetPause(bool shouldPause)
-    {
-        if (shouldPause)
-        {
-            previousTimeScale = Time.timeScale;
-            Time.timeScale = 0f;
-            isPaused = true;
-        }
-        else
-        {
-            Time.timeScale = previousTimeScale;
-            isPaused = false;
-        }
-    }*/
-
 
     // Example of a function that shows a tutorial that doesn't pause the game (for tutorial boxes like NPCs yelling at you)
     // "brah rah rah ah rah"
@@ -114,8 +81,8 @@ public enum TutorialState
 
     // Example of paused tutorial (for tutorial boxes that pause the game like in beginning of game)
     // Can use CanvasGroup to block all raycast on buttons and other UI elements. 
-    // Alternatively, disable the Unity EventSystem temporarily or create a UI Blocker that captures all inputs and does nothing.
-    // To handle advancing texts, you can use a coroutine or event trigger to advance the text when the player clicks the 'next' button.
+    // Alternatively, disable the C# EventSystem temporarily or create a UI Blocker that captures all inputs and does nothing.
+    // To handle advancing texts, can use a coroutine or event trigger to advance the text when the player clicks the 'next' button.
 
     /*public void ShowPausingTutorial()
     {
