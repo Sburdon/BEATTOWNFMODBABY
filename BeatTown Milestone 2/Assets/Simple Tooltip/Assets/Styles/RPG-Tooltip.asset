@@ -29,9 +29,9 @@ MonoBehaviour:
     italic: 0
     underline: 0
     strikethrough: 0
-  - tag: '@'
-    color: {r: 1, g: 1, b: 1, a: 0}
-    bold: 1
+  - tag: '@@'
+    color: {r: 0, g: 1, b: 1, a: 1}
+    bold: 0
     italic: 0
     underline: 0
     strikethrough: 0

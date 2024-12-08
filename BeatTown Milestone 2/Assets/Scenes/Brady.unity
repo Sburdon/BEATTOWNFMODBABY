@@ -358,9 +358,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Move       COST: 1 Fatigue
-
-'
+  m_text: 'Move       '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -387,10 +385,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 35
+  m_fontSize: 72
   m_fontSizeBase: 35
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -2861,9 +2859,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simpleTooltipStyle: {fileID: 11400000, guid: a104288cd74ebc84d80f27ae9b51d26c, type: 2}
-  infoLeft: "\t\t\tDescription:\nPunch an enemy for **1 DMG\n_Taunt `the enemy for
-    **1 Round\n\n_Taunt: `Taunted enemies chase the unit that taunted them and **attacks
-    `if available"
+  infoLeft: "\t\tDescription:\n\nDeal **1 DMG`to an enemy adjacent to you\n_Taunt
+    `the enemy for **1 Round\n\n_Taunt: `Taunted enemies chase the unit that taunted
+    them and **attacks `if available"
   infoRight: '##Cost: 1 Fatigue
 
 '
@@ -3249,9 +3247,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Swing       COST: 2 Fatigue
-
-'
+  m_text: "Swing     \n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3278,10 +3274,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 35
+  m_fontSize: 72
   m_fontSizeBase: 35
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -5569,7 +5565,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Push       COST: 1 Fatgiue'
+  m_text: 'Push   '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5596,10 +5592,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 35
+  m_fontSize: 72
   m_fontSizeBase: 35
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -6074,6 +6070,7 @@ GameObject:
   - component: {fileID: 921817472}
   - component: {fileID: 921817471}
   - component: {fileID: 921817470}
+  - component: {fileID: 921817473}
   m_Layer: 5
   m_Name: Push Button
   m_TagString: Untagged
@@ -6243,6 +6240,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 921817468}
   m_CullTransparentMesh: 1
+--- !u!114 &921817473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 921817468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99634edca86565b4a96a0b7b261787f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  simpleTooltipStyle: {fileID: 11400000, guid: a104288cd74ebc84d80f27ae9b51d26c, type: 2}
+  infoLeft: "\t\tDescription:\r\n\r\nPush an enemy until they hit an obstacle/wrestler\r"
+  infoRight: "\r##Cost: 1 Fatigue\r\n"
 --- !u!1 &942247301
 GameObject:
   m_ObjectHideFlags: 0
@@ -7500,7 +7512,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1143006666}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7508,7 +7520,7 @@ RectTransform:
   - {fileID: 1387196678}
   - {fileID: 461468339}
   - {fileID: 72683507}
-  m_Father: {fileID: 1724349334}
+  m_Father: {fileID: 1534741308}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8385,9 +8397,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Punch       COST: 1 Fatigue
-
-'
+  m_text: "Punch     \n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8414,10 +8424,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 35
+  m_fontSize: 72
   m_fontSizeBase: 35
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -10739,6 +10749,7 @@ RectTransform:
   - {fileID: 1453310172}
   - {fileID: 687946948}
   - {fileID: 1923928273}
+  - {fileID: 1143006667}
   m_Father: {fileID: 1724349334}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -11524,8 +11535,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simpleTooltipStyle: {fileID: 11400000, guid: a104288cd74ebc84d80f27ae9b51d26c, type: 2}
-  infoLeft: "Move: \n\t\tDescription: \nMove an enemy"
-  infoRight: 'Fatigue: 1'
+  infoLeft: "\t\tDescription:\n\nMove the player two spaces\r"
+  infoRight: '##Cost: 1 Fatigue'
 --- !u!1 &1635339906
 GameObject:
   m_ObjectHideFlags: 0
@@ -11760,7 +11771,6 @@ RectTransform:
   - {fileID: 1806489238}
   - {fileID: 767964094}
   - {fileID: 1534741308}
-  - {fileID: 1143006667}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -12276,6 +12286,7 @@ GameObject:
   - component: {fileID: 1766274697}
   - component: {fileID: 1766274696}
   - component: {fileID: 1766274695}
+  - component: {fileID: 1766274698}
   m_Layer: 5
   m_Name: Swing Button
   m_TagString: Untagged
@@ -12445,6 +12456,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1766274693}
   m_CullTransparentMesh: 1
+--- !u!114 &1766274698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766274693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99634edca86565b4a96a0b7b261787f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  simpleTooltipStyle: {fileID: 11400000, guid: a104288cd74ebc84d80f27ae9b51d26c, type: 2}
+  infoLeft: "\t\tDescription:\n\nMove another wrestler to an adjacent space to you"
+  infoRight: "\t##Cost: 2 Fatigue\n"
 --- !u!1 &1784561172
 GameObject:
   m_ObjectHideFlags: 0
