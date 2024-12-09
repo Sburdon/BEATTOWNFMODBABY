@@ -13,6 +13,7 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance Swing;
     FMOD.Studio.EventInstance Push;
     FMOD.Studio.EventInstance PlayerHurt;
+    FMOD.Studio.EventInstance Caught;
 
     int Cuda_Count = 0;
 
@@ -30,7 +31,7 @@ public class All_SFX : MonoBehaviour
         Swing = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Carry");
         Push = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Push");
         PlayerHurt = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Player Hurt");
-
+        Caught = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Caught");
     }
 
     public void UpdateCudaCount()
@@ -83,6 +84,14 @@ public class All_SFX : MonoBehaviour
     {
         PlayerHurt.start();
     }
+
+
+    public void PlayCaught()
+    {
+        PlayCaught().start;
+    }
+
+
 
 
 

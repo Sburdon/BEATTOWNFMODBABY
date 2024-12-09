@@ -186,6 +186,8 @@ public class Hook : MonoBehaviour
             enemyHealth.TakeDamage(enemyHealth.maxHealth);
         }
 
+        All_SFX.PlayCaught();
+
         Destroy(enemy);
 
         RespawnHook();
