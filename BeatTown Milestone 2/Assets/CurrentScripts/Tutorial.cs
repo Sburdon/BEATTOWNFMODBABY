@@ -8,6 +8,7 @@ public class Tutorial : MonoBehaviour
      Animator animtut;
     public Button[] barray;
     private bool isPaused = false;
+    private bool isTutorialActive = true;
 
     private void Start()
     {
@@ -46,45 +47,54 @@ public class Tutorial : MonoBehaviour
         }
         Time.timeScale =1f ;
         isPaused = false;
+        isTutorialActive = false; // mark tutorial as finished
     }
 
     private void Update() // any key advances tutorial
     {
-        // Check if any key is pressed to advance the tutorial (exclude ESC key to avoid conflict with pause)
-        if (Input.anyKeyDown && !Input.GetKeyDown(KeyCode.Escape))
+        if (isTutorialActive)
         {
-            ChangeAnimation();
+            // Check if any key is pressed to advance the tutorial (exclude ESC key to avoid conflict with pause)
+            if (Input.anyKeyDown)
+            {
+                ChangeAnimation();
+            }
         }
-
-        // Check for ESC key to toggle pause state
-        PauseGameOnESC();
+        else
+        {
+            // Check for ESC key to toggle pause state
+            PauseGameOnESC();
+        }
     }
 
     public void PauseGameOnESC()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (!isPaused)
+            if (!isTutorialActive) // only allow pausing/resuming if tutorial is completed
             {
-                // Disable button interactions before freezing
-                foreach (Button b in barray)
+                if (!isPaused)
                 {
-                    b.interactable = false;
+                    // Disable button interactions before freezing
+                    foreach (Button b in barray)
+                    {
+                        b.interactable = false;
+                    }
+                    // pause the game
+                    Time.timeScale = 0f;
+                    isPaused = true;
                 }
-                // pause the game
-                Time.timeScale = 0f;
-                isPaused = true;
-            }
-            else
-            {
-                // enable button interactions 
-                foreach (Button b in barray)
+                else
                 {
-                    b.interactable = true;
+                    // enable button interactions 
+                    foreach (Button b in barray)
+                    {
+                        b.interactable = true;
+                    }
+                    // resume the game
+                    Time.timeScale = 1f;
+                    isPaused = false;
                 }
-                // resume the game
-                Time.timeScale = 1f;
-                isPaused = false;
             }
         }
     }
