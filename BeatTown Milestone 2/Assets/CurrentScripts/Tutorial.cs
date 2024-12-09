@@ -7,6 +7,8 @@ public class Tutorial : MonoBehaviour
 {
      Animator animtut;
     public Button[] barray;
+    private bool isPaused = false;
+    private bool isTutorialActive = true;
 
     private void Start()
     {
@@ -29,6 +31,7 @@ public class Tutorial : MonoBehaviour
 
         // Pause the game
         Time.timeScale = 0f;
+        isPaused = true;
     }
 
     void ChangeAnimation() // to cycle through tutorial animations
@@ -43,15 +46,56 @@ public class Tutorial : MonoBehaviour
             b.interactable = true;
         }
         Time.timeScale =1f ;
+        isPaused = false;
+        isTutorialActive = false; // mark tutorial as finished
     }
 
     private void Update() // any key advances tutorial
     {
-        if (Input.anyKeyDown)
+        if (isTutorialActive)
         {
-            ChangeAnimation();
+            // Check if any key is pressed to advance the tutorial (exclude ESC key to avoid conflict with pause)
+            if (Input.anyKeyDown)
+            {
+                ChangeAnimation();
+            }
+        }
+        else
+        {
+            // Check for ESC key to toggle pause state
+            PauseGameOnESC();
         }
     }
 
-
+    public void PauseGameOnESC()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!isTutorialActive) // only allow pausing/resuming if tutorial is completed
+            {
+                if (!isPaused)
+                {
+                    // Disable button interactions before freezing
+                    foreach (Button b in barray)
+                    {
+                        b.interactable = false;
+                    }
+                    // pause the game
+                    Time.timeScale = 0f;
+                    isPaused = true;
+                }
+                else
+                {
+                    // enable button interactions 
+                    foreach (Button b in barray)
+                    {
+                        b.interactable = true;
+                    }
+                    // resume the game
+                    Time.timeScale = 1f;
+                    isPaused = false;
+                }
+            }
+        }
+    }
 }
