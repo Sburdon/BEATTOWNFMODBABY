@@ -7,6 +7,7 @@ public class Tutorial : MonoBehaviour
 {
      Animator animtut;
     public Button[] barray;
+    private bool isPaused = false;
 
     private void Start()
     {
@@ -29,6 +30,7 @@ public class Tutorial : MonoBehaviour
 
         // Pause the game
         Time.timeScale = 0f;
+        isPaused = true;
     }
 
     void ChangeAnimation() // to cycle through tutorial animations
@@ -43,15 +45,47 @@ public class Tutorial : MonoBehaviour
             b.interactable = true;
         }
         Time.timeScale =1f ;
+        isPaused = false;
     }
 
     private void Update() // any key advances tutorial
     {
-        if (Input.anyKeyDown)
+        // Check if any key is pressed to advance the tutorial (exclude ESC key to avoid conflict with pause)
+        if (Input.anyKeyDown && !Input.GetKeyDown(KeyCode.Escape))
         {
             ChangeAnimation();
         }
+
+        // Check for ESC key to toggle pause state
+        PauseGameOnESC();
     }
 
-
+    public void PauseGameOnESC()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!isPaused)
+            {
+                // Disable button interactions before freezing
+                foreach (Button b in barray)
+                {
+                    b.interactable = false;
+                }
+                // pause the game
+                Time.timeScale = 0f;
+                isPaused = true;
+            }
+            else
+            {
+                // enable button interactions 
+                foreach (Button b in barray)
+                {
+                    b.interactable = true;
+                }
+                // resume the game
+                Time.timeScale = 1f;
+                isPaused = false;
+            }
+        }
+    }
 }
