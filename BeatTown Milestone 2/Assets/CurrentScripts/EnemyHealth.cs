@@ -22,6 +22,9 @@ public class EnemyHealth : MonoBehaviour
     // Reference to RespawnManager
     private RespawnManager respawnManager;
 
+    // Reference to TempTurnBase to remove from turn order
+    private TempTurnBase tempTurnBase;
+
     // Public property to access current health
     public int CurrentHealth
     {
@@ -49,6 +52,13 @@ public class EnemyHealth : MonoBehaviour
         if (respawnManager == null)
         {
             Debug.LogError("RespawnManager instance not found in the scene.");
+        }
+
+        // Get reference to TempTurnBase
+        tempTurnBase = FindObjectOfType<TempTurnBase>();
+        if (tempTurnBase == null)
+        {
+            Debug.LogError("TempTurnBase instance not found in the scene.");
         }
     }
 
@@ -98,11 +108,29 @@ public class EnemyHealth : MonoBehaviour
             aiMove.enabled = false;
         }
 
+        // Remove enemy from the turn order system (TempTurnBase)
+        if (tempTurnBase != null)
+        {
+            // Check if this enemy is an AI unit
+            if (TryGetComponent(out AIMove aiMoveComponent))
+            {
+                tempTurnBase.RemoveAIUnit(aiMoveComponent);  // Remove from AI units list
+            }
+            // Check if this enemy is a Barra unit
+            else if (TryGetComponent(out BarraMove barraMoveComponent))
+            {
+                tempTurnBase.RemoveBarraUnit(barraMoveComponent);  // Remove from Barra units list
+            }
+        }
+
         // Notify RespawnManager
         if (respawnManager != null)
         {
             respawnManager.EnemyDied(gameObject);
         }
+
+        // Optionally, disable the enemy game object (instead of destroying it)
+        gameObject.SetActive(false);  // Deactivates the enemy object
     }
 
     private void UpdateHealthBar()
@@ -111,12 +139,12 @@ public class EnemyHealth : MonoBehaviour
         {
             // Calculate the health percentage and apply it only to the X scale, while keeping fixed Y scale
             float healthPercentage = (float)CurrentHealth / maxHealth;
-            fullHealthBar.transform.localScale = new Vector3(healthPercentage * 0.3f, 0.05f, 1); // Adjusted to use .5f and .09f for full bar
+            fullHealthBar.transform.localScale = new Vector3(healthPercentage * 0.3f, 0.05f, 1); // Adjusted to use .3f and .05f for full bar
         }
 
         if (emptyHealthBar != null)
         {
-            // Keep the empty health bar at a fixed scale of 0.5 on X and 0.09 on Y
+            // Keep the empty health bar at a fixed scale of 0.3 on X and 0.05 on Y
             emptyHealthBar.transform.localScale = new Vector3(0.3f, 0.05f, 1);
         }
     }

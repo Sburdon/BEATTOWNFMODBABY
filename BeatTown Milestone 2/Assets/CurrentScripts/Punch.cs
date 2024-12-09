@@ -7,12 +7,12 @@ public class Punch : MonoBehaviour
     public GameObject SwingHighlight;
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
-    public Tilemap tilemap; 
-    private Transform selectedEnemy; 
-    private bool isPunching; 
-    private PlayerMove playerMove; 
-    private PlayerFatigue playerFatigue; 
-    public int punchDamage = 1; 
+    public Tilemap tilemap;
+    private Transform selectedEnemy;
+    private bool isPunching;
+    private PlayerMove playerMove;
+    private PlayerFatigue playerFatigue;
+    public int punchDamage = 1;
     private StateMachine stateMachine;
     public All_SFX All_SFX;
     public GameObject RealMoveHighlight;
@@ -52,7 +52,7 @@ public class Punch : MonoBehaviour
             moveMentHighlight.SetActive(false);
             isPunching = true;
             selectedEnemy = null;
-            playerMove.CurrentAction = ActionType.Punch; 
+            playerMove.CurrentAction = ActionType.Punch;
             Debug.Log("Punch button pressed, current action: " + playerMove.CurrentAction);
             CheckEnemiesInRange();
         }
@@ -64,9 +64,9 @@ public class Punch : MonoBehaviour
 
     public void CancelPunch()
     {
-        isPunching = false; 
-        selectedEnemy = null; 
-        playerMove.CurrentAction = ActionType.None; 
+        isPunching = false;
+        selectedEnemy = null;
+        playerMove.CurrentAction = ActionType.None;
         Debug.Log("Punch action canceled.");
     }
 
@@ -84,7 +84,8 @@ public class Punch : MonoBehaviour
 
                 if (IsWithinPunchRange(playerPosition, enemyPosition))
                 {
-                    selectedEnemy = hit.collider.transform; 
+                    selectedEnemy = hit.collider.transform;
+                    FlipPlayerIfNeeded(enemyPosition); // Flip player before punching
                     Debug.Log($"Selected enemy for punch: {selectedEnemy.name}");
                 }
                 else
@@ -102,7 +103,7 @@ public class Punch : MonoBehaviour
             EnemyHealth enemyScript = selectedEnemy.GetComponent<EnemyHealth>();
             if (enemyScript != null)
             {
-                enemyScript.TakeDamage(punchDamage); 
+                enemyScript.TakeDamage(punchDamage);
                 Debug.Log($"{selectedEnemy.name} has been punched and took {punchDamage} damage!");
                 All_SFX.PlayFishSlap();
                 stateMachine.ChangeState(WrestlerState.Punch);
@@ -123,8 +124,8 @@ public class Punch : MonoBehaviour
 
             PPShighlight.SetActive(false);
             isPunching = false;
-            selectedEnemy = null; 
-            playerMove.CurrentAction = ActionType.None; 
+            selectedEnemy = null;
+            playerMove.CurrentAction = ActionType.None;
         }
         else
         {
@@ -147,8 +148,29 @@ public class Punch : MonoBehaviour
             if (IsWithinPunchRange(playerCurrentPosition, enemyPosition))
             {
                 Debug.Log($"{enemy.name} is within punch range!");
-                break; 
+                break;
             }
         }
+    }
+
+    private void FlipPlayerIfNeeded(Vector3Int enemyPosition)
+    {
+        Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
+
+        if (enemyPosition.x < playerPosition.x && transform.localScale.x > 0) // Enemy is to the left
+        {
+            FlipPlayer();
+        }
+        else if (enemyPosition.x > playerPosition.x && transform.localScale.x < 0) // Enemy is to the right
+        {
+            FlipPlayer();
+        }
+    }
+
+    private void FlipPlayer()
+    {
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1; // Flip the player horizontally
+        transform.localScale = localScale;
     }
 }

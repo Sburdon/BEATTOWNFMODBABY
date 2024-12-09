@@ -127,6 +127,9 @@ public class Swing : MonoBehaviour
                 Debug.Log($"Selected enemy for swing: {targetToSwing.name}");
                 PPShighlight.SetActive(false);
                 SwingHighlight.SetActive(true);
+
+                // Flip the player based on enemy's position
+                FlipPlayerIfNeeded(targetPosition);
             }
             else
             {
@@ -234,6 +237,27 @@ public class Swing : MonoBehaviour
         targetToSwing = null;
         Debug.Log("Swing action canceled.");
     }
+    private void FlipPlayerIfNeeded(Vector3Int enemyPosition)
+    {
+        Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
+
+        if (enemyPosition.x < playerPosition.x && transform.localScale.x > 0) // Enemy is to the left
+        {
+            FlipPlayer();
+        }
+        else if (enemyPosition.x > playerPosition.x && transform.localScale.x < 0) // Enemy is to the right
+        {
+            FlipPlayer();
+        }
+    }
+
+    private void FlipPlayer()
+    {
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1; // Flip the player horizontally
+        transform.localScale = localScale;
+    }
+
 }
 
 // Utility Class for AI-related Functions
@@ -258,4 +282,5 @@ public static class AIUtils
 
         return hasTile && !isOccupied;
     }
+
 }

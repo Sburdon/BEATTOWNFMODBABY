@@ -246,14 +246,7 @@ public class Push : MonoBehaviour
         {
             FlipPlayer();
         }
-        else if (direction == Vector3Int.up && transform.localScale.y < 0)
-        {
-            FlipPlayer();
-        }
-        else if (direction == Vector3Int.down && transform.localScale.y > 0)
-        {
-            FlipPlayer();
-        }
+     
     }
 
     // Function to flip the player sprite
@@ -261,7 +254,6 @@ public class Push : MonoBehaviour
     {
         Vector3 localScale = transform.localScale;
         localScale.x *= -1; // Flip the player horizontally
-        localScale.y *= -1; // Flip the player vertically (if needed)
         transform.localScale = localScale;
     }
 }
