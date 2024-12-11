@@ -366,8 +366,7 @@ public class PlayerMove : MonoBehaviour
 
     public void RefreshSpaceCount()
     {
-        remainingMoves = maxMoves;
-        canMove = true;
+        remainingMoves = 0; // Reset remaining moves to 0 at the start of a new turn 
         hasFatigueBeenDeductedForMove = false;
         UpdateMoveImages();
         Debug.Log("Movement reset for the next turn.");

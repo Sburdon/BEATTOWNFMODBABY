@@ -90,10 +90,10 @@ public class RespawnManager : MonoBehaviour
     }
 
 
-        /// <summary>
-        /// Called when an enemy dies. Determines if the enemy should respawn.
-        /// </summary>
-        public void EnemyDied(GameObject enemy)
+    /// <summary>
+    /// Called when an enemy dies. Determines if the enemy should respawn.
+    /// </summary>
+    public void EnemyDied(GameObject enemy)
     {
         if (enemy == null)
         {
@@ -117,7 +117,7 @@ public class RespawnManager : MonoBehaviour
     /// <summary>
     /// Coroutine to handle respawning of regular enemies after a delay.
     /// </summary>
-    private IEnumerator RespawnCoroutine()
+    public IEnumerator RespawnCoroutine()
     {
         yield return new WaitForSeconds(respawnDelay);
         SpawnEnemy();
@@ -205,6 +205,6 @@ public class RespawnManager : MonoBehaviour
         }
 
         Debug.Log("RespawnManager: Spawned a new Barra at " + spawnTile);
-        
+
     }
 }

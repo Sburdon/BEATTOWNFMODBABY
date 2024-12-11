@@ -88,7 +88,7 @@ public class All_SFX : MonoBehaviour
 
     public void PlayCaught()
     {
-        PlayCaught().start;
+        Caught.start();
     }
 
 

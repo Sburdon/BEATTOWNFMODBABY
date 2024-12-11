@@ -28,6 +28,7 @@ public class TempTurnBase : MonoBehaviour
     [Header("Player Components")]
     public PlayerMove playerMove;
     public PlayerFatigue playerFatigue;
+    private RespawnManager respawnManager;
 
     private bool isPlayerTurn = true;
     private bool isProcessingTurn = false;
@@ -43,6 +44,11 @@ public class TempTurnBase : MonoBehaviour
         if (playerFatigue == null)
             playerFatigue = FindObjectOfType<PlayerFatigue>();
 
+        respawnManager = RespawnManager.Instance;
+        if (respawnManager == null)
+        {
+            Debug.LogError("RespawnManager instance not found in the scene.");
+        }
         UpdateTurnOrderUI();
     }
 
@@ -120,6 +126,8 @@ public class TempTurnBase : MonoBehaviour
                     Debug.LogWarning($"AI {ai.gameObject.name} lacks AIFatigue component.");
                 }
 
+                // Reset the collider after AI unit's turn
+                ResetCollider(ai.gameObject);
                 yield return new WaitForSeconds(0.2f);
             }
         }
@@ -145,19 +153,33 @@ public class TempTurnBase : MonoBehaviour
                     Debug.LogWarning($"Barra {barra.gameObject.name} lacks BarraFatigue component.");
                 }
 
+                // Reset the collider after Barra unit's turn
+                ResetCollider(barra.gameObject);
                 yield return new WaitForSeconds(1f);
             }
         }
 
         Debug.Log("AI's turn has ended. Starting player's turn.");
+        //respawnManager.StartCoroutine(respawnManager.RespawnCoroutine());
         StartPlayerTurn();
         isProcessingTurn = false;
+    }
+
+    private void ResetCollider(GameObject unit)
+    {
+        Collider2D collider = unit.GetComponent<Collider2D>();
+        if (collider != null)
+        {
+            collider.enabled = false;
+            collider.enabled = true; // Reset the collider by disabling and re-enabling
+        }
     }
 
     public void StartPlayerTurn()
     {
         isPlayerTurn = true;
         playerFatigue.RecoverFatigue();
+        playerMove.RefreshSpaceCount();
         Debug.Log("Player's turn has started. Fatigue reset to maximum.");
         currentUnitIndex = -1; // Reset the index for next rotation
         UpdateTurnOrderUI();
@@ -168,6 +190,9 @@ public class TempTurnBase : MonoBehaviour
         if (aiMove != null && !aiUnits.Contains(aiMove))
         {
             aiUnits.Add(aiMove);
+            // Reset the collider of the AI unit
+            ResetCollider(aiMove.gameObject);
+
             Debug.Log($"TempTurnBase: Added AIMove {aiMove.gameObject.name} to the turn system.");
             UpdateTurnOrderUI();
         }
@@ -182,6 +207,9 @@ public class TempTurnBase : MonoBehaviour
         if (barraMove != null && !barraUnits.Contains(barraMove))
         {
             barraUnits.Add(barraMove);
+            // Reset the collider of the Barra unit
+            ResetCollider(barraMove.gameObject);
+
             Debug.Log($"TempTurnBase: Added Barra {barraMove.gameObject.name} to the turn system.");
             UpdateTurnOrderUI();
         }

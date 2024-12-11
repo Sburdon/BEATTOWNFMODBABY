@@ -116,6 +116,12 @@ public class Swing : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
+        // Debug logs to check collider state
+        if (hit.collider != null)
+        {
+            Debug.Log($"Hit object: {hit.collider.name} with tag: {hit.collider.tag}, Collider enabled: {hit.collider.enabled}");
+        }
+
         if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra")))
         {
             Vector3Int targetPosition = tilemap.WorldToCell(hit.collider.transform.position);

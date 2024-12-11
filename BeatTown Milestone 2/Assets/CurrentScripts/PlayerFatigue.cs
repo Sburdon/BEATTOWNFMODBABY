@@ -35,6 +35,7 @@ public class PlayerFatigue : MonoBehaviour
 
     public void RecoverFatigue()
     {
+
         currentFatigue = maxFatigue; // Recover fatigue
         UpdateFatigueBar(); // Update the fatigue bar UI
        
