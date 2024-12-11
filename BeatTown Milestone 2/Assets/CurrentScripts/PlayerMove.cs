@@ -6,6 +6,8 @@ using static StateMachine;
 
 public class PlayerMove : MonoBehaviour
 {
+    private TempTurnBase tempTurnBase;
+
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
     public Tilemap tilemap; // Reference to the Tilemap
@@ -45,6 +47,7 @@ public class PlayerMove : MonoBehaviour
         swingScript = GetComponent<Swing>(); // Get reference to Swing script
         playerFatigue = GetComponent<PlayerFatigue>(); // Get reference to PlayerFatigue script
         stateMachine = GetComponent<StateMachine>();
+        tempTurnBase = FindObjectOfType<TempTurnBase>();
 
         // Register the player with the OccupiedTilesManager
         OccupiedTilesManager.Instance.RegisterPlayer(this);
@@ -231,6 +234,7 @@ public class PlayerMove : MonoBehaviour
     {
         
             Debug.Log("Move button pressed.");
+            tempTurnBase.ResetAllColliders();
             SwingHighlight.SetActive(false);
             RealMoveHighlight.SetActive(false);
             PPShighlight.SetActive(false);

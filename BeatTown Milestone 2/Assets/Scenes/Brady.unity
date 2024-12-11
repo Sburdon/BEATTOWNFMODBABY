@@ -14540,6 +14540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e688630716e12eb48b845928b9dcc9bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tempTurnBase: {fileID: 0}
   SwingHighlight: {fileID: 1959559090}
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}
@@ -14561,6 +14562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8c7fe7bd39c4ad408e76c85e1dd6d63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tempTurnBase: {fileID: 0}
   SwingHighlight: {fileID: 1959559090}
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}
@@ -14637,6 +14639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a74b0e6d8199b8c4ba137cbac3b945c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tempTurnBase: {fileID: 0}
   SwingHighlight: {fileID: 1959559090}
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}

@@ -6,6 +6,7 @@ using static StateMachine;
 
 public class Push : MonoBehaviour
 {
+    public TempTurnBase tempTurnBase;
     public GameObject SwingHighlight;
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
@@ -24,7 +25,10 @@ public class Push : MonoBehaviour
         playerMove = GetComponent<PlayerMove>();
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
+        tempTurnBase = FindObjectOfType<TempTurnBase>();
+
     }
+
 
     public void SetHookReference(Hook hookInstance)
     {
@@ -57,6 +61,7 @@ public class Push : MonoBehaviour
 
     public void OnPushButtonPressed()
     {
+        tempTurnBase.ResetAllColliders();
         if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
         {
             RealMoveHighlight.SetActive(false);

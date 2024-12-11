@@ -4,6 +4,7 @@ using static StateMachine;
 
 public class Punch : MonoBehaviour
 {
+    public TempTurnBase tempTurnBase;
     public GameObject SwingHighlight;
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
@@ -22,7 +23,10 @@ public class Punch : MonoBehaviour
         playerMove = GetComponent<PlayerMove>();
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
+        tempTurnBase = FindObjectOfType<TempTurnBase>();
+
     }
+
 
     void Update()
     {
@@ -46,6 +50,8 @@ public class Punch : MonoBehaviour
     {
         if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
         {
+            tempTurnBase.ResetAllColliders();
+
             RealMoveHighlight.SetActive(false);
             SwingHighlight.SetActive(false);
             PPShighlight.SetActive(true);

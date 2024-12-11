@@ -54,16 +54,27 @@ public class TempTurnBase : MonoBehaviour
 
     void Update()
     {
-        if (isPlayerTurn && !isProcessingTurn)
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                // End player turn and start AI turn
-                EndPlayerTurn();
-            }
+            ResetAllColliders();
         }
     }
+    public void ResetAllColliders()
+    {
+        // Find all GameObjects with the "Enemy" or "Barra" tag
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject[] barras = GameObject.FindGameObjectsWithTag("Barra");
 
+        foreach (GameObject enemy in enemies)
+        {
+            ResetCollider(enemy);
+        }
+
+        foreach (GameObject barra in barras)
+        {
+            ResetCollider(barra);
+        }
+    }
     public void RemoveAIUnit(AIMove aiMove)
     {
         if (aiMove != null && aiUnits.Contains(aiMove))
@@ -127,7 +138,7 @@ public class TempTurnBase : MonoBehaviour
                 }
 
                 // Reset the collider after AI unit's turn
-                ResetCollider(ai.gameObject);
+                ResetAllColliders();
                 yield return new WaitForSeconds(0.2f);
             }
         }
@@ -154,7 +165,7 @@ public class TempTurnBase : MonoBehaviour
                 }
 
                 // Reset the collider after Barra unit's turn
-                ResetCollider(barra.gameObject);
+                ResetAllColliders();
                 yield return new WaitForSeconds(1f);
             }
         }
@@ -162,6 +173,7 @@ public class TempTurnBase : MonoBehaviour
         Debug.Log("AI's turn has ended. Starting player's turn.");
         //respawnManager.StartCoroutine(respawnManager.RespawnCoroutine());
         StartPlayerTurn();
+        ResetAllColliders();
         isProcessingTurn = false;
     }
 
@@ -178,6 +190,7 @@ public class TempTurnBase : MonoBehaviour
     public void StartPlayerTurn()
     {
         isPlayerTurn = true;
+        ResetAllColliders();
         playerFatigue.RecoverFatigue();
         playerMove.RefreshSpaceCount();
         Debug.Log("Player's turn has started. Fatigue reset to maximum.");
@@ -191,7 +204,7 @@ public class TempTurnBase : MonoBehaviour
         {
             aiUnits.Add(aiMove);
             // Reset the collider of the AI unit
-            ResetCollider(aiMove.gameObject);
+            ResetAllColliders();
 
             Debug.Log($"TempTurnBase: Added AIMove {aiMove.gameObject.name} to the turn system.");
             UpdateTurnOrderUI();
@@ -208,7 +221,7 @@ public class TempTurnBase : MonoBehaviour
         {
             barraUnits.Add(barraMove);
             // Reset the collider of the Barra unit
-            ResetCollider(barraMove.gameObject);
+            ResetAllColliders();
 
             Debug.Log($"TempTurnBase: Added Barra {barraMove.gameObject.name} to the turn system.");
             UpdateTurnOrderUI();
