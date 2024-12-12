@@ -211,7 +211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de5eef5ed30cbd941ad40f7c174f57a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1
+  moveSpeed: 2.4
   moveDistance: 2
   tilemap: {fileID: 0}
   playerMove: {fileID: 0}

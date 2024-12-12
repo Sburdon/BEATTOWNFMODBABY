@@ -34,17 +34,36 @@ public class Punch : MonoBehaviour
         {
             if (isPunching)
             {
-                if (selectedEnemy != null)
                 {
-                    TryPunchEnemy();
-                }
-                else
-                {
-                    SelectEnemy();
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+                    if (hit.collider != null)
+                    {
+                        if (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra"))
+                        {
+                            Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
+                            Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
+
+                            if (IsWithinPunchRange(playerPosition, enemyPosition))
+                            {
+                                selectedEnemy = hit.collider.transform;
+                                FlipPlayerIfNeeded(enemyPosition); // Flip player before punching
+                                Debug.Log($"Selected enemy for punch: {selectedEnemy.name}");
+                                TryPunchEnemy();
+                                
+                            }
+                            else
+                                {
+                                    Debug.Log("Selected enemy is out of punch range.");
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
+    
 
     public void OnPunchButtonPressed()
     {
@@ -76,31 +95,31 @@ public class Punch : MonoBehaviour
         Debug.Log("Punch action canceled.");
     }
 
-    void SelectEnemy()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+    //void SelectEnemy()
+    //{
+    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //    RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        if (hit.collider != null)
-        {
-            if (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra"))
-            {
-                Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
-                Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
+    //    if (hit.collider != null)
+    //    {
+    //        if (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra"))
+    //        {
+    //            Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
+    //            Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
 
-                if (IsWithinPunchRange(playerPosition, enemyPosition))
-                {
-                    selectedEnemy = hit.collider.transform;
-                    FlipPlayerIfNeeded(enemyPosition); // Flip player before punching
-                    Debug.Log($"Selected enemy for punch: {selectedEnemy.name}");
-                }
-                else
-                {
-                    Debug.Log("Selected enemy is out of punch range.");
-                }
-            }
-        }
-    }
+    //            if (IsWithinPunchRange(playerPosition, enemyPosition))
+    //            {
+    //                selectedEnemy = hit.collider.transform;
+    //                FlipPlayerIfNeeded(enemyPosition); // Flip player before punching
+    //                Debug.Log($"Selected enemy for punch: {selectedEnemy.name}");
+    //            }
+    //            else
+    //            {
+    //                Debug.Log("Selected enemy is out of punch range.");
+    //            }
+    //        }
+    //    }
+    //}
 
     void TryPunchEnemy()
     {
