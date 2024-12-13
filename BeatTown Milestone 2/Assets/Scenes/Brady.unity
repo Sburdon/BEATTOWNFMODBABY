@@ -2726,9 +2726,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simpleTooltipStyle: {fileID: 11400000, guid: a104288cd74ebc84d80f27ae9b51d26c, type: 2}
-  infoLeft: "\t\tDescription:\n\nDeal **1 DMG`to an enemy adjacent to you\n_Taunt
-    `the enemy for **1 Round\n\n_Taunt: `Taunted enemies chase the unit that taunted
-    them and **attacks `if available"
+  infoLeft: 'PUNCH
+
+    Description:
+
+    Deal **1 DMG`to an enemy adjacent to you
+
+    _Taunt
+    `the enemy for **1 Round
+
+
+    _Taunt: `Taunted enemies chase the unit that taunted
+    them and **attacks `if available'
   infoRight: '##Cost: 1 Fatigue
 
 '
@@ -5937,7 +5946,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simpleTooltipStyle: {fileID: 11400000, guid: a104288cd74ebc84d80f27ae9b51d26c, type: 2}
-  infoLeft: "\t\tDescription:\r\n\r\nPush an enemy until they hit an obstacle/wrestler\r"
+  infoLeft: "PUSH\r\n\rDescription:\nPush an enemy until they hit an obstacle/wrestler\r"
   infoRight: "\r##Cost: 1 Fatigue\r\n"
 --- !u!1 &942247301
 GameObject:
@@ -9868,7 +9877,7 @@ GameObject:
   - component: {fileID: 1481735402}
   - component: {fileID: 1481735403}
   m_Layer: 0
-  m_Name: image
+  m_Name: TurnOrderBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11422,7 +11431,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simpleTooltipStyle: {fileID: 11400000, guid: a104288cd74ebc84d80f27ae9b51d26c, type: 2}
-  infoLeft: "\t\tDescription:\n\nMove the player two spaces\r"
+  infoLeft: "MOVE     \nDescription:\nMove the player two spaces\r"
   infoRight: '##Cost: 1 Fatigue'
 --- !u!1 &1635339906
 GameObject:
@@ -12360,7 +12369,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simpleTooltipStyle: {fileID: 11400000, guid: a104288cd74ebc84d80f27ae9b51d26c, type: 2}
-  infoLeft: "\t\tDescription:\n\nMove another wrestler to an adjacent space to you"
+  infoLeft: 'SWING
+
+    Description:
+
+    Move another wrestler to an adjacent space
+    to you'
   infoRight: "\t##Cost: 2 Fatigue\n"
 --- !u!1 &1784561172
 GameObject:
