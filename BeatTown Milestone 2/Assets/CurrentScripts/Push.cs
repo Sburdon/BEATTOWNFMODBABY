@@ -42,20 +42,57 @@ public class Push : MonoBehaviour
         {
             if (isPushing && playerFatigue.currentFatigue > 0)
             {
+                SelectTarget();
                 if (selectedTarget != null)
                 {
-                    TryPushTarget();
+                    Vector3Int playerPosition = playerMove.CurrentTilePosition;
+                    Vector3Int targetPosition = tilemap.WorldToCell(selectedTarget.position);
+
+                    Vector3Int direction = Vector3Int.zero;
+
+                    if (playerPosition.x < targetPosition.x)
+                        direction = Vector3Int.right;
+                    else if (playerPosition.x > targetPosition.x)
+                        direction = Vector3Int.left;
+                    else if (playerPosition.y < targetPosition.y)
+                        direction = Vector3Int.up;
+                    else if (playerPosition.y > targetPosition.y)
+                        direction = Vector3Int.down;
+
+                    // Flip the player if they are not facing the correct direction
+                    FlipPlayerIfNeeded(direction);
+
+                    Vector3Int furthestTile = FindFurthestTile(targetPosition, direction);
+
+                    if (furthestTile != targetPosition)
+                    {
+                        OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetPosition);
+
+                        StartCoroutine(PushTargetToTile(selectedTarget, furthestTile));
+                        playerFatigue.UseFatigue(playerFatigue.pushFatigueCost);
+                        selectedTarget = null;
+                        isPushing = false;
+                    }
+                    else
+                    {
+                        Debug.Log("No valid tile to push to.");
+                    }
                 }
                 else
                 {
-                    SelectTarget();
+                    Debug.Log("No target selected for push.");
                 }
+                All_SFX.PlayPush();
             }
-            else if (isPushing && playerFatigue.currentFatigue <= 0)
+            else
             {
-                Debug.Log("No Fatigue to Push");
-                CancelPush();
+                SelectTarget();
             }
+        }
+        else if (isPushing && playerFatigue.currentFatigue <= 0)
+        {
+            Debug.Log("No Fatigue to Push");
+            CancelPush();
         }
     }
 
