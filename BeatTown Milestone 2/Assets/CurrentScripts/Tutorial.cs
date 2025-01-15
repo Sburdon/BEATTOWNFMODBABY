@@ -20,19 +20,84 @@ public class Tutorial : MonoBehaviour
             b.interactable = false;
         }
 
+        // Make unwanted sprites invisible
+        HideSprites();
+
         // start coroutiune to delay setting Time.timescale to 0
         StartCoroutine(DelayPause());
     }
 
+
+
     private IEnumerator DelayPause()
     {
         // Wait for 2 seconds (or any desired duration)
-        yield return new WaitForSecondsRealtime(2f); // Use WaitForSecondsRealtime to account for timeScale being 1
+        yield return new WaitForFixedUpdate(); // Use WaitForSecondsRealtime to account for timeScale being 1
 
         // Pause the game
         Time.timeScale = 0f;
         isPaused = true;
     }
+
+    private void HideSprites()
+    {
+        // Hide Hook sprite
+        Hook hook = FindObjectOfType<Hook>();
+        if (hook != null)
+        {
+            SpriteRenderer hookRenderer = hook.GetComponent<SpriteRenderer>();
+            if (hookRenderer != null)
+            {
+                hookRenderer.enabled = false; // Make the sprite invisible
+            }
+        }
+
+        // Hide Enemy health bar sprites
+        EnemyHealth[] enemies = FindObjectsOfType<EnemyHealth>();
+        foreach (EnemyHealth enemy in enemies)
+        {
+            Transform healthBar = enemy.transform.Find("HP_Square"); // Replace with actual child name
+            if (healthBar != null)
+            {
+                SpriteRenderer healthBarRenderer = healthBar.GetComponent<SpriteRenderer>();
+                if (healthBarRenderer != null)
+                {
+                    healthBarRenderer.enabled = false; // Make the sprite invisible
+                }
+            }
+        }
+    }
+
+
+    private void ShowSprites()
+    {
+        // Show Hook sprite
+        Hook hook = FindObjectOfType<Hook>();
+        if (hook != null)
+        {
+            SpriteRenderer hookRenderer = hook.GetComponent<SpriteRenderer>();
+            if (hookRenderer != null)
+            {
+                hookRenderer.enabled = true; // Make the sprite visible again
+            }
+        }
+
+        // Show Enemy health bar sprites
+        EnemyHealth[] enemies = FindObjectsOfType<EnemyHealth>();
+        foreach (EnemyHealth enemy in enemies)
+        {
+            Transform healthBar = enemy.transform.Find("HealthBar"); // Replace with actual child name
+            if (healthBar != null)
+            {
+                SpriteRenderer healthBarRenderer = healthBar.GetComponent<SpriteRenderer>();
+                if (healthBarRenderer != null)
+                {
+                    healthBarRenderer.enabled = true; // Make the sprite visible again
+                }
+            }
+        }
+    }
+
 
     void ChangeAnimation() // to cycle through tutorial animations
     {
@@ -48,6 +113,9 @@ public class Tutorial : MonoBehaviour
         Time.timeScale =1f ;
         isPaused = false;
         isTutorialActive = false; // mark tutorial as finished
+
+        // re enable sprites after tutorial
+        ShowSprites();
     }
 
     private void Update() // any key advances tutorial
