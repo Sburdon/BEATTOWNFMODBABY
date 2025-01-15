@@ -17,6 +17,7 @@ public class RespawnManager : MonoBehaviour
 
     [Header("Spawn Settings")]
     public int initialEnemiesToSpawn = 2;
+    public int minEnemies = 2;
     public float respawnDelay = 5f;
 
     private List<GameObject> enemies = new List<GameObject>();
@@ -83,9 +84,26 @@ public class RespawnManager : MonoBehaviour
             OccupiedTilesManager.Instance.AddOccupiedPosition(hookSpawnTile);
         }
 
-        for (int i = 0; i < initialEnemiesToSpawn; i++)
+        //for (int i = 0; i < initialEnemiesToSpawn; i++)
+        //{
+        //    SpawnEnemy();
+        //}
+
+        MaintainEnemyCount();
+    }
+    void Update()
+    {
+        
+    }
+
+    public void MaintainEnemyCount()
+    {
+        int currentEnemyCount = enemies.FindAll(enemy => enemy != null && !enemy.CompareTag("Barra")).Count;
+
+        while (currentEnemyCount < minEnemies)
         {
             SpawnEnemy();
+            currentEnemyCount++;
         }
     }
 
@@ -108,10 +126,10 @@ public class RespawnManager : MonoBehaviour
 
         Destroy(enemy);
 
-        if (!enemy.CompareTag("Barra"))
-        {
-            StartCoroutine(RespawnCoroutine());
-        }
+        //if (!enemy.CompareTag("Barra"))
+        //{
+        //    StartCoroutine(RespawnCoroutine());
+        //}
     }
 
     /// <summary>

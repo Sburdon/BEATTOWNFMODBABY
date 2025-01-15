@@ -29,10 +29,13 @@ public class TempTurnBase : MonoBehaviour
     public PlayerMove playerMove;
     public PlayerFatigue playerFatigue;
     private RespawnManager respawnManager;
+    private Hook hook;
 
     private bool isPlayerTurn = true;
     private bool isProcessingTurn = false;
     public GameObject RealMoveHighlight;
+
+    public All_SFX All_SFX;
 
     private int currentUnitIndex = -1; // To track the current unit's index for turn-based rotation
 
@@ -44,7 +47,10 @@ public class TempTurnBase : MonoBehaviour
         if (playerFatigue == null)
             playerFatigue = FindObjectOfType<PlayerFatigue>();
 
+        hook = Hook.Instance;
+
         respawnManager = RespawnManager.Instance;
+
         if (respawnManager == null)
         {
             Debug.LogError("RespawnManager instance not found in the scene.");
@@ -171,10 +177,17 @@ public class TempTurnBase : MonoBehaviour
         }
 
         Debug.Log("AI's turn has ended. Starting player's turn.");
-        //respawnManager.StartCoroutine(respawnManager.RespawnCoroutine());
+        respawnManager.MaintainEnemyCount();
+        ResetAllColliders();
         StartPlayerTurn();
         ResetAllColliders();
         isProcessingTurn = false;
+        if (hook.hookKillCount == 2 || hook.hookKillCount == 4)
+        {
+            RespawnManager.Instance.SpawnBarra();
+            All_SFX.PlayCUANG();
+        }
+       
     }
 
     private void ResetCollider(GameObject unit)

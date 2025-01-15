@@ -192,12 +192,6 @@ public class Hook : MonoBehaviour
 
         RespawnHook();
 
-        // Adjusted Barra spawning to occur at 2 kills and again at 4 kills
-        if (hookKillCount == 2 || hookKillCount == 4)
-        {
-            RespawnManager.Instance.SpawnBarra();
-            All_SFX.PlayCUANG();
-        }
 
         if (hookKillCount >= 6)
         {
