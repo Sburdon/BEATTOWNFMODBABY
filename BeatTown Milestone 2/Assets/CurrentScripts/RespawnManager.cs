@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
@@ -15,10 +13,20 @@ public class RespawnManager : MonoBehaviour
     public GameObject barraAIPrefab;
     public GameObject hookPrefab;
 
+    [Header("Electrician Prefab & Spawn Settings")]
+    [Tooltip("Prefab for your Electrician (with ElectricianMove script).")]
+    public GameObject electricianPrefab;
+
+    [Tooltip("Tile where the Electrician will spawn. E.g., (1, 3, 0).")]
+    public Vector3Int electricianSpawnTile;
+
     [Header("Spawn Settings")]
     public int initialEnemiesToSpawn = 2;
     public int minEnemies = 2;
     public float respawnDelay = 5f;
+
+    [Header("Hooks to Spawn")]
+    public int hooksToSpawn = 1;
 
     private List<GameObject> enemies = new List<GameObject>();
     private TempTurnBase tempTurnBase;
@@ -59,12 +67,94 @@ public class RespawnManager : MonoBehaviour
             return;
         }
 
-        // Spawn the hook and assign it to other scripts
-        if (hookPrefab != null)
+        // 1) Spawn the Electrician immediately on scene start (if prefab is assigned)
+        SpawnElectrician();
+
+        // 2) Spawn the desired number of hooks (if any)
+        SpawnHooks(hooksToSpawn);
+
+        // 3) (Optional) Spawn initial enemies
+        // for (int i = 0; i < initialEnemiesToSpawn; i++)
+        // {
+        //     SpawnEnemy();
+        // }
+
+        // Keep the enemy count as desired
+        MaintainEnemyCount();
+    }
+
+    void Update()
+    {
+        // ...
+    }
+
+    /// <summary>
+    /// Spawns a single Electrician at 'electricianSpawnTile' and adds to the turn order.
+    /// </summary>
+    private void SpawnElectrician()
+    {
+        // If you don't have an Electrician prefab assigned, just skip.
+        if (electricianPrefab == null)
+        {
+            Debug.LogWarning("RespawnManager: No Electrician prefab assigned. Skipping spawn.");
+            return;
+        }
+
+        // If the tile is occupied, skip spawning.
+        if (OccupiedTilesManager.Instance.IsTileOccupied(electricianSpawnTile))
+        {
+            Debug.LogWarning($"RespawnManager: Electrician spawn tile {electricianSpawnTile} is occupied!");
+            return;
+        }
+
+        // Convert tile to world position
+        Vector3 spawnWorldPos = tilemap.GetCellCenterWorld(electricianSpawnTile);
+
+        // Instantiate the Electrician
+        GameObject electricianGO = Instantiate(electricianPrefab, spawnWorldPos, Quaternion.identity);
+
+        // Get the ElectricianMove script
+        ElectricianMove electricianMove = electricianGO.GetComponent<ElectricianMove>();
+        if (electricianMove != null)
+        {
+            // Assign references
+            electricianMove.tilemap = tilemap;
+            electricianMove.playerMove = playerMove;
+            electricianMove.CurrentTilePosition = electricianSpawnTile;
+
+            // Mark the tile as occupied
+            OccupiedTilesManager.Instance.AddOccupiedPosition(electricianSpawnTile);
+
+            // Add to the turn order (method from your updated TempTurnBase)
+            tempTurnBase.AddElectricianUnit(electricianMove);
+
+            Debug.Log($"RespawnManager: Spawned Electrician at {electricianSpawnTile}");
+        }
+        else
+        {
+            Debug.LogError("RespawnManager: Electrician prefab has no ElectricianMove component!");
+        }
+    }
+
+    /// <summary>
+    /// Spawns the specified number of hooks. Assigns the first hook
+    /// to Swing/Push if needed.
+    /// </summary>
+    private void SpawnHooks(int count)
+    {
+        if (hookPrefab == null)
+        {
+            Debug.LogError("RespawnManager: hookPrefab is not assigned.");
+            return;
+        }
+
+        for (int i = 0; i < count; i++)
         {
             Vector3Int hookSpawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
             Vector3 hookWorldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(hookSpawnTile);
+
             GameObject hookInstance = Instantiate(hookPrefab, hookWorldPosition, Quaternion.identity);
+            OccupiedTilesManager.Instance.AddOccupiedPosition(hookSpawnTile);
 
             Hook hookScript = hookInstance.GetComponent<Hook>();
             if (hookScript != null)
@@ -73,27 +163,21 @@ public class RespawnManager : MonoBehaviour
                 hookScript.player = playerMove;
                 hookScript.fishCountText = fishCountText;
             }
+            else
+            {
+                Debug.LogError("RespawnManager: Hook prefab missing Hook component!");
+            }
 
-            // Assign the hook reference to Swing and Push components
-            Swing swingScript = FindObjectOfType<Swing>();
-            Push pushScript = FindObjectOfType<Push>();
+            // Assign the first spawned Hook to Swing/Push
+            if (i == 0)
+            {
+                Swing swingScript = FindObjectOfType<Swing>();
+                Push pushScript = FindObjectOfType<Push>();
 
-            if (swingScript != null) swingScript.hook = hookScript;
-            if (pushScript != null) pushScript.hook = hookScript;
-
-            OccupiedTilesManager.Instance.AddOccupiedPosition(hookSpawnTile);
+                if (swingScript != null) swingScript.hook = hookScript;
+                if (pushScript != null) pushScript.hook = hookScript;
+            }
         }
-
-        //for (int i = 0; i < initialEnemiesToSpawn; i++)
-        //{
-        //    SpawnEnemy();
-        //}
-
-        MaintainEnemyCount();
-    }
-    void Update()
-    {
-        
     }
 
     public void MaintainEnemyCount()
@@ -106,7 +190,6 @@ public class RespawnManager : MonoBehaviour
             currentEnemyCount++;
         }
     }
-
 
     /// <summary>
     /// Called when an enemy dies. Determines if the enemy should respawn.
@@ -126,10 +209,11 @@ public class RespawnManager : MonoBehaviour
 
         Destroy(enemy);
 
-        //if (!enemy.CompareTag("Barra"))
-        //{
-        //    StartCoroutine(RespawnCoroutine());
-        //}
+        // If you want them to respawn after a delay, uncomment:
+        // if (!enemy.CompareTag("Barra"))
+        // {
+        //     StartCoroutine(RespawnCoroutine());
+        // }
     }
 
     /// <summary>
@@ -162,7 +246,6 @@ public class RespawnManager : MonoBehaviour
         Vector3Int playerTile = playerMove.CurrentTilePosition;
         Vector3Int spawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(playerTile);
 
-        // Ensure that a valid spawn tile is found and is unoccupied
         if (OccupiedTilesManager.Instance.IsTileOccupied(spawnTile))
         {
             Debug.LogWarning("RespawnManager: Spawn tile is occupied. Trying another position.");
@@ -183,7 +266,7 @@ public class RespawnManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("RespawnManager: Spawned enemy does not have an AIMove component.");
+            Debug.LogError("RespawnManager: Spawned enemy missing AIMove component.");
         }
     }
 
@@ -192,7 +275,7 @@ public class RespawnManager : MonoBehaviour
     /// </summary>
     public void SpawnBarra()
     {
-        if (barraAIPrefab == null) return; // Ensure prefab exists
+        if (barraAIPrefab == null) return;
 
         PlayerMove playerMove = FindObjectOfType<PlayerMove>();
         if (playerMove == null)
@@ -204,10 +287,9 @@ public class RespawnManager : MonoBehaviour
         Vector3Int playerTile = playerMove.CurrentTilePosition;
         Vector3Int spawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(playerTile);
 
-        // Ensure that a valid spawn tile is found and is unoccupied
         if (OccupiedTilesManager.Instance.IsTileOccupied(spawnTile))
         {
-            Debug.LogWarning("RespawnManager: Unable to spawn Barra due to no available positions.");
+            Debug.LogWarning("RespawnManager: No available spawn for Barra.");
             return;
         }
 
@@ -219,10 +301,9 @@ public class RespawnManager : MonoBehaviour
         {
             barraMove.CurrentTilePosition = spawnTile;
             OccupiedTilesManager.Instance.RegisterBarraMove(barraMove);
-            tempTurnBase.AddBarraUnit(barraMove); // Add to TempTurnBase for turn management
+            tempTurnBase.AddBarraUnit(barraMove);
         }
 
         Debug.Log("RespawnManager: Spawned a new Barra at " + spawnTile);
-
     }
 }

@@ -13,7 +13,11 @@ public class TempTurnBase : MonoBehaviour
     public Sprite enemyBlueSprite;
     public Sprite enemyRedSprite;
     public Sprite barraBlueSprite;
-    public Sprite barraRedSprite; // Blue picture for the active turn
+    public Sprite barraRedSprite; 
+   
+    [Header("Electrician Sprites (Optional)")]
+    public Sprite electricianBlueSprite;
+    public Sprite electricianRedSprite;
 
     public GameObject turnOrderPrefab; // Prefab for each turn order image
 
@@ -24,6 +28,9 @@ public class TempTurnBase : MonoBehaviour
     public GameObject moveMentHighlight;
     public List<AIMove> aiUnits = new List<AIMove>();
     public List<BarraMove> barraUnits = new List<BarraMove>();
+
+    [Header("Electrician Units")]
+    public List<ElectricianMove> electricianUnits = new List<ElectricianMove>();
 
     [Header("Player Components")]
     public PlayerMove playerMove;
@@ -47,14 +54,15 @@ public class TempTurnBase : MonoBehaviour
         if (playerFatigue == null)
             playerFatigue = FindObjectOfType<PlayerFatigue>();
 
+        // Hook might be null if there's no Hook in the scene
         hook = Hook.Instance;
 
         respawnManager = RespawnManager.Instance;
-
         if (respawnManager == null)
         {
             Debug.LogError("RespawnManager instance not found in the scene.");
         }
+
         UpdateTurnOrderUI();
     }
 
@@ -65,6 +73,10 @@ public class TempTurnBase : MonoBehaviour
             ResetAllColliders();
         }
     }
+
+    // --------------------------------------------------------
+    // Colliders / Removal
+    // --------------------------------------------------------
     public void ResetAllColliders()
     {
         // Find all GameObjects with the "Enemy" or "Barra" tag
@@ -81,6 +93,17 @@ public class TempTurnBase : MonoBehaviour
             ResetCollider(barra);
         }
     }
+
+    private void ResetCollider(GameObject unit)
+    {
+        Collider2D collider = unit.GetComponent<Collider2D>();
+        if (collider != null)
+        {
+            collider.enabled = false;
+            collider.enabled = true; // Reset the collider by disabling and re-enabling
+        }
+    }
+
     public void RemoveAIUnit(AIMove aiMove)
     {
         if (aiMove != null && aiUnits.Contains(aiMove))
@@ -101,6 +124,37 @@ public class TempTurnBase : MonoBehaviour
         }
     }
 
+    // --------------------------------------------------------
+    // Adding Electricians
+    // --------------------------------------------------------
+    public void AddElectricianUnit(ElectricianMove electrician)
+    {
+        if (electrician != null && !electricianUnits.Contains(electrician))
+        {
+            electricianUnits.Add(electrician);
+            ResetAllColliders();
+            Debug.Log($"TempTurnBase: Added Electrician {electrician.gameObject.name} to the turn system.");
+            UpdateTurnOrderUI();
+        }
+        else
+        {
+            Debug.LogWarning("TempTurnBase: Attempted to add a null or already added Electrician.");
+        }
+    }
+
+    public void RemoveElectricianUnit(ElectricianMove electrician)
+    {
+        if (electrician != null && electricianUnits.Contains(electrician))
+        {
+            electricianUnits.Remove(electrician);
+            UpdateTurnOrderUI();
+            Debug.Log($"TempTurnBase: Removed Electrician {electrician.gameObject.name} from the turn system.");
+        }
+    }
+
+    // --------------------------------------------------------
+    // Turn Logic
+    // --------------------------------------------------------
     public void EndPlayerTurn()
     {
         if (!isPlayerTurn || isProcessingTurn) return;
@@ -118,21 +172,21 @@ public class TempTurnBase : MonoBehaviour
         isProcessingTurn = true;
         Debug.Log("AI's turn has started.");
 
-        // Start with the AI/Barra units turn in order
+        // Make copies so if the lists change mid-turn, we won't skip or double-run any units
         List<AIMove> aiUnitsCopy = new List<AIMove>(aiUnits);
         List<BarraMove> barraUnitsCopy = new List<BarraMove>(barraUnits);
+        List<ElectricianMove> electricianUnitsCopy = new List<ElectricianMove>(electricianUnits);
 
-        // Go through AI Units first
-        foreach (AIMove ai in aiUnitsCopy)
+        // 1) Go through AI Units
+        for (int i = 0; i < aiUnitsCopy.Count; i++)
         {
+            AIMove ai = aiUnitsCopy[i];
             if (ai != null && ai.gameObject.activeInHierarchy)
             {
-                currentUnitIndex = aiUnits.IndexOf(ai); // Set the current unit's index
-
-                // Highlight current unit
+                currentUnitIndex = aiUnits.IndexOf(ai); // set current unit
                 UpdateTurnOrderUI();
-                AIFatigue aiFatigue = ai.GetComponent<AIFatigue>();
 
+                AIFatigue aiFatigue = ai.GetComponent<AIFatigue>();
                 if (aiFatigue != null)
                 {
                     Debug.Log($"AI {ai.gameObject.name} is taking its turn.");
@@ -143,23 +197,41 @@ public class TempTurnBase : MonoBehaviour
                     Debug.LogWarning($"AI {ai.gameObject.name} lacks AIFatigue component.");
                 }
 
-                // Reset the collider after AI unit's turn
                 ResetAllColliders();
                 yield return new WaitForSeconds(0.2f);
             }
         }
 
-        // Go through Barra Units
-        foreach (BarraMove barra in barraUnitsCopy)
+        // 2) Go through Electrician Units
+        for (int i = 0; i < electricianUnitsCopy.Count; i++)
         {
+            ElectricianMove electrician = electricianUnitsCopy[i];
+            if (electrician != null && electrician.gameObject.activeInHierarchy)
+            {
+                // The index for Electrician: after all AI
+                currentUnitIndex = aiUnits.Count + electricianUnits.IndexOf(electrician);
+                UpdateTurnOrderUI();
+
+                Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
+                // If you don't have a Fatigue script for Electricians, call MoveAction directly:
+                yield return StartCoroutine(electrician.MoveAction());
+
+                ResetAllColliders();
+                yield return new WaitForSeconds(0.2f);
+            }
+        }
+
+        // 3) Go through Barra Units
+        for (int i = 0; i < barraUnitsCopy.Count; i++)
+        {
+            BarraMove barra = barraUnitsCopy[i];
             if (barra != null && barra.gameObject.activeInHierarchy)
             {
-                currentUnitIndex = aiUnits.Count + barraUnits.IndexOf(barra); // Barra index after AI units
-
-                // Highlight current unit
+                // The index for Barra: after all AI and Electricians
+                currentUnitIndex = aiUnits.Count + electricianUnits.Count + barraUnits.IndexOf(barra);
                 UpdateTurnOrderUI();
-                BarraFatigue barraFatigue = barra.GetComponent<BarraFatigue>();
 
+                BarraFatigue barraFatigue = barra.GetComponent<BarraFatigue>();
                 if (barraFatigue != null)
                 {
                     Debug.Log($"Barra {barra.gameObject.name} is taking its turn.");
@@ -170,53 +242,60 @@ public class TempTurnBase : MonoBehaviour
                     Debug.LogWarning($"Barra {barra.gameObject.name} lacks BarraFatigue component.");
                 }
 
-                // Reset the collider after Barra unit's turn
                 ResetAllColliders();
                 yield return new WaitForSeconds(1f);
             }
         }
 
         Debug.Log("AI's turn has ended. Starting player's turn.");
-        respawnManager.MaintainEnemyCount();
+
+        // Safely check hook (in case there's no Hook in scene)
+        if (hook != null && (hook.hookKillCount == 2 || hook.hookKillCount == 4))
+        {
+            // Example: spawn a Barra if killCount hits 2 or 4
+            respawnManager.SpawnBarra();
+            All_SFX.PlayCUANG();
+        }
+
+        // Maintain enemies if needed
+        if (respawnManager != null)
+        {
+            respawnManager.MaintainEnemyCount();
+        }
+
         ResetAllColliders();
         StartPlayerTurn();
         ResetAllColliders();
-        isProcessingTurn = false;
-        if (hook.hookKillCount == 2 || hook.hookKillCount == 4)
-        {
-            RespawnManager.Instance.SpawnBarra();
-            All_SFX.PlayCUANG();
-        }
-       
-    }
 
-    private void ResetCollider(GameObject unit)
-    {
-        Collider2D collider = unit.GetComponent<Collider2D>();
-        if (collider != null)
-        {
-            collider.enabled = false;
-            collider.enabled = true; // Reset the collider by disabling and re-enabling
-        }
+        isProcessingTurn = false;
     }
 
     public void StartPlayerTurn()
     {
         isPlayerTurn = true;
         ResetAllColliders();
-        playerFatigue.RecoverFatigue();
-        playerMove.RefreshSpaceCount();
+        if (playerFatigue != null)
+        {
+            playerFatigue.RecoverFatigue();
+        }
+        if (playerMove != null)
+        {
+            playerMove.RefreshSpaceCount();
+        }
+
         Debug.Log("Player's turn has started. Fatigue reset to maximum.");
         currentUnitIndex = -1; // Reset the index for next rotation
         UpdateTurnOrderUI();
     }
 
+    // --------------------------------------------------------
+    // Adding Regular AI or Barra
+    // --------------------------------------------------------
     public void AddAIUnit(AIMove aiMove)
     {
         if (aiMove != null && !aiUnits.Contains(aiMove))
         {
             aiUnits.Add(aiMove);
-            // Reset the collider of the AI unit
             ResetAllColliders();
 
             Debug.Log($"TempTurnBase: Added AIMove {aiMove.gameObject.name} to the turn system.");
@@ -233,7 +312,6 @@ public class TempTurnBase : MonoBehaviour
         if (barraMove != null && !barraUnits.Contains(barraMove))
         {
             barraUnits.Add(barraMove);
-            // Reset the collider of the Barra unit
             ResetAllColliders();
 
             Debug.Log($"TempTurnBase: Added Barra {barraMove.gameObject.name} to the turn system.");
@@ -245,6 +323,9 @@ public class TempTurnBase : MonoBehaviour
         }
     }
 
+    // --------------------------------------------------------
+    // Turn Order UI
+    // --------------------------------------------------------
     private void UpdateTurnOrderUI()
     {
         // Clear existing icons
@@ -253,31 +334,63 @@ public class TempTurnBase : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        // Add player turn icon
+        // 1) Add player icon
         GameObject playerIcon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
-        UnityEngine.UI.Image playerImage = playerIcon.GetComponent<UnityEngine.UI.Image>();
+        Image playerImage = playerIcon.GetComponent<Image>();
         playerImage.sprite = isPlayerTurn ? playerBlueSprite : playerRedSprite;
         playerImage.preserveAspect = true;
 
-        // Add AI units' icons and highlight the current turn unit
-        foreach (AIMove ai in aiUnits)
+        // 2) Add AI icons
+        for (int i = 0; i < aiUnits.Count; i++)
         {
+            AIMove ai = aiUnits[i];
             GameObject aiIcon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
-            UnityEngine.UI.Image aiImage = aiIcon.GetComponent<UnityEngine.UI.Image>();
+            Image aiImage = aiIcon.GetComponent<Image>();
 
-            // Set the color based on whether it's this unit's turn
-            aiImage.sprite = (aiUnits.IndexOf(ai) == currentUnitIndex) ? enemyBlueSprite : enemyRedSprite;
+            // If it's the current unit's turn, use the "blue" version
+            if (i == currentUnitIndex)
+                aiImage.sprite = enemyBlueSprite;
+            else
+                aiImage.sprite = enemyRedSprite;
+
             aiImage.preserveAspect = true;
         }
 
-        // Add Barra units' icons and highlight the current turn unit
-        foreach (BarraMove barra in barraUnits)
+        // 3) Add Electrician icons
+        for (int i = 0; i < electricianUnits.Count; i++)
         {
-            GameObject barraIcon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
-            UnityEngine.UI.Image barraImage = barraIcon.GetComponent<UnityEngine.UI.Image>();
+            ElectricianMove electrician = electricianUnits[i];
+            GameObject elecIcon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
+            Image elecImage = elecIcon.GetComponent<Image>();
 
-            // Set the color based on whether it's this unit's turn
-            barraImage.sprite = (barraUnits.IndexOf(barra) + aiUnits.Count == currentUnitIndex) ? barraBlueSprite : barraRedSprite;
+            // If you assigned electricianBlueSprite/electricianRedSprite, use them.
+            // Otherwise, fall back to enemy sprites
+            Sprite blue = (electricianBlueSprite != null) ? electricianBlueSprite : enemyBlueSprite;
+            Sprite red  = (electricianRedSprite != null)  ? electricianRedSprite  : enemyRedSprite;
+
+            // The index for Electricians is "aiUnits.Count + i"
+            if ((aiUnits.Count + i) == currentUnitIndex)
+                elecImage.sprite = blue;
+            else
+                elecImage.sprite = red;
+
+            elecImage.preserveAspect = true;
+        }
+
+        // 4) Add Barra icons
+        for (int i = 0; i < barraUnits.Count; i++)
+        {
+            BarraMove barra = barraUnits[i];
+            GameObject barraIcon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
+            Image barraImage = barraIcon.GetComponent<Image>();
+
+            // The index for Barra is "aiUnits.Count + electricianUnits.Count + i"
+            int thisBarraIndex = aiUnits.Count + electricianUnits.Count + i;
+            if (thisBarraIndex == currentUnitIndex)
+                barraImage.sprite = barraBlueSprite;
+            else
+                barraImage.sprite = barraRedSprite;
+
             barraImage.preserveAspect = true;
         }
     }
