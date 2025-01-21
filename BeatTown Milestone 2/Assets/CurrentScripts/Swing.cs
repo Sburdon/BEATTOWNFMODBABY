@@ -18,6 +18,7 @@ public class Swing : MonoBehaviour
     private bool isSwingMode = false;
     private bool isSwinging = false;
     private PlayerFatigue playerFatigue;
+    private PlayerMove playerMove;
     public int swingFatigueCost = 2;
     private StateMachine stateMachine;
     public All_SFX All_SFX;
@@ -28,7 +29,7 @@ public class Swing : MonoBehaviour
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
         tempTurnBase = FindObjectOfType<TempTurnBase>();
-
+        playerMove = GetComponent<PlayerMove>();
     }
 
 
@@ -40,6 +41,10 @@ public class Swing : MonoBehaviour
 
     public void OnSwingButtonPressed()
     {
+        if (playerMove.pendingMovePurchase == true)
+        {
+            playerMove.ResetPendingMove();
+        }
         tempTurnBase.ResetAllColliders();
 
         if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost))

@@ -98,6 +98,10 @@ public class Push : MonoBehaviour
 
     public void OnPushButtonPressed()
     {
+        if (playerMove.pendingMovePurchase == true)
+        {
+            playerMove.ResetPendingMove();
+        }
         tempTurnBase.ResetAllColliders();
         if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
         {

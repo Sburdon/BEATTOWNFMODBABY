@@ -32,6 +32,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject oneMoveImage;   // Image for one move left
     public GameObject twoMoveImage;   // Image for both moves left
 
+    public bool pendingMovePurchase = false; // Flag for pending move purchase
     private void Awake()
     {
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
@@ -55,6 +56,8 @@ public class PlayerMove : MonoBehaviour
         All_SFX.PlayFishBattle();
         All_SFX.UpdateCudaCount();
     }
+
+ 
 
     void Update()
     {
@@ -100,11 +103,11 @@ public class PlayerMove : MonoBehaviour
 
                 if (moveAllowed)
                 {
-                    // Deduct fatigue if the move is allowed
-                    if (!hasFatigueBeenDeductedForMove && playerFatigue.CanPerformAction(moveFatigueCost))
+                    // Deduct fatigue if the move is allowed and pending purchase is true
+                    if (pendingMovePurchase)
                     {
                         playerFatigue.UseFatigue(moveFatigueCost);
-                        hasFatigueBeenDeductedForMove = true;
+                        pendingMovePurchase = false; // Reset the flag after deduction
                     }
                 }
                 else
@@ -118,6 +121,16 @@ public class PlayerMove : MonoBehaviour
             }
         }
     }
+    public void ResetPendingMove()
+    {
+        if (pendingMovePurchase == true)
+        {
+            pendingMovePurchase = false;
+            remainingMoves = 0;
+        }
+        UpdateMoveImages();
+    }
+
 
     // Helper method to check if a tile position is within the tilemap bounds
     private bool IsWithinTilemapBounds(Vector3Int position)
@@ -126,7 +139,7 @@ public class PlayerMove : MonoBehaviour
     }
 
 
-    private void UpdateMoveImages()
+    public void UpdateMoveImages()
     {
         noMoveImage.SetActive(remainingMoves == 0);
         oneMoveImage.SetActive(remainingMoves == 1);
@@ -232,56 +245,44 @@ public class PlayerMove : MonoBehaviour
 
     public void OnMoveButtonPressed()
     {
-        
-            Debug.Log("Move button pressed.");
-            tempTurnBase.ResetAllColliders();
-            SwingHighlight.SetActive(false);
-            RealMoveHighlight.SetActive(false);
-            PPShighlight.SetActive(false);
-            moveMentHighlight.SetActive(false);
+        Debug.Log("Move button pressed.");
+        tempTurnBase.ResetAllColliders();
+        SwingHighlight.SetActive(false);
+        RealMoveHighlight.SetActive(false);
+        PPShighlight.SetActive(false);
+        moveMentHighlight.SetActive(false);
 
-            if (swingScript != null && swingScript.IsSwinging())
-            {
-                swingScript.CancelSwing();
-            }
+        if (swingScript != null && swingScript.IsSwinging())
+        {
+            swingScript.CancelSwing();
+        }
 
-            // Check if the player has moves left
-            if (remainingMoves > 0)
+        // Check if the player has moves left
+        if (remainingMoves > 0)
+        {
+            canMove = true;
+            Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
+            currentAction = ActionType.Move;
+        }
+        else if (remainingMoves <= 0 && !pendingMovePurchase)
+        {
+            // Set pending move purchase if the player wants to gain more moves
+            if (playerFatigue.CanPerformAction(moveFatigueCost))
             {
+                remainingMoves = maxMoves;
+                pendingMovePurchase = true; // Indicate that moves are pending purchase
+                UpdateMoveImages();
+                Debug.Log("Pending move purchase. You now have " + remainingMoves + " moves available.");
                 canMove = true;
-                Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
-                currentAction = ActionType.Move;
             }
-            else if (remainingMoves <= 0 && !hasFatigueBeenDeductedForMove)
-            {
-                // Deduct fatigue if player wants to gain more moves
-                if (playerFatigue.CanPerformAction(moveFatigueCost))
-                {
-                    playerFatigue.UseFatigue(moveFatigueCost);
-                    remainingMoves = maxMoves;
-                    UpdateMoveImages();
-                    hasFatigueBeenDeductedForMove = true;
-
-                    Debug.Log("Fatigue used to gain more moves. You now have " + remainingMoves + " moves.");
-                    canMove = true;
-                }
-            }
-            else
-            {
-                canMove = false;
-                Debug.Log("Not enough fatigue to gain more moves.");
-            }
-            if (remainingMoves == 1)
-            {
-                moveMentHighlight.SetActive(true);
-                RealMoveHighlight.SetActive(false);
-            }
-            if (remainingMoves == 2)
-            {
-                moveMentHighlight.SetActive(false);
-                RealMoveHighlight.SetActive(true);
-            }
-        
+        }
+        else
+        {
+            canMove = false;
+            Debug.Log("Not enough fatigue to gain more moves.");
+        }
+        UpdateMoveImages();
+        UpdateMoveHighlights();
     }
 
     public void CancelMove()
@@ -393,8 +394,34 @@ public class PlayerMove : MonoBehaviour
         get { return currentAction; }
         set
         {
+            if (currentAction == ActionType.Move && value != ActionType.Move)
+            {
+                if (pendingMovePurchase)
+                {
+                    pendingMovePurchase = false; // Cancel pending purchase but retain moves
+                    Debug.Log("Pending move purchase canceled, but remaining moves retained.");
+                }
+            }
             currentAction = value;
             Debug.Log("Current Action set to: " + currentAction);
+        }
+    }
+    private void UpdateMoveHighlights()
+    {
+        if (remainingMoves == 1)
+        {
+            moveMentHighlight.SetActive(true);
+            RealMoveHighlight.SetActive(false);
+        }
+        else if (remainingMoves == 2)
+        {
+            moveMentHighlight.SetActive(false);
+            RealMoveHighlight.SetActive(true);
+        }
+        else
+        {
+            moveMentHighlight.SetActive(false);
+            RealMoveHighlight.SetActive(false);
         }
     }
 }
