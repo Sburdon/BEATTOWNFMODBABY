@@ -185,11 +185,12 @@ public class TempTurnBase : MonoBehaviour
         StartPlayerTurn();
         ResetAllColliders();
         isProcessingTurn = false;
-        if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) & spawnBarra == true)
+        if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra == true)
         {
             RespawnManager.Instance.SpawnBarra();
             spawnBarra = false;
-        }else if(hook.hookKillCount == 4 || hook.hookKillCount == 5 & spawnBarra1 == true)
+        }
+        if((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1 == true)
         {
             RespawnManager.Instance.SpawnBarra();
             spawnBarra1 = false;
