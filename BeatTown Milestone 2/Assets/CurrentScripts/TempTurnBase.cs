@@ -34,6 +34,8 @@ public class TempTurnBase : MonoBehaviour
     private bool isPlayerTurn = true;
     private bool isProcessingTurn = false;
     public GameObject RealMoveHighlight;
+    private int lastSpawnedAt = 0;
+    private bool spawnBarra = false;
 
     public All_SFX All_SFX;
 
@@ -60,6 +62,7 @@ public class TempTurnBase : MonoBehaviour
 
     void Update()
     {
+        CheckHookKillCount();
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetAllColliders();
@@ -182,12 +185,14 @@ public class TempTurnBase : MonoBehaviour
         StartPlayerTurn();
         ResetAllColliders();
         isProcessingTurn = false;
-        if (hook.hookKillCount == 2 || hook.hookKillCount == 4)
+        if (spawnBarra == true)
         {
             RespawnManager.Instance.SpawnBarra();
-            All_SFX.PlayCUANG();
+            spawnBarra = false;
         }
-       
+
+
+
     }
 
     private void ResetCollider(GameObject unit)
@@ -199,7 +204,7 @@ public class TempTurnBase : MonoBehaviour
             collider.enabled = true; // Reset the collider by disabling and re-enabling
         }
     }
-
+  
     public void StartPlayerTurn()
     {
         isPlayerTurn = true;
@@ -209,6 +214,16 @@ public class TempTurnBase : MonoBehaviour
         Debug.Log("Player's turn has started. Fatigue reset to maximum.");
         currentUnitIndex = -1; // Reset the index for next rotation
         UpdateTurnOrderUI();
+    }
+    void CheckHookKillCount()
+    {
+        // Check if the current kill count is a multiple of 2 and greater than the last milestone
+        if (hook.hookKillCount % 2 == 0 && hook.hookKillCount > lastSpawnedAt)
+        {
+            spawnBarra = true;
+            All_SFX.PlayCUANG();
+            lastSpawnedAt = hook.hookKillCount; // Update the last milestone to the current count
+        }
     }
 
     public void AddAIUnit(AIMove aiMove)
