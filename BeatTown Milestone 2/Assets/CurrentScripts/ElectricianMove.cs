@@ -1,89 +1,84 @@
-using UnityEngine;
-using UnityEngine.Tilemaps;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Tilemaps;
 
+/// <summary>
+/// An Electrician script that moves along a route (list of tile coords) orthogonally,
+/// without referencing AIMove. 
+/// </summary>
 public class ElectricianMove : MonoBehaviour
 {
-    [Header("Tile and Movement Settings")]
+    [Header("Tile & Movement")]
     public Tilemap tilemap;
-    public PlayerMove playerMove;  
-    public int moveDistance = 2;    // tiles per turn
-    public float moveSpeed = 1f;    // speed of movement per tile
+    public int moveDistance = 2;
+    public float moveSpeed = 1f; // tiles per second
 
-    [HideInInspector]
-    public Vector3Int CurrentTilePosition { get; set; }
-
-    [Header("Route Settings")]
-    [Tooltip("List of tile coordinates that the Electrician will visit in sequence.")]
+    [Header("Route")]
+    [Tooltip("The list of grid positions (x,y,z=0) the Electrician will visit in order.")]
     public List<Vector3Int> routePositions = new List<Vector3Int>();
     private int currentRouteIndex = 0;
 
+    [HideInInspector]
+    public Vector3Int CurrentTilePosition;
+
     private SpriteRenderer spriteRenderer;
 
-    void Awake()
+    private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-
         if (tilemap == null)
-        {
             tilemap = FindObjectOfType<Tilemap>();
-            if (tilemap == null)
-                Debug.LogError($"ElectricianMove: No Tilemap assigned and none found in scene.");
-        }
-
-        if (playerMove == null)
-        {
-            playerMove = FindObjectOfType<PlayerMove>();
-            // Not strictly required unless you need player reference
-        }
     }
 
-    void Start()
+    private void Start()
     {
-        // Initialize the CurrentTilePosition based on spawn position
         if (tilemap != null)
             CurrentTilePosition = tilemap.WorldToCell(transform.position);
 
-        // Instead of RegisterAI(this), use a new method that doesn’t require AIMove
+        // Optionally register Electrician in OccupiedTilesManager
         if (OccupiedTilesManager.Instance != null)
         {
-            // Mark this tile as occupied so no one else can spawn here
             OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
         }
     }
 
     /// <summary>
-    /// Called when it’s this Electrician’s turn. Moves it toward the next route position.
+    /// Called each time the Electrician takes a turn (e.g., from TempTurnBase).
+    /// Moves toward the next route position up to moveDistance steps orthogonally.
     /// </summary>
     public IEnumerator MoveAction()
     {
-        // If we've visited all route positions, do nothing.
         if (currentRouteIndex >= routePositions.Count)
-            yield break;
+        {
+            yield break; // done route
+        }
 
         Vector3Int destinationTile = routePositions[currentRouteIndex];
-        List<Vector3Int> path = CalculatePath(CurrentTilePosition, destinationTile);
+        // Build orth path from current tile to destination
+        List<Vector3Int> path = CalculateOrthPath(CurrentTilePosition, destinationTile);
 
-        // Only move up to 'moveDistance' steps
+        // Limit to moveDistance
         if (path.Count > moveDistance)
             path = path.GetRange(0, moveDistance);
 
-        // Move along the path
         if (path.Count > 0)
             yield return StartCoroutine(MoveAlongPath(path));
 
-        // If we fully arrived at the route position, move to next
+        // If we fully arrived at the route tile
         if (CurrentTilePosition == destinationTile)
             currentRouteIndex++;
 
         yield return null;
     }
 
-    private List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int end)
+    /// <summary>
+    /// Purely orth moves from start to end (x first, then y),
+    /// verifying each tile with IsMoveValid().
+    /// </summary>
+    private List<Vector3Int> CalculateOrthPath(Vector3Int start, Vector3Int end)
     {
         List<Vector3Int> path = new List<Vector3Int>();
-        if (tilemap == null) return path;
 
         int dx = end.x - start.x;
         int dy = end.y - start.y;
@@ -98,13 +93,8 @@ public class ElectricianMove : MonoBehaviour
         {
             x += stepX;
             Vector3Int nextPos = new Vector3Int(x, y, start.z);
-            if (IsMoveValid(nextPos))
-            {
-                path.Add(nextPos);
-                if (path.Count >= moveDistance)
-                    return path;
-            }
-            else break;
+            if (!IsMoveValid(nextPos)) break;
+            path.Add(nextPos);
         }
 
         // Then move vertically
@@ -112,70 +102,27 @@ public class ElectricianMove : MonoBehaviour
         {
             y += stepY;
             Vector3Int nextPos = new Vector3Int(x, y, start.z);
-            if (IsMoveValid(nextPos))
-            {
-                path.Add(nextPos);
-                if (path.Count >= moveDistance)
-                    return path;
-            }
-            else break;
+            if (!IsMoveValid(nextPos)) break;
+            path.Add(nextPos);
         }
 
         return path;
     }
 
-    private bool IsMoveValid(Vector3Int tilePos)
-    {
-        if (tilemap == null) return false;
-        // 1) The tile must exist in the tilemap
-        if (!tilemap.HasTile(tilePos))
-            return false;
-        // 2) The tile must not be already occupied
-        if (OccupiedTilesManager.Instance.IsTileOccupied(tilePos))
-            return false;
-        // 3) Can't overlap player or another enemy
-        return !IsPlayerOrEnemyAtPosition(tilePos);
-    }
-
-    private bool IsPlayerOrEnemyAtPosition(Vector3Int position)
-    {
-        Vector3 worldPos = tilemap.GetCellCenterWorld(position);
-        Collider2D[] colliders = Physics2D.OverlapPointAll(worldPos);
-
-        foreach (var col in colliders)
-        {
-            // You can exclude this Electrician itself if it’s tagged "Enemy"
-            if (col.CompareTag("Player") || 
-               (col.CompareTag("Enemy") && col.gameObject != this.gameObject))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private IEnumerator MoveAlongPath(List<Vector3Int> path)
     {
-        foreach (Vector3Int targetPos in path)
+        foreach (Vector3Int tile in path)
         {
-            // Un-occupy the old tile
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
+            // Unoccupy old tile
+            if (OccupiedTilesManager.Instance != null)
+                OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
 
-            // Move smoothly to the next tile
-            yield return StartCoroutine(MoveToTile(targetPos));
+            yield return StartCoroutine(MoveToTile(tile));
+            CurrentTilePosition = tile;
 
-            // Update new position
-            CurrentTilePosition = targetPos;
-
-            // Re-occupy the tile we just arrived at
-            OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
-
-            // Check if we landed on the Hook
-            if (Hook.Instance != null && Hook.Instance.GetHookPosition() == CurrentTilePosition)
-            {
-                Hook.Instance.HandleEnemyHit(gameObject);
-                yield break;
-            }
+            // Re-occupy new tile
+            if (OccupiedTilesManager.Instance != null)
+                OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
         }
     }
 
@@ -184,12 +131,12 @@ public class ElectricianMove : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 endPos = tilemap.GetCellCenterWorld(tile);
         float elapsed = 0f;
-        float travelTime = 1f / moveSpeed; // how many seconds per 1 tile move
+        float travelTime = 1f / moveSpeed;
 
-        // Flip sprite if moving horizontally
-        if (tile.x < CurrentTilePosition.x) 
+        // Sprite flip
+        if (tile.x < CurrentTilePosition.x)
             spriteRenderer.flipX = true;
-        else if (tile.x > CurrentTilePosition.x) 
+        else if (tile.x > CurrentTilePosition.x)
             spriteRenderer.flipX = false;
 
         while (elapsed < travelTime)
@@ -199,5 +146,30 @@ public class ElectricianMove : MonoBehaviour
             yield return null;
         }
         transform.position = endPos;
+    }
+
+    private bool IsMoveValid(Vector3Int tilePos)
+    {
+        if (tilemap == null) return false;
+        // Must have a tile on tilemap
+        if (!tilemap.HasTile(tilePos)) return false;
+        // Must not be in occupied tiles
+        if (OccupiedTilesManager.Instance != null && OccupiedTilesManager.Instance.IsTileOccupied(tilePos))
+            return false;
+        // Must not be blocked by other objects
+        return !IsBlockedByObject(tilePos);
+    }
+
+    private bool IsBlockedByObject(Vector3Int tilePos)
+    {
+        Vector3 checkPos = tilemap.GetCellCenterWorld(tilePos);
+        Collider2D[] colliders = Physics2D.OverlapPointAll(checkPos);
+        foreach (var col in colliders)
+        {
+            // If it's a Player or Enemy (not itself), treat as blocked
+            if (col.CompareTag("Player") || (col.CompareTag("Enemy") && col.gameObject != this.gameObject))
+                return true;
+        }
+        return false;
     }
 }

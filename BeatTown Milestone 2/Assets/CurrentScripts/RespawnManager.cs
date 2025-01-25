@@ -13,11 +13,15 @@ public class RespawnManager : MonoBehaviour
     public GameObject barraAIPrefab;
     public GameObject hookPrefab;
 
-    [Header("Electrician Prefab & Spawn Settings")]
-    [Tooltip("Prefab for your Electrician (with ElectricianMove script).")]
-    public GameObject electricianPrefab;
+    [Header("Goon Prefab & Spawn Settings")]
+    [Tooltip("Prefab for your Goon (with GoonMove & GoonFatigue scripts).")]
+    public GameObject goonPrefab;
 
-    [Tooltip("Tile where the Electrician will spawn. E.g., (1, 3, 0).")]
+    [Tooltip("Tile where the Goon will spawn. E.g., (5, 5, 0).")]
+    public Vector3Int goonSpawnTile;
+
+    [Header("Electrician Prefab & Spawn Settings")]
+    public GameObject electricianPrefab;
     public Vector3Int electricianSpawnTile;
 
     [Header("Spawn Settings")]
@@ -55,7 +59,6 @@ public class RespawnManager : MonoBehaviour
         playerMove = FindObjectOfType<PlayerMove>();
         fishCountText = GameObject.Find("FISH CAUGHT")?.GetComponent<Text>();
 
-        // Check each reference individually to identify the missing component
         if (tempTurnBase == null) Debug.LogError("RespawnManager: TempTurnBase is missing.");
         if (tilemap == null) Debug.LogError("RespawnManager: Tilemap is missing.");
         if (playerMove == null) Debug.LogError("RespawnManager: PlayerMove is missing.");
@@ -67,19 +70,21 @@ public class RespawnManager : MonoBehaviour
             return;
         }
 
-        // 1) Spawn the Electrician immediately on scene start (if prefab is assigned)
+        // Example: spawn the Goon on scene start
+        SpawnGoon();
+
+        // Example: spawn the Electrician on scene start
         SpawnElectrician();
 
-        // 2) Spawn the desired number of hooks (if any)
+        // Spawn the desired number of hooks
         SpawnHooks(hooksToSpawn);
 
-        // 3) (Optional) Spawn initial enemies
+        // (Optional) Spawn some initial enemies
         // for (int i = 0; i < initialEnemiesToSpawn; i++)
         // {
-        //     SpawnEnemy();
+        //    SpawnEnemy();
         // }
 
-        // Keep the enemy count as desired
         MaintainEnemyCount();
     }
 
@@ -88,47 +93,73 @@ public class RespawnManager : MonoBehaviour
         // ...
     }
 
-    /// <summary>
-    /// Spawns a single Electrician at 'electricianSpawnTile' and adds to the turn order.
-    /// </summary>
-    private void SpawnElectrician()
+    // ------------------------------------------------------------------
+    // Goon Spawning
+    // ------------------------------------------------------------------
+    public void SpawnGoon()
     {
-        // If you don't have an Electrician prefab assigned, just skip.
-        if (electricianPrefab == null)
+        if (goonPrefab == null)
         {
-            Debug.LogWarning("RespawnManager: No Electrician prefab assigned. Skipping spawn.");
+            Debug.LogWarning("RespawnManager: No Goon prefab assigned.");
+            return;
+        }
+        if (OccupiedTilesManager.Instance.IsTileOccupied(goonSpawnTile))
+        {
+            Debug.LogWarning($"RespawnManager: Goon spawn tile {goonSpawnTile} is occupied!");
             return;
         }
 
-        // If the tile is occupied, skip spawning.
+        Vector3 spawnWorldPos = tilemap.GetCellCenterWorld(goonSpawnTile);
+        GameObject goonGO = Instantiate(goonPrefab, spawnWorldPos, Quaternion.identity);
+
+        GoonMove goonMove = goonGO.GetComponent<GoonMove>();
+        if (goonMove != null)
+        {
+            // Assign references the Goon might need:
+            // goonMove.playerMove = playerMove; // REMOVED since new GoonMove doesn't need it
+            goonMove.tilemap = tilemap;
+            goonMove.CurrentTilePosition = goonSpawnTile;
+
+            // Occupy the tile
+            OccupiedTilesManager.Instance.AddOccupiedPosition(goonSpawnTile);
+
+            // Add to turn system
+            tempTurnBase.AddGoonUnit(goonMove);
+        }
+        else
+        {
+            Debug.LogError("RespawnManager: Goon prefab is missing GoonMove component.");
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Electrician Spawning
+    // ------------------------------------------------------------------
+    public void SpawnElectrician()
+    {
+        if (electricianPrefab == null)
+        {
+            Debug.LogWarning("RespawnManager: No Electrician prefab assigned.");
+            return;
+        }
         if (OccupiedTilesManager.Instance.IsTileOccupied(electricianSpawnTile))
         {
             Debug.LogWarning($"RespawnManager: Electrician spawn tile {electricianSpawnTile} is occupied!");
             return;
         }
 
-        // Convert tile to world position
         Vector3 spawnWorldPos = tilemap.GetCellCenterWorld(electricianSpawnTile);
-
-        // Instantiate the Electrician
         GameObject electricianGO = Instantiate(electricianPrefab, spawnWorldPos, Quaternion.identity);
 
-        // Get the ElectricianMove script
         ElectricianMove electricianMove = electricianGO.GetComponent<ElectricianMove>();
         if (electricianMove != null)
         {
-            // Assign references
             electricianMove.tilemap = tilemap;
-            electricianMove.playerMove = playerMove;
             electricianMove.CurrentTilePosition = electricianSpawnTile;
+            // electricianMove.playerMove = playerMove; // REMOVED if new ElectricianMove doesn't need it
 
-            // Mark the tile as occupied
             OccupiedTilesManager.Instance.AddOccupiedPosition(electricianSpawnTile);
-
-            // Add to the turn order (method from your updated TempTurnBase)
             tempTurnBase.AddElectricianUnit(electricianMove);
-
-            Debug.Log($"RespawnManager: Spawned Electrician at {electricianSpawnTile}");
         }
         else
         {
@@ -136,10 +167,9 @@ public class RespawnManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Spawns the specified number of hooks. Assigns the first hook
-    /// to Swing/Push if needed.
-    /// </summary>
+    // ------------------------------------------------------------------
+    // Hook Spawning
+    // ------------------------------------------------------------------
     private void SpawnHooks(int count)
     {
         if (hookPrefab == null)
@@ -168,7 +198,6 @@ public class RespawnManager : MonoBehaviour
                 Debug.LogError("RespawnManager: Hook prefab missing Hook component!");
             }
 
-            // Assign the first spawned Hook to Swing/Push
             if (i == 0)
             {
                 Swing swingScript = FindObjectOfType<Swing>();
@@ -180,6 +209,9 @@ public class RespawnManager : MonoBehaviour
         }
     }
 
+    // ------------------------------------------------------------------
+    // Regular Enemy Logic
+    // ------------------------------------------------------------------
     public void MaintainEnemyCount()
     {
         int currentEnemyCount = enemies.FindAll(enemy => enemy != null && !enemy.CompareTag("Barra")).Count;
@@ -191,9 +223,6 @@ public class RespawnManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Called when an enemy dies. Determines if the enemy should respawn.
-    /// </summary>
     public void EnemyDied(GameObject enemy)
     {
         if (enemy == null)
@@ -203,31 +232,18 @@ public class RespawnManager : MonoBehaviour
         }
 
         enemies.Remove(enemy);
-
         Vector3Int enemyTilePosition = OccupiedTilesManager.Instance.tilemap.WorldToCell(enemy.transform.position);
         OccupiedTilesManager.Instance.RemoveOccupiedPosition(enemyTilePosition);
 
         Destroy(enemy);
-
-        // If you want them to respawn after a delay, uncomment:
-        // if (!enemy.CompareTag("Barra"))
-        // {
-        //     StartCoroutine(RespawnCoroutine());
-        // }
     }
 
-    /// <summary>
-    /// Coroutine to handle respawning of regular enemies after a delay.
-    /// </summary>
     public IEnumerator RespawnCoroutine()
     {
         yield return new WaitForSeconds(respawnDelay);
         SpawnEnemy();
     }
 
-    /// <summary>
-    /// Spawns a regular enemy at a random unoccupied tile position and adds them to the turn system.
-    /// </summary>
     public void SpawnEnemy()
     {
         if (enemyPrefab == null)
@@ -270,13 +286,12 @@ public class RespawnManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Spawns a Barra enemy at a random unoccupied tile position and adds them to the turn system.
-    /// </summary>
+    // ------------------------------------------------------------------
+    // Barra Spawning
+    // ------------------------------------------------------------------
     public void SpawnBarra()
     {
         if (barraAIPrefab == null) return;
-
         PlayerMove playerMove = FindObjectOfType<PlayerMove>();
         if (playerMove == null)
         {
