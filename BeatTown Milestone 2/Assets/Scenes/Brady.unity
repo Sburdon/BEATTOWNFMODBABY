@@ -14424,6 +14424,7 @@ MonoBehaviour:
   noMoveImage: {fileID: 1030971795}
   oneMoveImage: {fileID: 107938138}
   twoMoveImage: {fileID: 526153716}
+  pendingMovePurchase: 0
 --- !u!114 &1977991995
 MonoBehaviour:
   m_ObjectHideFlags: 0
