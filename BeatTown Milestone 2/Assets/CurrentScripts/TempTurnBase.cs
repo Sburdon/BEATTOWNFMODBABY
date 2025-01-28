@@ -190,14 +190,16 @@ public class TempTurnBase : MonoBehaviour
         isProcessingTurn = false;
         if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra == true)
         {
+            // use TutorialManager ref to initiate barra tutorial animation
+            TutorialScript.StartBarraAnimation();
+            
             RespawnManager.Instance.SpawnBarra();
             spawnBarra = false;
         }
-        if((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1 == true)
+        if ((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1 == true)
         {
-           // TutorialScript.ChangeBarraAnimation();
             RespawnManager.Instance.SpawnBarra();
-            // use TutorialManager ref to initiate barra tutorial animation
+            
             spawnBarra1 = false;
         }
     }

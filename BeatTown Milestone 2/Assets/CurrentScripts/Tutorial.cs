@@ -111,6 +111,13 @@ public class Tutorial : MonoBehaviour
         animtut.SetInteger("ChangeBarra", animtut.GetInteger("ChangeBarra") + 1);
     }
 
+    public void StartBarraAnimation()
+    {
+        isBarraTutorialActive = true;
+        animtut.SetInteger("ChangeBarra", 1); // Ensure this value matches the transition condition in Animator
+        Debug.Log("Triggered Barracuda Tutorial.");
+    }
+
     public void Etut() // end tutorial (called in Animator)
     {
         foreach (Button b in barray)
@@ -124,6 +131,7 @@ public class Tutorial : MonoBehaviour
         // re enable sprites after tutorial
         ShowSprites();
         animtut.SetBool("MainTutOver" , true); // declare end of main tutorial
+
     }
     
     public void EBarraTut() // end barra tutorial (called in Animator event)
@@ -146,11 +154,12 @@ public class Tutorial : MonoBehaviour
                 ChangeAnimation();
             }
         }
-        if (isBarraTutorialActive)
+        else if (isBarraTutorialActive)
         {
             // Check if SpaceBar is pressed to advance the tutorial
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                Debug.LogWarning("Spacebar pressed");
                 ChangeBarraAnimation();
             }
         }
