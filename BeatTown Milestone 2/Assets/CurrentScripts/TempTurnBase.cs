@@ -37,6 +37,7 @@ public class TempTurnBase : MonoBehaviour
     private bool spawnBarra = true;
     private bool spawnBarra1 = true;
 
+    public Tutorial TutorialScript; // Reference to the Tutorial script
 
     public All_SFX All_SFX;
 
@@ -44,6 +45,8 @@ public class TempTurnBase : MonoBehaviour
 
     void Start()
     {
+        TutorialScript = GetComponent<Tutorial>(); // Get the Tutorial script reference
+
         if (playerMove == null)
             playerMove = FindObjectOfType<PlayerMove>();
 
@@ -192,12 +195,11 @@ public class TempTurnBase : MonoBehaviour
         }
         if((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1 == true)
         {
+           // TutorialScript.ChangeBarraAnimation();
             RespawnManager.Instance.SpawnBarra();
+            // use TutorialManager ref to initiate barra tutorial animation
             spawnBarra1 = false;
         }
-
-
-
     }
 
     private void ResetCollider(GameObject unit)

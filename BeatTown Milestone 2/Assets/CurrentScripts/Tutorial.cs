@@ -5,10 +5,11 @@ using UnityEngine.UI;
 
 public class Tutorial : MonoBehaviour
 {
-     Animator animtut;
+    Animator animtut;
     public Button[] barray;
     private bool isPaused = false;
     private bool isTutorialActive = true;
+    private bool isBarraTutorialActive = false;
 
     private void Start()
     {
@@ -20,7 +21,7 @@ public class Tutorial : MonoBehaviour
             b.interactable = false;
         }
 
-        // Make unwanted sprites invisible
+        // Make unwanted sprites (i.e. hook) invisible
         HideSprites();
 
         // start coroutiune to delay setting Time.timescale to 0
@@ -104,6 +105,12 @@ public class Tutorial : MonoBehaviour
         animtut.SetInteger("Change", animtut.GetInteger("Change") + 1);
     }
 
+    public void ChangeBarraAnimation() // to cycle through barra animations
+    {
+        Debug.Log("changebarraanimation triggered");
+        animtut.SetInteger("ChangeBarra", animtut.GetInteger("ChangeBarra") + 1);
+    }
+
     public void Etut() // end tutorial (called in Animator)
     {
         foreach (Button b in barray)
@@ -116,16 +123,35 @@ public class Tutorial : MonoBehaviour
 
         // re enable sprites after tutorial
         ShowSprites();
+        animtut.SetBool("MainTutOver" , true); // declare end of main tutorial
+    }
+    
+    public void EBarraTut() // end barra tutorial (called in Animator event)
+    {
+        isBarraTutorialActive = false; // mark barra tutorial as finished
     }
 
     private void Update() // any key advances tutorial
     {
+       /* if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ChangeBarraAnimation();
+        }*/ // remove once barra tutorial is implemented
+        
         if (isTutorialActive)
         {
             // Check if any key is pressed to advance the tutorial (exclude ESC key to avoid conflict with pause)
             if (Input.anyKeyDown)
             {
                 ChangeAnimation();
+            }
+        }
+        if (isBarraTutorialActive)
+        {
+            // Check if SpaceBar is pressed to advance the tutorial
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                ChangeBarraAnimation();
             }
         }
         else
