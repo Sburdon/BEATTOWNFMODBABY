@@ -45,7 +45,7 @@ public class TempTurnBase : MonoBehaviour
 
     void Start()
     {
-        TutorialScript = GetComponent<Tutorial>(); // Get the Tutorial script reference
+      
 
         if (playerMove == null)
             playerMove = FindObjectOfType<PlayerMove>();
@@ -188,19 +188,26 @@ public class TempTurnBase : MonoBehaviour
         StartPlayerTurn();
         ResetAllColliders();
         isProcessingTurn = false;
+       
         if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra == true)
         {
-            // use TutorialManager ref to initiate barra tutorial animation
-            TutorialScript.StartBarraAnimation();
             
+            Debug.Log("First hook kill count reached. Barra tutorial animation triggered.");
             RespawnManager.Instance.SpawnBarra();
             spawnBarra = false;
+
+            // use TutorialManager ref to initiate barra tutorial animation
+            TutorialScript.StartBarraAnimation();
         }
         if ((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1 == true)
         {
             RespawnManager.Instance.SpawnBarra();
             
             spawnBarra1 = false;
+            Debug.Log("Second hook kill count reached. Barra tutorial animation triggered.");
+
+            // use TutorialManager ref to initiate barra tutorial animation
+            TutorialScript.StartBarraAnimation();
         }
     }
 
