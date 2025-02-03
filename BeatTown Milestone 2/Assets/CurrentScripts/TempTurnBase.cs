@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +17,7 @@ public class TempTurnBase : MonoBehaviour
 
     public GameObject turnOrderPrefab; // Prefab for each turn order image
 
+    private List<Image> turnOrderImages = new List<Image>();
 
     [Header("AI Units")]
     public GameObject PPShighlight;
@@ -36,18 +36,17 @@ public class TempTurnBase : MonoBehaviour
     public GameObject RealMoveHighlight;
     private bool spawnBarra = true;
     private bool spawnBarra1 = true;
+    private List<object> turnUnits = new List<object>();
+    private int currentTurnIndex = 0;
 
-    public Tutorial TutorialScript; // Reference to the Tutorial script
+
 
     public All_SFX All_SFX;
 
     private int currentUnitIndex = -1; // To track the current unit's index for turn-based rotation
-    public TurnOrderType currentTurnOrder = TurnOrderType.PlayerAIBarra;
 
     void Start()
     {
-
-
         if (playerMove == null)
             playerMove = FindObjectOfType<PlayerMove>();
 
@@ -55,15 +54,59 @@ public class TempTurnBase : MonoBehaviour
             playerFatigue = FindObjectOfType<PlayerFatigue>();
 
         hook = Hook.Instance;
-
         respawnManager = RespawnManager.Instance;
 
         if (respawnManager == null)
         {
             Debug.LogError("RespawnManager instance not found in the scene.");
         }
+
+        InitializeTurnOrder();
         UpdateTurnOrderUI();
     }
+
+    private void InitializeTurnOrder()
+    {
+        turnUnits.Clear();
+        turnUnits.Add(playerMove); // Add player first
+
+        foreach (var ai in aiUnits)
+            turnUnits.Add(ai);
+
+        foreach (var barra in barraUnits)
+            turnUnits.Add(barra);
+    }
+    private void RotateTurnOrder()
+    {
+        var unit = turnUnits[currentTurnIndex];
+        turnUnits.RemoveAt(currentTurnIndex);
+        turnUnits.Add(unit);
+
+        // Ensure the index wraps around
+        currentTurnIndex = currentTurnIndex % turnUnits.Count;
+
+        UpdateTurnOrderUI();
+    }
+    public void StartTurn()
+    {
+        if (turnUnits.Count == 0) return;
+
+        var currentUnit = turnUnits[currentTurnIndex];
+
+        if (currentUnit is PlayerMove)
+        {
+            StartPlayerTurn();
+        }
+        else if (currentUnit is AIMove ai)
+        {
+            StartCoroutine(ProcessAITurn(ai));
+        }
+        else if (currentUnit is BarraMove barra)
+        {
+            StartCoroutine(ProcessBarraTurn(barra));
+        }
+    }
+
 
     void Update()
     {
@@ -95,6 +138,14 @@ public class TempTurnBase : MonoBehaviour
             aiUnits.Remove(aiMove);
             UpdateTurnOrderUI();
             Debug.Log($"TempTurnBase: Removed {aiMove.gameObject.name} from AI units.");
+
+            // Ensure the turn order index is correctly adjusted
+            if (currentUnitIndex >= aiUnits.Count)
+            {
+                currentUnitIndex = aiUnits.Count - 1; // Adjust index if needed
+            }
+
+            UpdateTurnOrderUI(); // Re-update turn order UI after removal
         }
     }
 
@@ -105,8 +156,17 @@ public class TempTurnBase : MonoBehaviour
             barraUnits.Remove(barraMove);
             UpdateTurnOrderUI();
             Debug.Log($"TempTurnBase: Removed {barraMove.gameObject.name} from Barra units.");
+
+            // Ensure the turn order index is correctly adjusted
+            if (currentUnitIndex >= aiUnits.Count + barraUnits.Count)
+            {
+                currentUnitIndex = aiUnits.Count + barraUnits.Count - 1; // Adjust index if needed
+            }
+
+            UpdateTurnOrderUI(); // Re-update turn order UI after removal
         }
     }
+
 
     public void EndPlayerTurn()
     {
@@ -117,27 +177,60 @@ public class TempTurnBase : MonoBehaviour
         RealMoveHighlight.SetActive(false);
         isPlayerTurn = false;
 
-        StartCoroutine(AITurnRoutine());
+        RotateTurnOrder();
+        StartTurn();
     }
+
+    private IEnumerator ProcessAITurn(AIMove ai)
+    {
+        isProcessingTurn = true;
+        AIFatigue aiFatigue = ai.GetComponent<AIFatigue>();
+
+        if (aiFatigue != null)
+        {
+            Debug.Log($"AI {ai.gameObject.name} is taking its turn.");
+            yield return StartCoroutine(aiFatigue.HandleTurn());
+        }
+
+        RotateTurnOrder();
+        StartTurn();
+        isProcessingTurn = false;
+    }
+
+    private IEnumerator ProcessBarraTurn(BarraMove barra)
+    {
+        isProcessingTurn = true;
+        BarraFatigue barraFatigue = barra.GetComponent<BarraFatigue>();
+
+        if (barraFatigue != null)
+        {
+            Debug.Log($"Barra {barra.gameObject.name} is taking its turn.");
+            yield return StartCoroutine(barraFatigue.HandleTurn());
+        }
+
+        RotateTurnOrder();
+        StartTurn();
+        isProcessingTurn = false;
+    }
+
 
     private IEnumerator AITurnRoutine()
     {
         isProcessingTurn = true;
         Debug.Log("AI's turn has started.");
 
-        // Start with the AI/Barra units turn in order
+        // Start with the AI/Barra units' turn in order
         List<AIMove> aiUnitsCopy = new List<AIMove>(aiUnits);
         List<BarraMove> barraUnitsCopy = new List<BarraMove>(barraUnits);
 
         // Go through AI Units first
         foreach (AIMove ai in aiUnitsCopy)
         {
-            if (ai != null && ai.gameObject.activeInHierarchy)
+            if (ai != null && ai.gameObject.activeInHierarchy) // Check if the unit is alive
             {
                 currentUnitIndex = aiUnits.IndexOf(ai); // Set the current unit's index
 
                 // Highlight current unit
-                ChangeTurnOrder(TurnOrderType.AIBarraPlayer);
                 UpdateTurnOrderUI();
                 AIFatigue aiFatigue = ai.GetComponent<AIFatigue>();
 
@@ -155,18 +248,21 @@ public class TempTurnBase : MonoBehaviour
                 ResetAllColliders();
                 yield return new WaitForSeconds(0.2f);
             }
+            else
+            {
+                // If AI is dead or inactive, remove it from the turn order
+                RemoveAIUnit(ai);
+            }
         }
 
         // Go through Barra Units
         foreach (BarraMove barra in barraUnitsCopy)
         {
-            if (barra != null && barra.gameObject.activeInHierarchy)
+            if (barra != null && barra.gameObject.activeInHierarchy) // Check if the unit is alive
             {
                 currentUnitIndex = aiUnits.Count + barraUnits.IndexOf(barra); // Barra index after AI units
 
                 // Highlight current unit
-                ChangeTurnOrder(TurnOrderType.BarraPlayerAI);
-
                 UpdateTurnOrderUI();
                 BarraFatigue barraFatigue = barra.GetComponent<BarraFatigue>();
 
@@ -184,6 +280,11 @@ public class TempTurnBase : MonoBehaviour
                 ResetAllColliders();
                 yield return new WaitForSeconds(1f);
             }
+            else
+            {
+                // If Barra is dead or inactive, remove it from the turn order
+                RemoveBarraUnit(barra);
+            }
         }
 
         Debug.Log("AI's turn has ended. Starting player's turn.");
@@ -193,27 +294,23 @@ public class TempTurnBase : MonoBehaviour
         ResetAllColliders();
         isProcessingTurn = false;
 
+        // Additional spawning logic based on hook kill count
         if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra == true)
         {
-
-            Debug.Log("First hook kill count reached. Barra tutorial animation triggered.");
             RespawnManager.Instance.SpawnBarra();
             spawnBarra = false;
-
-            // use TutorialManager ref to initiate barra tutorial animation
-            TutorialScript.StartBarraAnimation();
         }
         if ((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1 == true)
         {
             RespawnManager.Instance.SpawnBarra();
-
             spawnBarra1 = false;
-            Debug.Log("Second hook kill count reached. Barra tutorial animation triggered.");
-
-            // use TutorialManager ref to initiate barra tutorial animation
-            TutorialScript.StartBarraAnimation();
         }
     }
+
+
+
+
+
 
     private void ResetCollider(GameObject unit)
     {
@@ -227,8 +324,6 @@ public class TempTurnBase : MonoBehaviour
 
     public void StartPlayerTurn()
     {
-        
-        ChangeTurnOrder(TurnOrderType.PlayerAIBarra);
         isPlayerTurn = true;
         ResetAllColliders();
         playerFatigue.RecoverFatigue();
@@ -243,15 +338,8 @@ public class TempTurnBase : MonoBehaviour
         if (aiMove != null && !aiUnits.Contains(aiMove))
         {
             aiUnits.Add(aiMove);
-            // Reset the collider of the AI unit
-            ResetAllColliders();
-
-            Debug.Log($"TempTurnBase: Added AIMove {aiMove.gameObject.name} to the turn system.");
+            turnUnits.Insert(turnUnits.Count - barraUnits.Count, aiMove); // Insert before Barra units
             UpdateTurnOrderUI();
-        }
-        else
-        {
-            Debug.LogWarning("TempTurnBase: Attempted to add a null or already added AIMove.");
         }
     }
 
@@ -260,25 +348,11 @@ public class TempTurnBase : MonoBehaviour
         if (barraMove != null && !barraUnits.Contains(barraMove))
         {
             barraUnits.Add(barraMove);
-            // Reset the collider of the Barra unit
-            ResetAllColliders();
-
-            Debug.Log($"TempTurnBase: Added Barra {barraMove.gameObject.name} to the turn system.");
+            turnUnits.Add(barraMove); // Barra units go to the end
             UpdateTurnOrderUI();
         }
-        else
-        {
-            Debug.LogWarning("TempTurnBase: Attempted to add a null or already added Barra.");
-        }
-    }
-    public enum TurnOrderType
-    {
-        PlayerAIBarra,  // Player, AI, Barra
-        AIBarraPlayer,  // AI, Barra, Player
-        BarraPlayerAI   // Barra, Player, AI
     }
 
-    private List<Transform> unitIcons = new List<Transform>();
 
     private void UpdateTurnOrderUI()
     {
@@ -288,97 +362,33 @@ public class TempTurnBase : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        List<GameObject> turnOrderIcons = new List<GameObject>();
+        // Add player turn icon
+        GameObject playerIcon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
+        UnityEngine.UI.Image playerImage = playerIcon.GetComponent<UnityEngine.UI.Image>();
+        playerImage.sprite = isPlayerTurn ? playerBlueSprite : playerRedSprite;
+        playerImage.preserveAspect = true;
 
-        // Add icons to the list based on the current order type
-        switch (currentTurnOrder)
+        // Add AI units' icons and highlight the current turn unit
+        foreach (AIMove ai in aiUnits)
         {
-            case TurnOrderType.PlayerAIBarra:
-                // Add player turn icon
-                turnOrderIcons.Add(CreateTurnOrderIcon(playerBlueSprite, isPlayerTurn));
-                // Add AI units' icons
-                foreach (AIMove ai in aiUnits)
-                {
-                    turnOrderIcons.Add(CreateTurnOrderIcon(
-                        aiUnits.IndexOf(ai) == currentUnitIndex ? enemyBlueSprite : enemyRedSprite));
-                }
-                // Add Barra units' icons
-                foreach (BarraMove barra in barraUnits)
-                {
-                    turnOrderIcons.Add(CreateTurnOrderIcon(
-                        (barraUnits.IndexOf(barra) + aiUnits.Count == currentUnitIndex) ? barraBlueSprite : barraRedSprite));
-                }
-                break;
+            GameObject aiIcon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
+            UnityEngine.UI.Image aiImage = aiIcon.GetComponent<UnityEngine.UI.Image>();
 
-            case TurnOrderType.AIBarraPlayer:
-                // Add AI units' icons
-                foreach (AIMove ai in aiUnits)
-                {
-                    turnOrderIcons.Add(CreateTurnOrderIcon(
-                        aiUnits.IndexOf(ai) == currentUnitIndex ? enemyBlueSprite : enemyRedSprite));
-                }
-                // Add Barra units' icons
-                foreach (BarraMove barra in barraUnits)
-                {
-                    turnOrderIcons.Add(CreateTurnOrderIcon(
-                        (barraUnits.IndexOf(barra) + aiUnits.Count == currentUnitIndex) ? barraBlueSprite : barraRedSprite));
-                }
-                // Add player turn icon
-                turnOrderIcons.Add(CreateTurnOrderIcon(playerBlueSprite, isPlayerTurn));
-                break;
-
-            case TurnOrderType.BarraPlayerAI:
-                // Add Barra units' icons
-                foreach (BarraMove barra in barraUnits)
-                {
-                    turnOrderIcons.Add(CreateTurnOrderIcon(
-                        (barraUnits.IndexOf(barra) == currentUnitIndex) ? barraBlueSprite : barraRedSprite));
-                }
-                // Add player turn icon
-                turnOrderIcons.Add(CreateTurnOrderIcon(playerBlueSprite, isPlayerTurn));
-                // Add AI units' icons
-                foreach (AIMove ai in aiUnits)
-                {
-                    turnOrderIcons.Add(CreateTurnOrderIcon(
-                        aiUnits.IndexOf(ai) == currentUnitIndex ? enemyBlueSprite : enemyRedSprite));
-                }
-                break;
+            // Set the color based on whether it's this unit's turn
+            aiImage.sprite = (aiUnits.IndexOf(ai) == currentUnitIndex) ? enemyBlueSprite : enemyRedSprite;
+            aiImage.preserveAspect = true;
         }
 
-        // Add all the icons to the panel
-        foreach (GameObject icon in turnOrderIcons)
+        // Add Barra units' icons and highlight the current turn unit
+        foreach (BarraMove barra in barraUnits)
         {
-            icon.transform.SetParent(turnOrderPanel.transform);
+            GameObject barraIcon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
+            UnityEngine.UI.Image barraImage = barraIcon.GetComponent<UnityEngine.UI.Image>();
+
+            // Set the color based on whether it's this unit's turn
+            barraImage.sprite = (barraUnits.IndexOf(barra) + aiUnits.Count == currentUnitIndex) ? barraBlueSprite : barraRedSprite;
+            barraImage.preserveAspect = true;
         }
     }
-
-    private GameObject CreateTurnOrderIcon(Sprite sprite, bool isActive = false)
-    {
-        GameObject icon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
-        UnityEngine.UI.Image image = icon.GetComponent<UnityEngine.UI.Image>();
-        image.sprite = sprite;
-        image.preserveAspect = true;
-        // Optionally, you can add any effect when the unit is active (e.g., apply a glow effect or change alpha)
-        if (isActive)
-        {
-            // For example, you can change the color of the icon if it’s the active turn
-            image.color = new Color(1, 1, 1, 1); // Active color (white)
-        }
-        else
-        {
-            image.color = new Color(1, 1, 1, 0.5f); // Inactive color (faded)
-        }
-        return icon;
-    }
-    public void ChangeTurnOrder(TurnOrderType newOrder)
-    {
-        // Set the turn order to the passed in value
-        currentTurnOrder = newOrder;
-
-        // Update the UI to reflect the new turn order
-        UpdateTurnOrderUI();
-    }
-
-
 
 }
