@@ -87,8 +87,103 @@ public class TempTurnBase : MonoBehaviour
         // Ensure the index wraps around
         currentTurnIndex = currentTurnIndex % turnUnits.Count;
 
-        UpdateTurnOrderUI();
+        // Animate only the current unit's turn end (optional)
+        StartCoroutine(AnimateTurnOrderRotation());
     }
+
+    
+    private void updateSpacing()
+    {
+        int totalImages = turnOrderPanel.transform.childCount;
+        HorizontalLayoutGroup layoutGroup = turnOrderPanel.GetComponent<HorizontalLayoutGroup>();
+
+
+        if (totalImages == 1)
+        {
+            return;
+        }
+        else if(totalImages == 2){
+            layoutGroup.spacing = -442;
+        }
+        else if (totalImages == 3)
+        {
+            layoutGroup.spacing = -290;
+        }
+        else if (totalImages == 4)
+        {
+            layoutGroup.spacing = -150;
+        }
+        else if (totalImages == 4)
+        {
+            layoutGroup.spacing = -7;
+        }
+        else { return; }
+
+    }
+
+    private IEnumerator AnimateTurnOrderRotation()
+    {
+        // Get the current unit (who's ending their turn)
+        Transform currentUnit = turnOrderPanel.transform.GetChild(currentTurnIndex);
+
+        // Get the total number of images (children) in the panel
+        int totalImages = turnOrderPanel.transform.childCount;
+
+        // Calculate the distance to move based on the number of images (150 * number of images)
+        float moveDistanceCur = 150f * totalImages - 80f;
+        float moveDistanceLeft = 150f;
+
+        // Slide out the current unit's icon to the right (far off-screen)
+        LeanTween.move(currentUnit.GetComponent<RectTransform>(),
+                       new Vector2(moveDistanceCur, currentUnit.GetComponent<RectTransform>().anchoredPosition.y),
+                       0.5f).setEaseOutCubic(); // Slide right
+
+        // Slide all the other icons to the left (except the current one) at the same time
+        for (int i = 0; i < turnOrderPanel.transform.childCount; i++)
+        {
+            // Skip the current unit (who's ending its turn)
+            if (i == currentTurnIndex)
+                continue;
+
+            Transform otherUnit = turnOrderPanel.transform.GetChild(i);
+
+            // Slide the other icons to the left by the calculated move distance (150 * total images)
+            LeanTween.move(otherUnit.GetComponent<RectTransform>(),
+                           new Vector2(otherUnit.GetComponent<RectTransform>().anchoredPosition.x - moveDistanceLeft,
+                                       otherUnit.GetComponent<RectTransform>().anchoredPosition.y),
+                           0.5f).setEaseOutCubic();
+        }
+
+        // Wait for the slide-out to complete (0.5 seconds)
+        yield return new WaitForSeconds(0.5f);
+
+        // After the animation completes, we rearrange the turn order and re-update the UI
+        UpdateTurnOrderUI();
+
+        // Now, get the new active unit (the one that is next in the turn order)
+        Transform nextUnit = turnOrderPanel.transform.GetChild(currentTurnIndex);  // Now points to the new active unit
+
+        // Ensure that the other units that slid left are reset back to their original positions
+        for (int i = 0; i < turnOrderPanel.transform.childCount; i++)
+        {
+            Transform unit = turnOrderPanel.transform.GetChild(i);
+
+            // Reset each unit's position to its original position (assuming we want it centered at x = 0)
+            unit.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, unit.GetComponent<RectTransform>().anchoredPosition.y); // Reset positions
+        }
+
+        // Set the new unit's position to off-screen to the left before it slides in
+        nextUnit.GetComponent<RectTransform>().anchoredPosition = new Vector2(-moveDistanceLeft, nextUnit.GetComponent<RectTransform>().anchoredPosition.y); // Start off-screen to the left
+
+        // Slide the new active unit into view (left to right)
+        LeanTween.move(nextUnit.GetComponent<RectTransform>(),
+                       new Vector2(0f, nextUnit.GetComponent<RectTransform>().anchoredPosition.y),
+                       0.5f).setEaseInCubic(); // Slide in from left to right
+    }
+
+
+
+
     public void StartTurn()
     {
         
@@ -124,10 +219,12 @@ public class TempTurnBase : MonoBehaviour
 
     void Update()
     {
+        updateSpacing();
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetAllColliders();
         }
+        
     }
     public void ResetAllColliders()
     {
@@ -160,7 +257,8 @@ public class TempTurnBase : MonoBehaviour
                 currentUnitIndex = aiUnits.Count - 1; // Adjust index
             }
 
-            UpdateTurnOrderUI(); // Re-update turn order UI after removal
+            UpdateTurnOrderUI();
+            // Re-update turn order UI after removal
         }
     }
 
@@ -179,7 +277,7 @@ public class TempTurnBase : MonoBehaviour
                 currentUnitIndex = aiUnits.Count + barraUnits.Count - 1; // Adjust index
             }
 
-            UpdateTurnOrderUI(); // Re-update turn order UI after removal
+            UpdateTurnOrderUI();
         }
     }
 
