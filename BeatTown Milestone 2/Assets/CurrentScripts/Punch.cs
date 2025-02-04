@@ -58,27 +58,31 @@ public class Punch : MonoBehaviour
 
     public void OnPunchButtonPressed()
     {
-        if(playerMove.pendingMovePurchase == true) {
-            playerMove.ResetPendingMove();
-        }
-        
-        if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
+        if (tempTurnBase.isPlayerTurn)
         {
-            tempTurnBase.ResetAllColliders();
+            if (playerMove.pendingMovePurchase == true)
+            {
+                playerMove.ResetPendingMove();
+            }
 
-            RealMoveHighlight.SetActive(false);
-            SwingHighlight.SetActive(false);
-            PPShighlight.SetActive(true);
-            moveMentHighlight.SetActive(false);
-            isPunching = true;
-            selectedEnemy = null;
-            playerMove.CurrentAction = ActionType.Punch;
-            Debug.Log("Punch button pressed, current action: " + playerMove.CurrentAction);
-            CheckEnemiesInRange();
-        }
-        else
-        {
-            Debug.Log("Not enough fatigue to punch.");
+            if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
+            {
+                tempTurnBase.ResetAllColliders();
+
+                RealMoveHighlight.SetActive(false);
+                SwingHighlight.SetActive(false);
+                PPShighlight.SetActive(true);
+                moveMentHighlight.SetActive(false);
+                isPunching = true;
+                selectedEnemy = null;
+                playerMove.CurrentAction = ActionType.Punch;
+                Debug.Log("Punch button pressed, current action: " + playerMove.CurrentAction);
+                CheckEnemiesInRange();
+            }
+            else
+            {
+                Debug.Log("Not enough fatigue to punch.");
+            }
         }
     }
 

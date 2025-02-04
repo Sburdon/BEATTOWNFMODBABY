@@ -98,27 +98,31 @@ public class Push : MonoBehaviour
 
     public void OnPushButtonPressed()
     {
-        if (playerMove.pendingMovePurchase == true)
+        if (tempTurnBase.isPlayerTurn)
         {
-            playerMove.ResetPendingMove();
-        }
-        tempTurnBase.ResetAllColliders();
-        if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
-        {
-            RealMoveHighlight.SetActive(false);
-            SwingHighlight.SetActive(false);
-            PPShighlight.SetActive(true);
-            moveMentHighlight.SetActive(false);
-            playerMove.CancelMove();
-            isPushing = true;
-            selectedTarget = null;
-            Debug.Log("Push button pressed, current action: " + playerMove.CurrentAction);
-        }
-        else
-        {
-            Debug.Log("Not enough fatigue to push.");
+            if (playerMove.pendingMovePurchase == true)
+            {
+                playerMove.ResetPendingMove();
+            }
+            tempTurnBase.ResetAllColliders();
+            if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
+            {
+                RealMoveHighlight.SetActive(false);
+                SwingHighlight.SetActive(false);
+                PPShighlight.SetActive(true);
+                moveMentHighlight.SetActive(false);
+                playerMove.CancelMove();
+                isPushing = true;
+                selectedTarget = null;
+                Debug.Log("Push button pressed, current action: " + playerMove.CurrentAction);
+            }
+            else
+            {
+                Debug.Log("Not enough fatigue to push.");
+            }
         }
     }
+
 
     public void CancelPush()
     {

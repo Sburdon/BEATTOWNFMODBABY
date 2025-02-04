@@ -245,44 +245,49 @@ public class PlayerMove : MonoBehaviour
 
     public void OnMoveButtonPressed()
     {
-        Debug.Log("Move button pressed.");
-        tempTurnBase.ResetAllColliders();
-        SwingHighlight.SetActive(false);
-        RealMoveHighlight.SetActive(false);
-        PPShighlight.SetActive(false);
-        moveMentHighlight.SetActive(false);
 
-        if (swingScript != null && swingScript.IsSwinging())
+        if (tempTurnBase.isPlayerTurn)
         {
-            swingScript.CancelSwing();
-        }
+            Debug.Log("Move button pressed.");
+            tempTurnBase.ResetAllColliders();
+            SwingHighlight.SetActive(false);
+            RealMoveHighlight.SetActive(false);
+            PPShighlight.SetActive(false);
+            moveMentHighlight.SetActive(false);
 
-        // Check if the player has moves left
-        if (remainingMoves > 0)
-        {
-            canMove = true;
-            Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
-            currentAction = ActionType.Move;
-        }
-        else if (remainingMoves <= 0 && !pendingMovePurchase)
-        {
-            // Set pending move purchase if the player wants to gain more moves
-            if (playerFatigue.CanPerformAction(moveFatigueCost))
+            if (swingScript != null && swingScript.IsSwinging())
             {
-                remainingMoves = maxMoves;
-                pendingMovePurchase = true; // Indicate that moves are pending purchase
-                UpdateMoveImages();
-                Debug.Log("Pending move purchase. You now have " + remainingMoves + " moves available.");
-                canMove = true;
+                swingScript.CancelSwing();
             }
+
+            // Check if the player has moves left
+            if (remainingMoves > 0)
+            {
+                canMove = true;
+                Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
+                currentAction = ActionType.Move;
+            }
+            else if (remainingMoves <= 0 && !pendingMovePurchase)
+            {
+                // Set pending move purchase if the player wants to gain more moves
+                if (playerFatigue.CanPerformAction(moveFatigueCost))
+                {
+                    remainingMoves = maxMoves;
+                    pendingMovePurchase = true; // Indicate that moves are pending purchase
+                    UpdateMoveImages();
+                    Debug.Log("Pending move purchase. You now have " + remainingMoves + " moves available.");
+                    canMove = true;
+                }
+            }
+            else
+            {
+                canMove = false;
+                Debug.Log("Not enough fatigue to gain more moves.");
+            }
+            UpdateMoveImages();
+            UpdateMoveHighlights();
         }
-        else
-        {
-            canMove = false;
-            Debug.Log("Not enough fatigue to gain more moves.");
-        }
-        UpdateMoveImages();
-        UpdateMoveHighlights();
+        else return;
     }
 
     public void CancelMove()

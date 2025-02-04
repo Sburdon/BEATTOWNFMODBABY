@@ -41,36 +41,39 @@ public class Swing : MonoBehaviour
 
     public void OnSwingButtonPressed()
     {
-        if (playerMove.pendingMovePurchase == true)
+        if (tempTurnBase.isPlayerTurn)
         {
-            playerMove.ResetPendingMove();
-        }
-        tempTurnBase.ResetAllColliders();
-
-        if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost))
-        {
-            RealMoveHighlight.SetActive(false);
-            PPShighlight.SetActive(true);
-            SwingHighlight.SetActive(false);
-            moveMentHighlight.SetActive(false);
-            if (isSwinging)
+            if (playerMove.pendingMovePurchase == true)
             {
-                Debug.Log("Already swinging.");
-                return;
+                playerMove.ResetPendingMove();
             }
+            tempTurnBase.ResetAllColliders();
 
-            if (isSwingMode)
+            if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost))
             {
-                Debug.Log("Swing mode already active.");
-                return;
-            }
+                RealMoveHighlight.SetActive(false);
+                PPShighlight.SetActive(true);
+                SwingHighlight.SetActive(false);
+                moveMentHighlight.SetActive(false);
+                if (isSwinging)
+                {
+                    Debug.Log("Already swinging.");
+                    return;
+                }
 
-            isSwingMode = true;
-            Debug.Log("Swing mode activated. Click on an adjacent enemy or Barra to swing.");
-        }
-        else
-        {
-            Debug.Log("Not enough fatigue to swing.");
+                if (isSwingMode)
+                {
+                    Debug.Log("Swing mode already active.");
+                    return;
+                }
+
+                isSwingMode = true;
+                Debug.Log("Swing mode activated. Click on an adjacent enemy or Barra to swing.");
+            }
+            else
+            {
+                Debug.Log("Not enough fatigue to swing.");
+            }
         }
     }
 
