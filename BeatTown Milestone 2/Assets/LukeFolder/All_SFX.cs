@@ -7,6 +7,7 @@ public class All_SFX : MonoBehaviour
 
     FMOD.Studio.EventInstance walking;
     FMOD.Studio.EventInstance UISelect;
+    FMOD.Studio.EventInstance UIDENY;
     FMOD.Studio.EventInstance CUANG;
     FMOD.Studio.EventInstance FishBattle;
     FMOD.Studio.EventInstance FishSlap;
@@ -14,6 +15,7 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance Push;
     FMOD.Studio.EventInstance PlayerHurt;
     FMOD.Studio.EventInstance Caught;
+
 
     int Cuda_Count = 0;
 
@@ -24,6 +26,7 @@ public class All_SFX : MonoBehaviour
     {
 
         UISelect = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/UI Click");
+        UIDENY = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/UI Deny");
         walking = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/RingStep");
         CUANG = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Fish_UI/CUANG");
         FishBattle = FMODUnity.RuntimeManager.CreateInstance("event:/Fish_Battle");
@@ -32,6 +35,7 @@ public class All_SFX : MonoBehaviour
         Push = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Push");
         PlayerHurt = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Player Hurt");
         Caught = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Fish_UI/Caught");
+
     }
 
     public void UpdateCudaCount()
@@ -91,7 +95,10 @@ public class All_SFX : MonoBehaviour
         Caught.start();
     }
 
-
+    public void PlayUIDENY()
+    {
+        UIDENY.start();
+    }
 
 
 
