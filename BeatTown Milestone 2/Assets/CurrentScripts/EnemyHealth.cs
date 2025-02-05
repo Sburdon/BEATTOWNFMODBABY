@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
+using UnityEngine.UI; // For UI Slider
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -9,77 +9,102 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField]
     private int health;        // Current health
 
-    public GameObject fullHealthBarPrefab; // Reference to the full health bar prefab
-    public GameObject emptyHealthBarPrefab; // Reference to the empty health bar prefab
-    private GameObject fullHealthBar; // Instance of the full health bar
-    private GameObject emptyHealthBar; // Instance of the empty health bar
+    public GameObject healthSliderPrefab; // Reference to the health slider prefab
+    private Slider healthSlider;          // Instance of the slider
+
+    private bool isHovered = false;  // Track if the enemy is being hovered over
 
     public bool IsDead { get; private set; } = false; // Flag to track if the enemy is dead
 
-    // Event to notify when the enemy dies
-    public event Action OnDeath;
+    public event System.Action OnDeath;
 
-    // Reference to RespawnManager
     private RespawnManager respawnManager;
-
-    // Reference to TempTurnBase to remove from turn order
     private TempTurnBase tempTurnBase;
 
-    // Public property to access current health
     public int CurrentHealth
     {
         get { return health; }
         private set
         {
             health = Mathf.Clamp(value, 0, maxHealth);
-            UpdateHealthBar();
+            UpdateHealthSlider(); // Update the health slider when health changes
         }
     }
 
     void Start()
     {
-        health = maxHealth; // Initialize health
-        CurrentHealth = health; // Initialize current health
+        health = maxHealth;
+        CurrentHealth = health;
 
-        // Instantiate both health bars as children of the enemy
-        fullHealthBar = Instantiate(fullHealthBarPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity, transform);
-        emptyHealthBar = Instantiate(emptyHealthBarPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity, transform);
-
-        UpdateHealthBar();
-
-        // Find RespawnManager instance
         respawnManager = RespawnManager.Instance;
-        if (respawnManager == null)
-        {
-            Debug.LogError("RespawnManager instance not found in the scene.");
-        }
-
-        // Get reference to TempTurnBase
         tempTurnBase = FindObjectOfType<TempTurnBase>();
-        if (tempTurnBase == null)
+
+        if (respawnManager == null) Debug.LogError("RespawnManager instance not found.");
+        if (tempTurnBase == null) Debug.LogError("TempTurnBase instance not found.");
+
+        // Instantiate the slider from the prefab and disable it initially
+        if (healthSliderPrefab != null)
         {
-            Debug.LogError("TempTurnBase instance not found in the scene.");
+            GameObject sliderObj = Instantiate(healthSliderPrefab, transform.position, Quaternion.identity, GameObject.Find("Canvas").transform);
+            healthSlider = sliderObj.GetComponent<Slider>();
+            healthSlider.gameObject.SetActive(false); // Hide at the start
+        }
+        else
+        {
+            Debug.LogError("Health Slider Prefab is not assigned in the Inspector!");
         }
     }
 
     void Update()
     {
-        // Keep the health bars hovering above the enemy at a fixed position
-        Vector3 healthBarPosition = transform.position + new Vector3(0, 0.45f, 0); // Adjust Y offset as needed
-        fullHealthBar.transform.position = healthBarPosition;
-        emptyHealthBar.transform.position = healthBarPosition;
+        HandleHoverDetection();
+    }
+
+    private void HandleHoverDetection()
+    {
+        Vector3 mousePosition = Input.mousePosition;
+        Vector2 worldMousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        Collider2D hit = Physics2D.OverlapPoint(worldMousePosition);
+
+        if (hit != null && hit.gameObject == gameObject && !isHovered)
+        {
+            isHovered = true;
+            ShowHealthSlider(true);
+        }
+        else if ((hit == null || hit.gameObject != gameObject) && isHovered)
+        {
+            isHovered = false;
+            ShowHealthSlider(false);
+        }
+
+        // Set the slider's position to the fixed coordinates
+        if (healthSlider != null && healthSlider.gameObject.activeSelf)
+        {
+            RectTransform sliderRect = healthSlider.GetComponent<RectTransform>();
+            sliderRect.anchoredPosition = new Vector2(879f, -94.00001f);
+        }
+
+    }
+
+    public void ShowHealthSlider(bool show)
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.gameObject.SetActive(show);
+            UpdateHealthSlider();
+        }
     }
 
     public void TakeDamage(int amount)
     {
-        if (IsDead) return; // Do nothing if already dead
+        if (IsDead) return;
 
         CurrentHealth -= amount;
         Debug.Log($"{gameObject.name} took {amount} damage! Remaining health: {CurrentHealth}");
 
         if (CurrentHealth <= 0)
         {
-            Die(); // Implement death logic
+            Die();
         }
     }
 
@@ -87,65 +112,53 @@ public class EnemyHealth : MonoBehaviour
     {
         CurrentHealth = maxHealth;
         IsDead = false;
-        UpdateHealthBar(); // Reset health bar
         Debug.Log($"{gameObject.name} has been respawned with full health.");
     }
 
     public void Die()
     {
-        if (IsDead) return; // Prevent multiple deaths
+        if (IsDead) return;
 
         Debug.Log($"{gameObject.name} has died.");
         IsDead = true;
 
-        // Invoke the death event
         OnDeath?.Invoke();
 
-        // Disable enemy's behavior (optional)
-        AIMove aiMove = GetComponent<AIMove>();
-        if (aiMove != null)
-        {
-            aiMove.enabled = false;
-        }
-
-        // Remove enemy from the turn order system (TempTurnBase)
         if (tempTurnBase != null)
         {
-            // Check if this enemy is an AI unit
             if (TryGetComponent(out AIMove aiMoveComponent))
             {
-                tempTurnBase.RemoveAIUnit(aiMoveComponent);  // Remove from AI units list
+                tempTurnBase.RemoveAIUnit(aiMoveComponent);
             }
-            // Check if this enemy is a Barra unit
             else if (TryGetComponent(out BarraMove barraMoveComponent))
             {
-                tempTurnBase.RemoveBarraUnit(barraMoveComponent);  // Remove from Barra units list
+                tempTurnBase.RemoveBarraUnit(barraMoveComponent);
             }
         }
 
-        // Notify RespawnManager
         if (respawnManager != null)
         {
             respawnManager.EnemyDied(gameObject);
         }
 
-        // Optionally, disable the enemy game object (instead of destroying it)
-        gameObject.SetActive(false);  // Deactivates the enemy object
+        gameObject.SetActive(false);
     }
 
-    private void UpdateHealthBar()
+    private void UpdateHealthSlider()
     {
-        if (fullHealthBar != null)
+        if (healthSlider != null)
         {
-            // Calculate the health percentage and apply it only to the X scale, while keeping fixed Y scale
-            float healthPercentage = (float)CurrentHealth / maxHealth;
-            fullHealthBar.transform.localScale = new Vector3(healthPercentage * 0.3f, 0.05f, 1); // Adjusted to use .3f and .05f for full bar
-        }
-
-        if (emptyHealthBar != null)
-        {
-            // Keep the empty health bar at a fixed scale of 0.3 on X and 0.05 on Y
-            emptyHealthBar.transform.localScale = new Vector3(0.3f, 0.05f, 1);
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = CurrentHealth;
         }
     }
+
+    private void OnDestroy()
+    {
+        if (healthSlider != null)
+        {
+            Destroy(healthSlider.gameObject); // Clean up the slider when the enemy is destroyed
+        }
+    }
+
 }

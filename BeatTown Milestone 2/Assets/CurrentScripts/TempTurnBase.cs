@@ -62,7 +62,7 @@ public class TempTurnBase : MonoBehaviour
         {
             Debug.LogError("RespawnManager instance not found in the scene.");
         }
-
+        ResetAllColliders();
         InitializeTurnOrder();
         UpdateTurnOrderUI();
     }
@@ -91,7 +91,7 @@ public class TempTurnBase : MonoBehaviour
         StartCoroutine(AnimateTurnOrderRotation());
     }
 
-    
+
     private void updateSpacing()
     {
         int totalImages = turnOrderPanel.transform.childCount;
@@ -102,7 +102,8 @@ public class TempTurnBase : MonoBehaviour
         {
             return;
         }
-        else if(totalImages == 2){
+        else if (totalImages == 2)
+        {
             layoutGroup.spacing = -442;
         }
         else if (totalImages == 3)
@@ -113,9 +114,9 @@ public class TempTurnBase : MonoBehaviour
         {
             layoutGroup.spacing = -150;
         }
-        else if (totalImages == 4)
+        else if (totalImages == 5)
         {
-            layoutGroup.spacing = -7;
+            layoutGroup.spacing = -3;
         }
         else { return; }
 
@@ -186,7 +187,7 @@ public class TempTurnBase : MonoBehaviour
 
     public void StartTurn()
     {
-        
+
         if (turnUnits.Count == 0) return;
 
         var currentUnit = turnUnits[currentTurnIndex];
@@ -224,7 +225,7 @@ public class TempTurnBase : MonoBehaviour
         {
             ResetAllColliders();
         }
-        
+
     }
     public void ResetAllColliders()
     {
@@ -330,7 +331,7 @@ public class TempTurnBase : MonoBehaviour
     }
 
 
-   
+
 
 
     private void ResetCollider(GameObject unit)
@@ -383,42 +384,86 @@ public class TempTurnBase : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        // Iterate through all the units in the turn order
-        for (int i = 0; i < turnUnits.Count; i++)
+        // Initialize a list to hold the turn order sequence, maintaining the required order
+        List<GameObject> turnOrderList = new List<GameObject>();
+
+        // Add units to the list based on their types and presence
+        foreach (var unit in turnUnits)
         {
-            // Check if the unit is no longer active or has been removed
-            if (turnUnits[i] is AIMove aiUnit && (aiUnit == null || !aiUnit.gameObject.activeInHierarchy))
+            if (unit is PlayerMove) // Check for PlayerMove type
             {
-                // Skip adding this unit to the turn order UI
-                continue;
+                // Always add player at the first position
+                turnOrderList.Add(CreateTurnOrderIcon(unit, "Player"));
             }
-
-            if (turnUnits[i] is BarraMove barraUnit && (barraUnit == null || !barraUnit.gameObject.activeInHierarchy))
+            else if (unit is AIMove) // Check for AIMove type
             {
-                // Skip adding this unit to the turn order UI
-                continue;
+                // Add AI units
+                turnOrderList.Add(CreateTurnOrderIcon(unit, "Enemy"));
             }
+            else if (unit is BarraMove) // Check for BarraMove type
+            {
+                // Add Barra units
+                turnOrderList.Add(CreateTurnOrderIcon(unit, "Barra"));
+            }
+        }
 
-            GameObject icon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
+        // Set tags and sprites for the turn order UI based on the current turn index
+        for (int i = 0; i < turnOrderList.Count; i++)
+        {
+            GameObject icon = turnOrderList[i];
             Image unitImage = icon.GetComponent<Image>();
 
-            // Set the correct sprite based on whether it's the current unit's turn
-            if (turnUnits[i] is PlayerMove)
+            // Determine which sprite to show based on the turn order and current turn index
+            if (icon.CompareTag("Player"))
             {
                 unitImage.sprite = (i == currentTurnIndex) ? playerBlueSprite : playerRedSprite;
             }
-            else if (turnUnits[i] is AIMove)
+            else if (icon.CompareTag("Enemy"))
             {
                 unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite : enemyRedSprite;
             }
-            else if (turnUnits[i] is BarraMove)
+            else if (icon.CompareTag("Barra"))
             {
                 unitImage.sprite = (i == currentTurnIndex) ? barraBlueSprite : barraRedSprite;
             }
 
-            unitImage.preserveAspect = true;
+
         }
     }
+
+
+    // Helper function to create a turn order icon
+    private GameObject CreateTurnOrderIcon(object unit, string unitType)
+    {
+        // Instantiate the prefab
+        GameObject icon = Instantiate(turnOrderPrefab, turnOrderPanel.transform);
+
+        // Set the appropriate tag for the unit type (Player, AI, Barra)
+        icon.tag = unitType;
+
+        // Add a BoxCollider2D to the icon
+        BoxCollider2D collider = icon.AddComponent<BoxCollider2D>();
+        collider.size = new Vector2(150, 150); // Adjust the collider size as needed
+
+        // Add TurnOrderIcons component to handle hover functionality
+        TurnOrderIcons turnOrderIcons = icon.AddComponent<TurnOrderIcons>();
+
+        // Link the enemy if the unit is an AI or Barra (assuming these are enemies)
+        if (unit is AIMove || unit is BarraMove)
+        {
+            // Assuming the unit object has a reference to the GameObject it controls
+            GameObject enemyObject = ((MonoBehaviour)unit).gameObject;
+            turnOrderIcons.linkedEnemy = enemyObject;
+        }
+        else
+        {
+            // For Player units, set linkedEnemy to null
+            turnOrderIcons.linkedEnemy = null;
+        }
+
+        return icon;
+    }
+
 
 
 }
