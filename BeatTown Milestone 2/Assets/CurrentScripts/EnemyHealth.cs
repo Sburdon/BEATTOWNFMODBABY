@@ -60,7 +60,7 @@ public class EnemyHealth : MonoBehaviour
         HandleHoverDetection();
     }
 
-    private void HandleHoverDetection()
+    public void HandleHoverDetection()
     {
         Vector3 mousePosition = Input.mousePosition;
         Vector2 worldMousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
@@ -83,7 +83,6 @@ public class EnemyHealth : MonoBehaviour
             RectTransform sliderRect = healthSlider.GetComponent<RectTransform>();
             sliderRect.anchoredPosition = new Vector2(879f, -94.00001f);
         }
-
     }
 
     public void ShowHealthSlider(bool show)
@@ -160,5 +159,4 @@ public class EnemyHealth : MonoBehaviour
             Destroy(healthSlider.gameObject); // Clean up the slider when the enemy is destroyed
         }
     }
-
 }
