@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 948fafe9bbb31b04d9300b2d0bb48659, type: 3}
-  m_Name: Fish
+  m_Name: GreyFish
   m_EditorClassIdentifier: 
   idleTexture: {fileID: 2800000, guid: 261126f2492192e428986a59f10927d6, type: 3}
   moveTexture: {fileID: 2800000, guid: 2998b448a5c591442957d5734c6fbafd, type: 3}
@@ -19,7 +19,7 @@ MonoBehaviour:
   swingBackTexture: {fileID: 2800000, guid: 3669780eabffe44e287f8a9a415e0a31, type: 3}
   pushTexture: {fileID: 2800000, guid: 43cebd2503c82b142b04d07695e6553b, type: 3}
   reactTexture: {fileID: 2800000, guid: 47f494b73fda67642b237c4d008bbecc, type: 3}
-  sourceTexture: {fileID: 2800000, guid: 6c8a2bb76210e429883ed0c7d8c3cd20, type: 3}
-  sourceBackTexture: {fileID: 2800000, guid: caa2a77ad9c1144cdbdc617da4c9715e, type: 3}
+  sourceTexture: {fileID: 2800000, guid: 6748bce62f3654fd698b5daf1fe63142, type: 3}
+  sourceBackTexture: {fileID: 2800000, guid: 6c6650776b80d4f878e9d19964963dd4, type: 3}
   baseMask: {fileID: 2800000, guid: b23e00bba6b1a8b4eba37847f57dc1fa, type: 3}
   backBaseMask: {fileID: 2800000, guid: 5f907d833e4c4492bb2cd2cb747a647e, type: 3}

@@ -12,7 +12,7 @@ public class StateMachine : MonoBehaviour
         Punch,
         Push,
         React,
-        Swing
+        Swing //state for swing remains the same even if back, just the texture/source/base mask changes 
     }
 
     public WrestlerState currentState;
@@ -25,6 +25,7 @@ public class StateMachine : MonoBehaviour
     private List<Sprite> moveFrames;
     private List<Sprite> punchFrames;
     private List<Sprite> swingFrames;
+    private List<Sprite> swingBackFrames;
     private List<Sprite> pushFrames;
     private List<Sprite> reactFrames;
 
@@ -32,6 +33,7 @@ public class StateMachine : MonoBehaviour
     public float moveSpeed = 3f;
     private bool canMove = true;
     public bool actionPlaying;
+    public bool swingingBack = false;
 
     private int curFrame = 0;
     private float frameDuration = 0.1f; // time per frame

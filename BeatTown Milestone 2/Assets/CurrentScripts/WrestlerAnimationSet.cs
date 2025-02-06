@@ -10,9 +10,12 @@ public class WrestlerAnimationSet : ScriptableObject
     public Texture2D moveTexture;
     public Texture2D punchTexture;
     public Texture2D swingTexture;
+    public Texture2D swingBackTexture;
     public Texture2D pushTexture;
     public Texture2D reactTexture;
 
     public Texture2D sourceTexture;
+    public Texture2D sourceBackTexture;
     public Texture2D baseMask;  // common base mask if applicable for all animations
+    public Texture2D backBaseMask; 
 }
