@@ -10,6 +10,7 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance UIDENY;
     FMOD.Studio.EventInstance CUANG;
     FMOD.Studio.EventInstance FishBattle;
+    FMOD.Studio.EventInstance Shock_Value;
     FMOD.Studio.EventInstance FishSlap;
     FMOD.Studio.EventInstance Swing;
     FMOD.Studio.EventInstance Push;
@@ -30,6 +31,7 @@ public class All_SFX : MonoBehaviour
         walking = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/RingStep");
         CUANG = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Fish_UI/CUANG");
         FishBattle = FMODUnity.RuntimeManager.CreateInstance("event:/Fish_Battle");
+        Shock_Value = FMODUnity.RuntimeManager.CreateInstance("event:/Shock_Value");
         FishSlap = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Fish Slap Hit");
         Swing = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Carry");
         Push = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Push");
@@ -67,6 +69,11 @@ public class All_SFX : MonoBehaviour
     public void PlayFishBattle()
     {
         FishBattle.start();
+    }
+
+    public void PlayShockValue()
+    {
+        Shock_Value.start();
     }
 
     public void PlayFishSlap()
