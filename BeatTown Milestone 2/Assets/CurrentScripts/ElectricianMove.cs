@@ -17,12 +17,14 @@ public class ElectricianMove : MonoBehaviour
     [Header("Route")]
     [Tooltip("The list of grid positions (x,y,z=0) the Electrician will visit in order.")]
     public List<Vector3Int> routePositions = new List<Vector3Int>();
-    private int currentRouteIndex = 0;
+    public int currentRouteIndex = 0;
 
     [HideInInspector]
     public Vector3Int CurrentTilePosition;
 
     private SpriteRenderer spriteRenderer;
+    private bool canMove; // ask Spencer where to add bool check 
+    public bool InPuddle;
 
     private void Awake()
     {

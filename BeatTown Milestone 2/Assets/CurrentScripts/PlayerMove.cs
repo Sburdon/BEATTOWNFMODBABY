@@ -12,13 +12,13 @@ public class PlayerMove : MonoBehaviour
     public GameObject moveMentHighlight;
     public Tilemap tilemap; // Reference to the Tilemap
     public float moveSpeed = 1f; // Speed of movement
-    public int maxMoves = 2; // Maximum moves allowed in a turn
+    public int maxMoves = 2; // Maximum moves allowefd in a turn
     public int remainingMoves; // Count of remaining moves in the current turn
     private bool canMove = false; // Flag to control movement
     private ActionType currentAction; // Current action type for the player
     private Swing swingScript; // Reference to the Swing script
     private StateMachine stateMachine;
-    public Vector3Int CurrentTilePosition { get; private set; } // Current tile position in grid coordinates
+    public Vector3Int CurrentTilePosition { get;  set; } // Current tile position in grid coordinates
     private Coroutine currentMoveCoroutine; // Store reference to the current move coroutine
     private PlayerFatigue playerFatigue; // Reference to the PlayerFatigue script
     public int moveFatigueCost = 1; // Fatigue cost for movement
@@ -31,6 +31,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject noMoveImage;    // Image for no moves left
     public GameObject oneMoveImage;   // Image for one move left
     public GameObject twoMoveImage;   // Image for both moves left
+    public bool InPuddle;
 
     private void Awake()
     {

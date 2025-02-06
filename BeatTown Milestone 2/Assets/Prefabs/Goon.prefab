@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4034726167913234830}
   m_Layer: 0
   m_Name: Goon
-  m_TagString: Untagged
+  m_TagString: Goon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -116,7 +116,6 @@ MonoBehaviour:
   tilemap: {fileID: 0}
   electricianMove: {fileID: 0}
   electricianHealth: {fileID: 0}
-  moveDistance: 2
   moveSpeed: 2
   CurrentTilePosition: {x: 0, y: 0, z: 0}
   enemyHealth: {fileID: 0}

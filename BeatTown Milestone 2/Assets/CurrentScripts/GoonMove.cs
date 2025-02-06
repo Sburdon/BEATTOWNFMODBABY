@@ -47,6 +47,10 @@ public class GoonMove : MonoBehaviour
     // Public so other scripts can check whether Goon is charging a punch
     public bool IsPunchCharging => isPunchCharging;
 
+    private bool canMove; // ask Spencer where to add bool check
+    public bool InPuddle; 
+
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
