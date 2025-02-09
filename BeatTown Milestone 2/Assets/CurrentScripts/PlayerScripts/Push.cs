@@ -19,6 +19,8 @@ public class Push : MonoBehaviour
     private StateMachine stateMachine;
     public All_SFX All_SFX;
     public GameObject RealMoveHighlight;
+    public GameObject jumpHighlight;
+
 
     void Awake()
     {
@@ -105,6 +107,7 @@ public class Push : MonoBehaviour
             SwingHighlight.SetActive(false);
             PPShighlight.SetActive(true);
             moveMentHighlight.SetActive(false);
+            jumpHighlight.SetActive(false);
             playerMove.CancelMove();
             isPushing = true;
             selectedTarget = null;
@@ -133,7 +136,7 @@ public class Push : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra")))
+        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Goon") || hit.collider.CompareTag("Electrician") || hit.collider.CompareTag("Barra")))
         {
             Transform target = hit.collider.transform;
 

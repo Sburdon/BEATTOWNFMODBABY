@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8817764080709851294}
   - component: {fileID: 4858879070415540499}
   - component: {fileID: -493358338824373106}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Electrician
   m_TagString: Electrician
   m_Icon: {fileID: 0}
@@ -142,7 +142,9 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   - {x: 1, y: 0, z: 0}
   - {x: 1, y: -2, z: 0}
+  currentRouteIndex: 0
   CurrentTilePosition: {x: 0, y: 0, z: 0}
+  InPuddle: 0
 --- !u!114 &-493358338824373106
 MonoBehaviour:
   m_ObjectHideFlags: 0

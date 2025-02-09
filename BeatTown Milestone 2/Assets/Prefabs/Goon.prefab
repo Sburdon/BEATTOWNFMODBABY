@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7229931423695465607}
   - component: {fileID: 69601709187568420}
   - component: {fileID: 4034726167913234830}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Goon
   m_TagString: Goon
   m_Icon: {fileID: 0}
@@ -124,6 +124,7 @@ MonoBehaviour:
     type: 3}
   punchIndicatorPrefab: {fileID: 5677381966219801058, guid: 35bab3f6bd9c5864aadcb33ef3109648,
     type: 3}
+  InPuddle: 0
 --- !u!70 &4034726167913234830
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

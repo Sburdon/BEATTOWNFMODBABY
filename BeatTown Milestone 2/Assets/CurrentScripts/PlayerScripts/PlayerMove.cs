@@ -25,6 +25,8 @@ public class PlayerMove : MonoBehaviour
     public All_SFX All_SFX; // Reference to FMOD Script
     public GameObject SwingHighlight;
     public GameObject RealMoveHighlight;
+    public GameObject jumpHighlight;
+
 
     private bool hasFatigueBeenDeductedForMove = false; // Flag to ensure fatigue is only deducted once per move action
 
@@ -240,8 +242,9 @@ public class PlayerMove : MonoBehaviour
             RealMoveHighlight.SetActive(false);
             PPShighlight.SetActive(false);
             moveMentHighlight.SetActive(false);
+            jumpHighlight.SetActive(false);
 
-            if (swingScript != null && swingScript.IsSwinging())
+        if (swingScript != null && swingScript.IsSwinging())
             {
                 swingScript.CancelSwing();
             }
@@ -377,7 +380,7 @@ public class PlayerMove : MonoBehaviour
         Debug.Log("Movement reset for the next turn.");
     }
 
-    void UpdatePlayerPosition()
+    public void UpdatePlayerPosition()
     {
         transform.position = tilemap.GetCellCenterWorld(CurrentTilePosition);
         OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);

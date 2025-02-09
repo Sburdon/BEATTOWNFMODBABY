@@ -1,0 +1,239 @@
+using System.Collections;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+using static StateMachine;
+
+public class Jump : MonoBehaviour
+{
+    public TempTurnBase tempTurnBase;
+    public Tilemap tilemap;
+    public float jumpHeight = 5f; // Adjust this value as needed
+    public float jumpSpeed = 2f;
+    private Vector3Int targetTilePosition;
+    private GameObject targetToJumpOn;
+    private bool isJumpMode = false;
+    private bool isJumping = false;
+    private PlayerFatigue playerFatigue;
+    public int jumpFatigueCost = 2;
+    private StateMachine stateMachine;
+    public All_SFX All_SFX;
+
+    private OccupiedTilesManager occupiedTilesManager;
+    private PlayerMove playerMove; // Reference to the PlayerMove script
+    Vector3Int removePlayerOldPos;
+    public GameObject SwingHighlight;
+    public GameObject PPShighlight;
+    public GameObject moveMentHighlight;
+    public GameObject jumpHighlight;
+    public GameObject RealMoveHighlight;
+
+    void Awake()
+    {
+        occupiedTilesManager = GetComponent<OccupiedTilesManager>();
+        playerMove = GetComponent<PlayerMove>();
+        playerFatigue = GetComponent<PlayerFatigue>();
+        stateMachine = GetComponent<StateMachine>();
+        tempTurnBase = FindObjectOfType<TempTurnBase>();
+    }
+
+    public void OnJumpButtonPressed()
+    {
+        RealMoveHighlight.SetActive(false);
+        SwingHighlight.SetActive(false);
+        PPShighlight.SetActive(false);
+        moveMentHighlight.SetActive(false);
+        jumpHighlight.SetActive(true);
+        removePlayerOldPos = playerMove.CurrentTilePosition;
+        tempTurnBase.ResetAllColliders();
+
+        if (playerFatigue.CanPerformAction(jumpFatigueCost))
+        {
+            if (isJumping)
+            {
+                Debug.Log("Already jumping.");
+                return;
+            }
+
+            if (isJumpMode)
+            {
+                Debug.Log("Jump mode already active.");
+                return;
+            }
+
+            isJumpMode = true;
+            Debug.Log("Jump mode activated. Click on a valid tile to jump.");
+        }
+        else
+        {
+            Debug.Log("Not enough fatigue to jump.");
+        }
+    }
+
+    void Update()
+    {
+        if (isJumpMode && !isJumping)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
+                Vector3Int playerTilePosition = tilemap.WorldToCell(transform.position);
+                int deltaX = Mathf.Abs(clickedTilePosition.x - playerTilePosition.x);
+                int deltaY = Mathf.Abs(clickedTilePosition.y - playerTilePosition.y);
+
+                bool isDiagonalMove = (deltaX == 1 && deltaY == 1);
+
+                // Only allow jump if it is a valid straight jump (2 tiles) or a valid diagonal (1 tile)
+                if (IsValidStraightJump(playerTilePosition, clickedTilePosition) || isDiagonalMove)
+                {
+                    targetTilePosition = clickedTilePosition;
+                    playerFatigue.UseFatigue(jumpFatigueCost);
+                    StartCoroutine(JumpToTarget(targetTilePosition));
+
+                    isJumpMode = false;
+                    jumpHighlight.SetActive(false);
+                }
+                else
+                {
+                    Debug.Log("Invalid jump target.");
+                }
+            }
+            else if (Input.GetMouseButtonDown(1)) // Right-click to cancel
+            {
+                Debug.Log("Jump action canceled.");
+                isJumpMode = false;
+                
+            }
+        }
+    }
+
+    private bool IsValidStraightJump(Vector3Int playerTilePosition, Vector3Int targetTilePosition)
+    {
+        // Check if the jump is exactly 2 tiles in a straight line (no diagonal)
+        return (playerTilePosition.x == targetTilePosition.x && Mathf.Abs(playerTilePosition.y - targetTilePosition.y) == 2) ||
+               (playerTilePosition.y == targetTilePosition.y && Mathf.Abs(playerTilePosition.x - targetTilePosition.x) == 2);
+    }
+    private bool IsWithinTilemapBounds(Vector3Int position)
+    {
+        return tilemap.cellBounds.Contains(position);
+    }
+    private IEnumerator JumpToTarget(Vector3Int targetTilePosition)
+    {
+        if(!IsWithinTilemapBounds(targetTilePosition)) {
+          yield break;
+        }
+ 
+            isJumping = true;
+
+            Vector3 startPos = transform.position;
+            Vector3 endPos = tilemap.GetCellCenterWorld(targetTilePosition);
+
+            float elapsedTime = 0f;
+            float duration = 1f / jumpSpeed;
+
+            // Move player to target position
+            while (elapsedTime < duration)
+            {
+                transform.position = Vector3.Lerp(startPos, endPos, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            transform.position = endPos;
+
+            // Check if there's an enemy or other objects on the target tile
+            bool bounced = false;
+
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
+            foreach (var collider in colliders)
+            {
+                if (collider.CompareTag("Electrician") || collider.CompareTag("Goon"))
+                {
+                    // If we land on an enemy or Barra, we don't deal damage
+                    Debug.Log("Landed on an enemy or Barra, no damage dealt.");
+
+                    // Start bouncing to random adjacent tile until we find an empty one
+                    Vector3Int bounceTile = GetRandomAdjacentTile(transform.position);
+                    while (!IsValidTile(bounceTile) || !IsWithinTilemapBounds(bounceTile))
+                    {
+                        bounceTile = GetRandomAdjacentTile(bounceTile); // Continue bouncing to another random tile
+                    }
+
+                    // Once we find a valid empty tile, move to it
+                    transform.position = tilemap.GetCellCenterWorld(bounceTile);
+                    bounced = true;
+                    Debug.Log("Bounced to a valid adjacent tile.");
+                    break;
+                }
+                jumpHighlight.SetActive(false);
+                OccupiedTilesManager.Instance.AddOccupiedPosition(tilemap.WorldToCell(playerMove.CurrentTilePosition));
+                OccupiedTilesManager.Instance.RemoveOccupiedPosition(tilemap.WorldToCell(removePlayerOldPos));
+            }
+
+            // If no bounce was needed (no enemy or Barra), just finish the jump normally
+            if (!bounced)
+            {
+                jumpHighlight.SetActive(false);
+                Debug.Log("Jump action completed.");
+            }
+
+            isJumping = false;
+    }
+
+
+    // Check if the tile is valid for landing or bouncing (no enemy or other obstacle)
+    private bool IsValidTile(Vector3Int tilePosition)
+    {
+        // Check if the tile is not occupied by an enemy or Barra and is valid
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(tilemap.GetCellCenterWorld(tilePosition), 0.5f);
+        foreach (var collider in colliders)
+        {
+            if (collider.CompareTag("Electrician") || collider.CompareTag("Goon"))
+            {
+                return false; // Tile is not valid if it contains an enemy or Barra
+            }
+        }
+
+        return true; // Tile is valid if it doesn't contain any enemy or Barra
+    }
+
+    // Get a random adjacent tile to bounce to
+    private Vector3Int GetRandomAdjacentTile(Vector3 currentPos)
+    {
+        Vector3Int currentTile = tilemap.WorldToCell(currentPos);
+
+        // Define the adjacent tiles (up, down, left, right)
+        Vector3Int[] adjacentTiles = new Vector3Int[] {
+        currentTile + Vector3Int.up,
+        currentTile + Vector3Int.down,
+        currentTile + Vector3Int.left,
+        currentTile + Vector3Int.right,
+    };
+
+        // Shuffle the array to ensure randomness
+        System.Random rng = new System.Random();
+        adjacentTiles = adjacentTiles.OrderBy(tile => rng.Next()).ToArray();
+
+        // Keep trying to find a valid tile until one is found
+        foreach (var tile in adjacentTiles)
+        {
+            // Check if the tile is within bounds and valid
+            if (IsWithinTilemapBounds(tile) && IsValidTile(tile))
+            {
+                OccupiedTilesManager.Instance.AddOccupiedPosition(tilemap.WorldToCell(tile));
+                return tile; // Return the first valid adjacent tile   
+
+            }
+        }
+
+        // If no valid adjacent tile was found, return the current tile as fallback
+        return currentTile;
+    }
+    public void CancelJump()
+    {
+        isJumpMode = false;
+        isJumping = false;
+        Debug.Log("Jump action canceled.");
+    }
+}

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -48,6 +49,10 @@ public class Puddle : MonoBehaviour
             thingInPuddle = collision.gameObject;
             playerMove.InPuddle = true; // bool for Player script (not used for anything yet)
         }
+        else
+        {
+            return;
+        }
 
         // the object “as far as possible” in the direction it’s (supposed to be) facing.
         ThingInPuddle(thingInPuddle);
@@ -69,12 +74,14 @@ public class Puddle : MonoBehaviour
             startTile = playerMove.CurrentTilePosition;
             // Default to sliding right
             direction = Vector3Int.right;
+
         }
         else if (thing.CompareTag("Goon"))
         {
             startTile = goonMove.CurrentTilePosition;
             // Default to sliding right
             direction = Vector3Int.right;
+
         }
 
         else if (thing.CompareTag("Electrician"))
@@ -82,6 +89,7 @@ public class Puddle : MonoBehaviour
             startTile = electricianMove.CurrentTilePosition;
             // Default to sliding right
             direction = Vector3Int.right;
+
         }
 
         // In case something went wrong

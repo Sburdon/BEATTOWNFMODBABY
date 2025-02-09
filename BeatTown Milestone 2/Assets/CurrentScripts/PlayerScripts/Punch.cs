@@ -17,6 +17,8 @@ public class Punch : MonoBehaviour
     private StateMachine stateMachine;
     public All_SFX All_SFX;
     public GameObject RealMoveHighlight;
+    public GameObject jumpHighlight;
+
 
     private void Awake()
     {
@@ -40,7 +42,7 @@ public class Punch : MonoBehaviour
 
                     if (hit.collider != null)
                     {
-                        if (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra"))
+                        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Goon") || hit.collider.CompareTag("Electrician") || hit.collider.CompareTag("Barra")))
                         {
                             Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
                             Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
@@ -75,6 +77,7 @@ public class Punch : MonoBehaviour
             SwingHighlight.SetActive(false);
             PPShighlight.SetActive(true);
             moveMentHighlight.SetActive(false);
+            jumpHighlight.SetActive(false);
             isPunching = true;
             selectedEnemy = null;
             playerMove.CurrentAction = ActionType.Punch;

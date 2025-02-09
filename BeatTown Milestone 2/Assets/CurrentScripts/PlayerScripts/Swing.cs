@@ -22,6 +22,8 @@ public class Swing : MonoBehaviour
     private StateMachine stateMachine;
     public All_SFX All_SFX;
     public GameObject RealMoveHighlight;
+    public GameObject jumpHighlight;
+
 
     void Awake()
     {
@@ -48,6 +50,7 @@ public class Swing : MonoBehaviour
             PPShighlight.SetActive(true);
             SwingHighlight.SetActive(false);
             moveMentHighlight.SetActive(false);
+            jumpHighlight.SetActive(false);
             if (isSwinging)
             {
                 Debug.Log("Already swinging.");
@@ -129,7 +132,7 @@ public class Swing : MonoBehaviour
             Debug.Log($"Hit object: {hit.collider.name} with tag: {hit.collider.tag}, Collider enabled: {hit.collider.enabled}");
         }
 
-        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra")))
+        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Goon") || hit.collider.CompareTag("Electrician") || hit.collider.CompareTag("Barra")))
         {
             Vector3Int targetPosition = tilemap.WorldToCell(hit.collider.transform.position);
             Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
