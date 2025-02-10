@@ -18,19 +18,18 @@ public class Swing : MonoBehaviour
     private bool isSwingMode = false;
     private bool isSwinging = false;
     private PlayerFatigue playerFatigue;
+    private PlayerMove playerMove;
     public int swingFatigueCost = 2;
     private StateMachine stateMachine;
     public All_SFX All_SFX;
     public GameObject RealMoveHighlight;
-    public GameObject jumpHighlight;
-
 
     void Awake()
     {
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
         tempTurnBase = FindObjectOfType<TempTurnBase>();
-
+        playerMove = GetComponent<PlayerMove>();
     }
 
 
@@ -42,33 +41,39 @@ public class Swing : MonoBehaviour
 
     public void OnSwingButtonPressed()
     {
-        tempTurnBase.ResetAllColliders();
-
-        if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost))
+        if (tempTurnBase.isPlayerTurn)
         {
-            RealMoveHighlight.SetActive(false);
-            PPShighlight.SetActive(true);
-            SwingHighlight.SetActive(false);
-            moveMentHighlight.SetActive(false);
-            jumpHighlight.SetActive(false);
-            if (isSwinging)
+            if (playerMove.pendingMovePurchase == true)
             {
-                Debug.Log("Already swinging.");
-                return;
+                playerMove.ResetPendingMove();
             }
+            tempTurnBase.ResetAllColliders();
 
-            if (isSwingMode)
+            if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost))
             {
-                Debug.Log("Swing mode already active.");
-                return;
-            }
+                RealMoveHighlight.SetActive(false);
+                PPShighlight.SetActive(true);
+                SwingHighlight.SetActive(false);
+                moveMentHighlight.SetActive(false);
+                if (isSwinging)
+                {
+                    Debug.Log("Already swinging.");
+                    return;
+                }
 
-            isSwingMode = true;
-            Debug.Log("Swing mode activated. Click on an adjacent enemy or Barra to swing.");
-        }
-        else
-        {
-            Debug.Log("Not enough fatigue to swing.");
+                if (isSwingMode)
+                {
+                    Debug.Log("Swing mode already active.");
+                    return;
+                }
+
+                isSwingMode = true;
+                Debug.Log("Swing mode activated. Click on an adjacent enemy or Barra to swing.");
+            }
+            else
+            {
+                Debug.Log("Not enough fatigue to swing.");
+            }
         }
     }
 
@@ -132,7 +137,7 @@ public class Swing : MonoBehaviour
             Debug.Log($"Hit object: {hit.collider.name} with tag: {hit.collider.tag}, Collider enabled: {hit.collider.enabled}");
         }
 
-        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Goon") || hit.collider.CompareTag("Electrician") || hit.collider.CompareTag("Barra")))
+        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra")))
         {
             Vector3Int targetPosition = tilemap.WorldToCell(hit.collider.transform.position);
             Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
