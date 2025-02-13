@@ -19,8 +19,6 @@ public class Push : MonoBehaviour
     private StateMachine stateMachine;
     public All_SFX All_SFX;
     public GameObject RealMoveHighlight;
-    public GameObject jumpHighlight;
-
 
     void Awake()
     {
@@ -100,24 +98,31 @@ public class Push : MonoBehaviour
 
     public void OnPushButtonPressed()
     {
-        tempTurnBase.ResetAllColliders();
-        if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
+        if (tempTurnBase.isPlayerTurn)
         {
-            RealMoveHighlight.SetActive(false);
-            SwingHighlight.SetActive(false);
-            PPShighlight.SetActive(true);
-            moveMentHighlight.SetActive(false);
-            jumpHighlight.SetActive(false);
-            playerMove.CancelMove();
-            isPushing = true;
-            selectedTarget = null;
-            Debug.Log("Push button pressed, current action: " + playerMove.CurrentAction);
-        }
-        else
-        {
-            Debug.Log("Not enough fatigue to push.");
+            if (playerMove.pendingMovePurchase == true)
+            {
+                playerMove.ResetPendingMove();
+            }
+            tempTurnBase.ResetAllColliders();
+            if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
+            {
+                RealMoveHighlight.SetActive(false);
+                SwingHighlight.SetActive(false);
+                PPShighlight.SetActive(true);
+                moveMentHighlight.SetActive(false);
+                playerMove.CancelMove();
+                isPushing = true;
+                selectedTarget = null;
+                Debug.Log("Push button pressed, current action: " + playerMove.CurrentAction);
+            }
+            else
+            {
+                Debug.Log("Not enough fatigue to push.");
+            }
         }
     }
+
 
     public void CancelPush()
     {
@@ -136,7 +141,7 @@ public class Push : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Goon") || hit.collider.CompareTag("Electrician") || hit.collider.CompareTag("Barra")))
+        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra")))
         {
             Transform target = hit.collider.transform;
 

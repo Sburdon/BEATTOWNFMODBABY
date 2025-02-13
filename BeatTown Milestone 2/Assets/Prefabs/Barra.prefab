@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: -1942732356278275659}
   - component: {fileID: 3584107739911414736}
   - component: {fileID: -9014424349289359115}
+  - component: {fileID: -8722220608973156056}
   m_Layer: 22
   m_Name: Barra
   m_TagString: Barra
@@ -106,9 +107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 5
   health: 0
-  fullHealthBarPrefab: {fileID: 5397143593198203743, guid: 51be1fbc4e5094e4db9ed2e8497f317a,
-    type: 3}
-  emptyHealthBarPrefab: {fileID: 2196120353045712488, guid: b7b9401cea1141441946b5aeea418c71,
+  healthSliderPrefab: {fileID: 2293432034552231111, guid: f1813d4b914eaf84a9bc872b8bf5d332,
     type: 3}
 --- !u!50 &5081536892844149405
 Rigidbody2D:
@@ -248,3 +247,24 @@ MonoBehaviour:
   moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 1b61796a7dbbd61458e9191ecfedcd73, type: 2}
+--- !u!95 &-8722220608973156056
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3323733470962230501}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9f3d5768ac85774469bf65ff8966724d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
