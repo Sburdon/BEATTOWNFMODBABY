@@ -16,6 +16,8 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance Push;
     FMOD.Studio.EventInstance PlayerHurt;
     FMOD.Studio.EventInstance Caught;
+    FMOD.Studio.EventInstance Panel_Fix;
+    FMOD.Studio.EventInstance Panel_Added;
 
 
     int Cuda_Count = 0;
@@ -37,6 +39,9 @@ public class All_SFX : MonoBehaviour
         Push = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Push");
         PlayerHurt = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Player Hurt");
         Caught = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Fish_UI/Caught");
+        Panel_Fix = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Panel_Fix");
+        Panel_Added = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Panel_Added");
+
 
     }
 
@@ -107,6 +112,15 @@ public class All_SFX : MonoBehaviour
         UIDENY.start();
     }
 
+    public void PlayPanelFix()
+    {
+        Panel_Fix.start();
+    }
+
+    public void PlayPanelAdded()
+    {
+        Panel_Added.start();
+    }
 
 
 
