@@ -170,44 +170,56 @@ public class RespawnManager : MonoBehaviour
     // ------------------------------------------------------------------
     // Hook Spawning
     // ------------------------------------------------------------------
-    private void SpawnHooks(int count)
+   private void SpawnHooks(int count)
+{
+    // If there’s no hook prefab, we still stop here
+    if (hookPrefab == null)
     {
-        if (hookPrefab == null)
+        Debug.LogError("RespawnManager: hookPrefab is not assigned.");
+        return;
+    }
+
+    // If count is zero, skip everything else
+    if (count <= 0)
+    {
+        Debug.Log("RespawnManager: No hooks to spawn. Skipping hook spawning.");
+        return;
+    }
+
+    // If count > 0, run the original loop
+    for (int i = 0; i < count; i++)
+    {
+        Vector3Int hookSpawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
+        Vector3 hookWorldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(hookSpawnTile);
+
+        GameObject hookInstance = Instantiate(hookPrefab, hookWorldPosition, Quaternion.identity);
+        OccupiedTilesManager.Instance.AddOccupiedPosition(hookSpawnTile);
+
+        // Set references
+        Hook hookScript = hookInstance.GetComponent<Hook>();
+        if (hookScript != null)
         {
-            Debug.LogError("RespawnManager: hookPrefab is not assigned.");
-            return;
+            hookScript.tilemap = tilemap;
+            hookScript.player = playerMove;
+            hookScript.fishCountText = fishCountText;
+        }
+        else
+        {
+            Debug.LogError("RespawnManager: Hook prefab missing Hook component!");
         }
 
-        for (int i = 0; i < count; i++)
+        // Only set Swing/Push references on the very first hook
+        if (i == 0)
         {
-            Vector3Int hookSpawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
-            Vector3 hookWorldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(hookSpawnTile);
+            Swing swingScript = FindObjectOfType<Swing>();
+            Push pushScript = FindObjectOfType<Push>();
 
-            GameObject hookInstance = Instantiate(hookPrefab, hookWorldPosition, Quaternion.identity);
-            OccupiedTilesManager.Instance.AddOccupiedPosition(hookSpawnTile);
-
-            Hook hookScript = hookInstance.GetComponent<Hook>();
-            if (hookScript != null)
-            {
-                hookScript.tilemap = tilemap;
-                hookScript.player = playerMove;
-                hookScript.fishCountText = fishCountText;
-            }
-            else
-            {
-                Debug.LogError("RespawnManager: Hook prefab missing Hook component!");
-            }
-
-            if (i == 0)
-            {
-                Swing swingScript = FindObjectOfType<Swing>();
-                Push pushScript = FindObjectOfType<Push>();
-
-                if (swingScript != null) swingScript.hook = hookScript;
-                if (pushScript != null) pushScript.hook = hookScript;
-            }
+            if (swingScript != null) swingScript.hook = hookScript;
+            if (pushScript != null) pushScript.hook = hookScript;
         }
     }
+}
+
 
     // ------------------------------------------------------------------
     // Regular Enemy Logic
