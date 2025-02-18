@@ -22,7 +22,7 @@ public class AIMove : MonoBehaviour
     [HideInInspector]
     public Vector3Int CurrentTilePosition { get; set; }
 
-    private EnemyHealth enemyHealth;
+    public EnemyHealth enemyHealth;
     private StateMachine stateMachine;
     private SpriteRenderer spriteRenderer;
 
@@ -199,7 +199,7 @@ public class AIMove : MonoBehaviour
     /// <summary>
     /// Calculates a strictly orthogonal path towards the target position by first moving along x, then along y.
     /// </summary>
-    private List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int end)
+    protected virtual List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int end)
     {
         List<Vector3Int> path = new List<Vector3Int>();
 
@@ -255,7 +255,7 @@ public class AIMove : MonoBehaviour
         return path;
     }
 
-    private IEnumerator MoveAlongPath(List<Vector3Int> path)
+    public IEnumerator MoveAlongPath(List<Vector3Int> path)
     {
         foreach (Vector3Int targetPosition in path)
         {
@@ -303,7 +303,7 @@ public class AIMove : MonoBehaviour
         transform.position = targetWorldPosition;
     }
 
-    private bool IsMoveValid(Vector3Int targetTilePosition)
+    public bool IsMoveValid(Vector3Int targetTilePosition)
     {
         if (!tilemap.HasTile(targetTilePosition)
             || OccupiedTilesManager.Instance.IsTileOccupied(targetTilePosition)

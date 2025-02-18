@@ -8,6 +8,8 @@ TagManager:
   - AI
   - Barra
   - Wall
+  - Electrician
+  - Goon
   layers:
   - Default
   - TransparentFX

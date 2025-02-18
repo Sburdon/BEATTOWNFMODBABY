@@ -8,5 +8,6 @@ public enum ActionType
     Move,   // Move action
     Punch,   // Spin action
     Swing,   // Swing action
+    Jump,    //Jump action
     Push      //Push action
 }

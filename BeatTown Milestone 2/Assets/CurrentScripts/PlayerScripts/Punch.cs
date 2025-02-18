@@ -17,6 +17,8 @@ public class Punch : MonoBehaviour
     private StateMachine stateMachine;
     public All_SFX All_SFX;
     public GameObject RealMoveHighlight;
+    public GameObject jumpHighlight;
+
 
     private void Awake()
     {
@@ -30,59 +32,61 @@ public class Punch : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && isPunching)
+        if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-
-            if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra")))
+            if (isPunching)
             {
-                Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
-                Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-                if (IsWithinPunchRange(playerPosition, enemyPosition))
-                {
-                    selectedEnemy = hit.collider.transform;
-                    FlipPlayerIfNeeded(enemyPosition);
-                    Debug.Log($"Selected enemy for punch: {selectedEnemy.name}");
-                    TryPunchEnemy();
-                }
-                else
-                {
-                    Debug.Log("Selected enemy is out of punch range.");
+                    if (hit.collider != null)
+                    {
+                        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Goon") || hit.collider.CompareTag("Electrician") || hit.collider.CompareTag("Barra")))
+                        {
+                            Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
+                            Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
+
+                            if (IsWithinPunchRange(playerPosition, enemyPosition))
+                            {
+                                selectedEnemy = hit.collider.transform;
+                                FlipPlayerIfNeeded(enemyPosition); // Flip player before punching
+                                Debug.Log($"Selected enemy for punch: {selectedEnemy.name}");
+                                TryPunchEnemy();
+                                
+                            }
+                            else
+                                {
+                                    Debug.Log("Selected enemy is out of punch range.");
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
-
+    
 
     public void OnPunchButtonPressed()
     {
-        if (tempTurnBase.isPlayerTurn)
+        if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
         {
-            if (playerMove.pendingMovePurchase == true)
-            {
-                playerMove.ResetPendingMove();
-            }
+            tempTurnBase.ResetAllColliders();
 
-            if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
-            {
-                tempTurnBase.ResetAllColliders();
-
-                RealMoveHighlight.SetActive(false);
-                SwingHighlight.SetActive(false);
-                PPShighlight.SetActive(true);
-                moveMentHighlight.SetActive(false);
-                isPunching = true;
-                selectedEnemy = null;
-                playerMove.CurrentAction = ActionType.Punch;
-                Debug.Log("Punch button pressed, current action: " + playerMove.CurrentAction);
-                CheckEnemiesInRange();
-            }
-            else
-            {
-                Debug.Log("Not enough fatigue to punch.");
-            }
+            RealMoveHighlight.SetActive(false);
+            SwingHighlight.SetActive(false);
+            PPShighlight.SetActive(true);
+            moveMentHighlight.SetActive(false);
+            jumpHighlight.SetActive(false);
+            isPunching = true;
+            selectedEnemy = null;
+            playerMove.CurrentAction = ActionType.Punch;
+            Debug.Log("Punch button pressed, current action: " + playerMove.CurrentAction);
+            CheckEnemiesInRange();
+        }
+        else
+        {
+            Debug.Log("Not enough fatigue to punch.");
         }
     }
 
@@ -94,6 +98,31 @@ public class Punch : MonoBehaviour
         Debug.Log("Punch action canceled.");
     }
 
+    //void SelectEnemy()
+    //{
+    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //    RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+    //    if (hit.collider != null)
+    //    {
+    //        if (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra"))
+    //        {
+    //            Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
+    //            Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
+
+    //            if (IsWithinPunchRange(playerPosition, enemyPosition))
+    //            {
+    //                selectedEnemy = hit.collider.transform;
+    //                FlipPlayerIfNeeded(enemyPosition); // Flip player before punching
+    //                Debug.Log($"Selected enemy for punch: {selectedEnemy.name}");
+    //            }
+    //            else
+    //            {
+    //                Debug.Log("Selected enemy is out of punch range.");
+    //            }
+    //        }
+    //    }
+    //}
 
     void TryPunchEnemy()
     {
