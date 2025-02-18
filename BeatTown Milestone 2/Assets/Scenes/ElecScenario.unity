@@ -1126,11 +1126,12 @@ MonoBehaviour:
     type: 3}
   hookPrefab: {fileID: 146274211700111789, guid: b77ac0510f587904990eefe19e10b817,
     type: 3}
-  goonPrefab: {fileID: 0}
+  goonPrefab: {fileID: 7009643357949541972, guid: 13b78cc3079c14046ba0681cd748f43b,
+    type: 3}
   goonSpawnTile: {x: 0, y: 0, z: 0}
   electricianPrefab: {fileID: 7856497740735355207, guid: be8ccf3335ca07d46a91d210fdab7d7c,
     type: 3}
-  electricianSpawnTile: {x: 2, y: 2, z: 0}
+  electricianSpawnTile: {x: 1, y: 0, z: 0}
   initialEnemiesToSpawn: 0
   minEnemies: 0
   respawnDelay: 0.5
@@ -2626,7 +2627,7 @@ MonoBehaviour:
   enemiesToSpawn: []
   clearExistingEnemies: 0
   playerMove: {fileID: 1977991994}
-  tempTurnBase: {fileID: 1562467052}
+  tempTurnBase: {fileID: 0}
 --- !u!4 &335138833
 Transform:
   m_ObjectHideFlags: 0
@@ -13961,7 +13962,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1562467053}
-  - component: {fileID: 1562467052}
+  - component: {fileID: 1562467054}
   m_Layer: 0
   m_Name: TempTurnBase
   m_TagString: Untagged
@@ -13969,41 +13970,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1562467052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1562467051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3c278c3eddb1134eabf9ca5d3c77c1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  turnOrderPanel: {fileID: 2085965856}
-  playerBlueSprite: {fileID: 21300000, guid: 7c935034f0dacaa4e894b2fc1d774a38, type: 3}
-  playerRedSprite: {fileID: 21300000, guid: 7ff35a6abd326c2408c2fc32b924afdf, type: 3}
-  enemyBlueSprite: {fileID: 21300000, guid: 1813d240af6536341b6c3628c46cb659, type: 3}
-  enemyRedSprite: {fileID: 21300000, guid: c69fa4295e9088843adf54d62761d9f2, type: 3}
-  barraBlueSprite: {fileID: 21300000, guid: 5022d49213b23f34c9e73a4bece25cac, type: 3}
-  barraRedSprite: {fileID: 21300000, guid: 76b673cb7f91b9344b29d86d3d3e67a2, type: 3}
-  electricianBlueSprite: {fileID: 0}
-  electricianRedSprite: {fileID: 0}
-  goonBlueSprite: {fileID: 0}
-  goonRedSprite: {fileID: 0}
-  turnOrderPrefab: {fileID: 122606133422700438, guid: 0076737d9bf349743abeeba6f6d31d02,
-    type: 3}
-  PPShighlight: {fileID: 1563459242}
-  moveMentHighlight: {fileID: 597358265}
-  aiUnits: []
-  barraUnits: []
-  electricianUnits: []
-  goonUnits: []
-  playerMove: {fileID: 1977991994}
-  playerFatigue: {fileID: 1977991997}
-  RealMoveHighlight: {fileID: 1253888467}
-  All_SFX: {fileID: 0}
 --- !u!4 &1562467053
 Transform:
   m_ObjectHideFlags: 0
@@ -14019,6 +13985,42 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1562467054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1562467051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 895d6369497124c4ca514b9d6e49aabc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnOrderPanel: {fileID: 2085965856}
+  playerBlueSprite: {fileID: 21300000, guid: 7c935034f0dacaa4e894b2fc1d774a38, type: 3}
+  playerRedSprite: {fileID: 21300000, guid: 7ff35a6abd326c2408c2fc32b924afdf, type: 3}
+  enemyBlueSprite: {fileID: 21300000, guid: 1813d240af6536341b6c3628c46cb659, type: 3}
+  enemyRedSprite: {fileID: 21300000, guid: c69fa4295e9088843adf54d62761d9f2, type: 3}
+  barraBlueSprite: {fileID: 21300000, guid: 5022d49213b23f34c9e73a4bece25cac, type: 3}
+  barraRedSprite: {fileID: 21300000, guid: 76b673cb7f91b9344b29d86d3d3e67a2, type: 3}
+  goonBlueSprite: {fileID: 0}
+  goonRedSprite: {fileID: 0}
+  electricianBlueSprite: {fileID: 0}
+  electricianRedSprite: {fileID: 0}
+  turnOrderPrefab: {fileID: 122606133422700438, guid: 0076737d9bf349743abeeba6f6d31d02,
+    type: 3}
+  PPShighlight: {fileID: 1563459242}
+  moveMentHighlight: {fileID: 597358265}
+  aiUnits: []
+  goonUnits: []
+  electricianUnits: []
+  barraUnits: []
+  playerMove: {fileID: 1977991994}
+  playerFatigue: {fileID: 1977991997}
+  isPlayerTurn: 1
+  RealMoveHighlight: {fileID: 1253888467}
+  All_SFX: {fileID: 0}
 --- !u!1 &1563459242
 GameObject:
   m_ObjectHideFlags: 0
@@ -16589,7 +16591,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1562467052}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TempTurnBase, Assembly-CSharp
         m_MethodName: EndPlayerTurn
         m_Mode: 1
@@ -18005,7 +18007,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e688630716e12eb48b845928b9dcc9bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tempTurnBase: {fileID: 1562467052}
+  tempTurnBase: {fileID: 0}
   SwingHighlight: {fileID: 1959559090}
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}
@@ -18028,7 +18030,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8c7fe7bd39c4ad408e76c85e1dd6d63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tempTurnBase: {fileID: 1562467052}
+  tempTurnBase: {fileID: 0}
   SwingHighlight: {fileID: 1959559090}
   PPShighlight: {fileID: 1563459242}
   moveMentHighlight: {fileID: 597358265}
@@ -18115,7 +18117,7 @@ MonoBehaviour:
   hook: {fileID: 0}
   All_SFX: {fileID: 1977992003}
   RealMoveHighlight: {fileID: 1253888467}
-  jumpHighlight: {fileID: 582571621}
+  jumpHighlight: {fileID: 0}
 --- !u!114 &1977992001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18195,7 +18197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f95f0c28d93c80458ac64285e0fa87e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tempTurnBase: {fileID: 1562467052}
+  tempTurnBase: {fileID: 0}
   tilemap: {fileID: 644845377}
   jumpHeight: 5
   jumpSpeed: 5
