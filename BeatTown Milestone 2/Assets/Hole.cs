@@ -40,19 +40,22 @@ public class Hole : MonoBehaviour
         {
             electricianMove = collision.gameObject.GetComponent<ElectricianMove>();
             thingInHole = collision.gameObject;
-         //   electricianMove.InHole = true; // bool for Electrician script (not used for anything yet)
+         //   electricianMove.Prone = true; // bool for Electrician script (not used for anything yet)
         }
         else if (collision.gameObject.CompareTag("Goon"))
         {
             goonMove = collision.gameObject.GetComponent<GoonMove>();
             thingInHole = collision.gameObject;
-          //  goonMove.InHole = true; // bool for Goon script (not used for anything yet)
+          //  goonMove.Prone = true; // bool for Goon script (not used for anything yet)
         }
         else if (collision.gameObject.CompareTag("Player"))
         {
+            // add logic to stop Player (mid turn) from moving (until they spend 1 fatigue)
             playerMove = collision.gameObject.GetComponent<PlayerMove>();
             thingInHole = collision.gameObject;
-       //     playerMove.InHole = true; // bool for Player script (not used for anything yet)
+            PlayerFatigue playerFatigue = collision.GetComponent<PlayerFatigue>();
+            playerFatigue.prone = true;  // bool in PlayerFatigue that requires + 1 fatigue spent
+            
         }
         else
         {
