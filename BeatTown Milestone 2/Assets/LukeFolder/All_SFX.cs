@@ -18,7 +18,9 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance Caught;
     FMOD.Studio.EventInstance Panel_Fix;
     FMOD.Studio.EventInstance Panel_Added;
-
+    FMOD.Studio.EventInstance Jump;
+    FMOD.Studio.EventInstance Slip;
+    FMOD.Studio.EventInstance Fall;
 
     int Cuda_Count = 0;
 
@@ -41,6 +43,9 @@ public class All_SFX : MonoBehaviour
         Caught = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Fish_UI/Caught");
         Panel_Fix = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Panel_Fix");
         Panel_Added = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Panel_Added");
+        Jump = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Jump");
+        Slip = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Slip");
+        Fall = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Fall");
 
 
     }
@@ -120,7 +125,31 @@ public class All_SFX : MonoBehaviour
     public void PlayPanelAdded()
     {
         Panel_Added.start();
+
+
     }
+
+    public void PlayJump()
+    {
+        Jump.start();
+    }
+
+    public void PlaySlip()
+    {
+        Slip.start();
+    }
+
+    public void PlayFall()
+    {
+        Fall.start();
+
+
+    }
+
+
+
+
+
 
 
 
