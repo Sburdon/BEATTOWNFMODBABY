@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using static StateMachine;
 
@@ -28,6 +29,13 @@ public class Jump : MonoBehaviour
     public GameObject jumpHighlight;
     public GameObject RealMoveHighlight;
 
+    private void Start()
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 1) // Change to your scene index
+        {
+            this.enabled = false;
+        }
+    }
     void Awake()
     {
         occupiedTilesManager = GetComponent<OccupiedTilesManager>();
