@@ -64,34 +64,43 @@ public class TempTurnBase : MonoBehaviour
         {
             Debug.LogError("RespawnManager instance not found in the scene.");
         }
+
         ResetAllColliders();
         InitializeTurnOrder();
         UpdateTurnOrderUI();
     }
 
+    /// <summary>
+    /// Builds the initial turn order (Player, AI, Goon, Electrician, Barra, etc.).
+    /// </summary>
     private void InitializeTurnOrder()
     {
         turnUnits.Clear();
-        // Player first
+
+        // Player always first
         turnUnits.Add(playerMove);
 
-        // Existing AI
+        // Standard AI
         foreach (var ai in aiUnits)
             turnUnits.Add(ai);
 
-        // Goons
+        // Goon units
         foreach (var goon in goonUnits)
             turnUnits.Add(goon);
 
-        // Electricians
+        // Electrician units
         foreach (var electrician in electricianUnits)
             turnUnits.Add(electrician);
 
-        // Barras
+        // Barra
         foreach (var barra in barraUnits)
             turnUnits.Add(barra);
     }
 
+    /// <summary>
+    /// Moves the current unit (turnUnits[currentTurnIndex]) to the back of the list,
+    /// then triggers the rotation animation.
+    /// </summary>
     private void RotateTurnOrder()
     {
         var unit = turnUnits[currentTurnIndex];
@@ -101,7 +110,6 @@ public class TempTurnBase : MonoBehaviour
         // Ensure the index wraps around
         currentTurnIndex = currentTurnIndex % turnUnits.Count;
 
-        // Animate only the current unit's turn end (optional)
         StartCoroutine(AnimateTurnOrderRotation());
     }
 
@@ -200,19 +208,20 @@ public class TempTurnBase : MonoBehaviour
         ).setEaseInCubic();
     }
 
+    /// <summary>
+    /// Called to start the turn for whichever unit is at currentTurnIndex.
+    /// </summary>
     public void StartTurn()
-{
-    if (turnUnits.Count == 0) return;
-
-    var currentUnit = turnUnits[currentTurnIndex];
-
-    if (currentUnit is PlayerMove)
     {
-        respawnManager.MaintainEnemyCount();
-        
-        // NEW CHECK: only do killCount checks if hook exists
-        if (hook != null)
+        if (turnUnits.Count == 0) return;
+
+        var currentUnit = turnUnits[currentTurnIndex];
+
+        if (currentUnit is PlayerMove)
         {
+            // Keep hooking in the "spawn Barra" logic
+            respawnManager.MaintainEnemyCount();
+
             if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra == true)
             {
                 RespawnManager.Instance.SpawnBarra();
@@ -223,27 +232,26 @@ public class TempTurnBase : MonoBehaviour
                 RespawnManager.Instance.SpawnBarra();
                 spawnBarra1 = false;
             }
-        }
 
-        StartPlayerTurn();
+            StartPlayerTurn();
+        }
+        else if (currentUnit is AIMove ai)
+        {
+            StartCoroutine(ProcessAITurn(ai));
+        }
+        else if (currentUnit is BarraMove barra)
+        {
+            StartCoroutine(ProcessBarraTurn(barra));
+        }
+        else if (currentUnit is GoonMove goon)
+        {
+            StartCoroutine(ProcessGoonTurn(goon));
+        }
+        else if (currentUnit is ElectricianMove electrician)
+        {
+            StartCoroutine(ProcessElectricianTurn(electrician));
+        }
     }
-    else if (currentUnit is AIMove ai)
-    {
-        StartCoroutine(ProcessAITurn(ai));
-    }
-    else if (currentUnit is BarraMove barra)
-    {
-        StartCoroutine(ProcessBarraTurn(barra));
-    }
-    else if (currentUnit is GoonMove goon)
-    {
-        StartCoroutine(ProcessGoonTurn(goon));
-    }
-    else if (currentUnit is ElectricianMove electrician)
-    {
-        StartCoroutine(ProcessElectricianTurn(electrician));
-    }
-}
 
     void Update()
     {
@@ -280,7 +288,9 @@ public class TempTurnBase : MonoBehaviour
         }
     }
 
-    // ----------------- REMOVALS -----------------
+    // ─────────────────────────────────────
+    // Removal Methods (AI, Barra, Goon, Electrician)
+    // ─────────────────────────────────────
     public void RemoveAIUnit(AIMove aiMove)
     {
         if (aiMove != null && aiUnits.Contains(aiMove))
@@ -326,9 +336,11 @@ public class TempTurnBase : MonoBehaviour
             UpdateTurnOrderUI();
             Debug.Log($"TempTurnBase: Removed {goonMove.gameObject.name} from Goon units.");
 
-            if (currentUnitIndex >= aiUnits.Count + barraUnits.Count + goonUnits.Count + electricianUnits.Count)
+            if (currentUnitIndex >=
+                aiUnits.Count + barraUnits.Count + goonUnits.Count + electricianUnits.Count)
             {
-                currentUnitIndex = aiUnits.Count + barraUnits.Count + goonUnits.Count + electricianUnits.Count - 1;
+                currentUnitIndex =
+                    aiUnits.Count + barraUnits.Count + goonUnits.Count + electricianUnits.Count - 1;
             }
 
             UpdateTurnOrderUI();
@@ -354,35 +366,49 @@ public class TempTurnBase : MonoBehaviour
             UpdateTurnOrderUI();
         }
     }
-    // -------------------------------------------
 
+    // ─────────────────────────────────────
+    // End Player Turn
+    // ─────────────────────────────────────
     public void EndPlayerTurn()
-{
-    if (!isPlayerTurn || isProcessingTurn) return;
-
-    // NEW: Resolve all Goon punches here
-    foreach (var goon in goonUnits)
     {
-        goon.ResolvePunch();
+        if (!isPlayerTurn || isProcessingTurn) return;
+
+        // If you want to handle some Goon-specific logic at the end of the player's turn:
+        foreach (var goon in goonUnits)
+        {
+            goon.ResolvePunch(); 
+        }
+
+        PPShighlight.SetActive(false);
+        moveMentHighlight.SetActive(false);
+        RealMoveHighlight.SetActive(false);
+        isPlayerTurn = false;
+
+        RotateTurnOrder();
+        StartTurn();
     }
 
-    PPShighlight.SetActive(false);
-    moveMentHighlight.SetActive(false);
-    RealMoveHighlight.SetActive(false);
-    isPlayerTurn = false;
-
-    RotateTurnOrder();
-    StartTurn();
-}
-
-    // ----------------- TURN PROCESSING -----------------
+    // ─────────────────────────────────────
+    // AI, Barra, Goon, Electrician coroutines
+    // ─────────────────────────────────────
     private IEnumerator ProcessAITurn(AIMove ai)
     {
         isProcessingTurn = true;
-        // If you have AI logic or AI fatigue, handle it here
-        Debug.Log($"AI {ai.gameObject.name} is taking its turn.");
 
-        yield return null;
+        // If we have an AI fatigue system:
+        AIFatigue aiFatigue = ai.GetComponent<AIFatigue>();
+        if (aiFatigue != null)
+        {
+            Debug.Log($"AI {ai.gameObject.name} is taking its turn.");
+            yield return StartCoroutine(aiFatigue.HandleTurn());
+        }
+        else
+        {
+            // Otherwise, do nothing or your own AI logic
+            Debug.LogWarning($"No AIFatigue found on {ai.gameObject.name}. The AI won't move.");
+            yield return null;
+        }
 
         RotateTurnOrder();
         StartTurn();
@@ -392,21 +418,28 @@ public class TempTurnBase : MonoBehaviour
     private IEnumerator ProcessBarraTurn(BarraMove barra)
     {
         isProcessingTurn = true;
-        Debug.Log($"Barra {barra.gameObject.name} is taking its turn.");
 
-        yield return null;
+        BarraFatigue barraFatigue = barra.GetComponent<BarraFatigue>();
+        if (barraFatigue != null)
+        {
+            Debug.Log($"Barra {barra.gameObject.name} is taking its turn.");
+            yield return StartCoroutine(barraFatigue.HandleTurn());
+        }
+        else
+        {
+            Debug.LogWarning($"No BarraFatigue found on {barra.gameObject.name}. The Barra won't move.");
+            yield return null;
+        }
 
         RotateTurnOrder();
         StartTurn();
         isProcessingTurn = false;
     }
 
-    // Here we add GoonFatigue references back in:
     private IEnumerator ProcessGoonTurn(GoonMove goon)
     {
         isProcessingTurn = true;
 
-        // GoonFatigue reference:
         GoonFatigue goonFatigue = goon.GetComponent<GoonFatigue>();
         if (goonFatigue != null)
         {
@@ -415,7 +448,6 @@ public class TempTurnBase : MonoBehaviour
         }
         else
         {
-            // If, for some reason, the goon has no GoonFatigue, just do nothing
             Debug.LogWarning($"Goon {goon.gameObject.name} has no GoonFatigue component. Skipping fatigue logic.");
             yield return null;
         }
@@ -425,23 +457,23 @@ public class TempTurnBase : MonoBehaviour
         isProcessingTurn = false;
     }
 
-    // Electrician has no fatigue:
     private IEnumerator ProcessElectricianTurn(ElectricianMove electrician)
-{
-    isProcessingTurn = true;
-    Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
+    {
+        isProcessingTurn = true;
+        Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
 
-    // Call Electrician's movement routine
-    yield return StartCoroutine(electrician.MoveAction());
+        // If ElectricianMove has its own routine:
+        yield return StartCoroutine(electrician.MoveAction());
 
-    // Then continue as normal
-    RotateTurnOrder();
-    StartTurn();
-    isProcessingTurn = false;
-}
-    // -------------------------------------------
+        // Then continue
+        RotateTurnOrder();
+        StartTurn();
+        isProcessingTurn = false;
+    }
 
-    // ----------------- START / ADD UNITS -----------------
+    // ─────────────────────────────────────
+    // Start Player Turn
+    // ─────────────────────────────────────
     public void StartPlayerTurn()
     {
         isPlayerTurn = true;
@@ -456,12 +488,16 @@ public class TempTurnBase : MonoBehaviour
         UpdateTurnOrderUI();
     }
 
+    // ─────────────────────────────────────
+    // Add Methods (AI, Barra, Goon, Electrician)
+    // ─────────────────────────────────────
     public void AddAIUnit(AIMove aiMove)
     {
         if (aiMove != null && !aiUnits.Contains(aiMove))
         {
             aiUnits.Add(aiMove);
-            turnUnits.Insert(turnUnits.Count - barraUnits.Count, aiMove);
+            // Insert AI units before goons/electricians/barra if you like
+            turnUnits.Insert(turnUnits.Count - (barraUnits.Count + goonUnits.Count + electricianUnits.Count), aiMove);
             UpdateTurnOrderUI();
         }
     }
@@ -496,14 +532,19 @@ public class TempTurnBase : MonoBehaviour
         }
     }
 
-    // -------------- UPDATE TURN ORDER UI --------------
+    /// <summary>
+    /// Rebuilds the turn order UI icons based on turnUnits
+    /// and highlights the currentTurnIndex with the blue sprite.
+    /// </summary>
     private void UpdateTurnOrderUI()
     {
+        // Clear previous turn order UI
         foreach (Transform child in turnOrderPanel.transform)
         {
             Destroy(child.gameObject);
         }
 
+        // Build the list for UI icons
         List<GameObject> turnOrderList = new List<GameObject>();
 
         foreach (var unit in turnUnits)
@@ -522,15 +563,17 @@ public class TempTurnBase : MonoBehaviour
             }
             else if (unit is GoonMove)
             {
-                // Goons are currently using the "Enemy" tag for the UI
-                turnOrderList.Add(CreateTurnOrderIcon(unit, "Enemy")); 
+                // Goon -> treat as Enemy icon, or you can make a new tag if you have a new sprite
+                turnOrderList.Add(CreateTurnOrderIcon(unit, "Enemy"));
             }
             else if (unit is ElectricianMove)
             {
+                // Electrician -> also treat as Enemy icon, unless you have a special sprite
                 turnOrderList.Add(CreateTurnOrderIcon(unit, "Enemy"));
             }
         }
 
+        // Now set the correct sprite for each icon
         for (int i = 0; i < turnOrderList.Count; i++)
         {
             GameObject icon = turnOrderList[i];
@@ -561,6 +604,7 @@ public class TempTurnBase : MonoBehaviour
 
         TurnOrderIcons turnOrderIcons = icon.AddComponent<TurnOrderIcons>();
 
+        // Link the enemy if it's not a player
         if (unit is AIMove || unit is BarraMove || unit is GoonMove || unit is ElectricianMove)
         {
             GameObject enemyObject = ((MonoBehaviour)unit).gameObject;
