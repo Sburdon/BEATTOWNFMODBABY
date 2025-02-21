@@ -7,13 +7,20 @@ public class All_SFX : MonoBehaviour
 
     FMOD.Studio.EventInstance walking;
     FMOD.Studio.EventInstance UISelect;
+    FMOD.Studio.EventInstance UIDENY;
     FMOD.Studio.EventInstance CUANG;
     FMOD.Studio.EventInstance FishBattle;
+    FMOD.Studio.EventInstance Shock_Value;
     FMOD.Studio.EventInstance FishSlap;
     FMOD.Studio.EventInstance Swing;
     FMOD.Studio.EventInstance Push;
     FMOD.Studio.EventInstance PlayerHurt;
     FMOD.Studio.EventInstance Caught;
+    FMOD.Studio.EventInstance Panel_Fix;
+    FMOD.Studio.EventInstance Panel_Added;
+    FMOD.Studio.EventInstance Jump;
+    FMOD.Studio.EventInstance Slip;
+    FMOD.Studio.EventInstance Fall;
 
     int Cuda_Count = 0;
 
@@ -24,14 +31,23 @@ public class All_SFX : MonoBehaviour
     {
 
         UISelect = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/UI Click");
+        UIDENY = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/UI Deny");
         walking = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/RingStep");
-        CUANG = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/CUANG");
+        CUANG = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Fish_UI/CUANG");
         FishBattle = FMODUnity.RuntimeManager.CreateInstance("event:/Fish_Battle");
+        Shock_Value = FMODUnity.RuntimeManager.CreateInstance("event:/Shock_Value");
         FishSlap = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Fish Slap Hit");
         Swing = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Carry");
         Push = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Action/Push");
         PlayerHurt = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/Player Hurt");
-        Caught = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Caught");
+        Caught = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Fish_UI/Caught");
+        Panel_Fix = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Panel_Fix");
+        Panel_Added = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Panel_Added");
+        Jump = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Jump");
+        Slip = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Slip");
+        Fall = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Fall");
+
+
     }
 
     public void UpdateCudaCount()
@@ -65,6 +81,11 @@ public class All_SFX : MonoBehaviour
         FishBattle.start();
     }
 
+    public void PlayShockValue()
+    {
+        Shock_Value.start();
+    }
+
     public void PlayFishSlap()
     {
         FishSlap.start();
@@ -90,6 +111,42 @@ public class All_SFX : MonoBehaviour
     {
         Caught.start();
     }
+
+    public void PlayUIDENY()
+    {
+        UIDENY.start();
+    }
+
+    public void PlayPanelFix()
+    {
+        Panel_Fix.start();
+    }
+
+    public void PlayPanelAdded()
+    {
+        Panel_Added.start();
+
+
+    }
+
+    public void PlayJump()
+    {
+        Jump.start();
+    }
+
+    public void PlaySlip()
+    {
+        Slip.start();
+    }
+
+    public void PlayFall()
+    {
+        Fall.start();
+
+
+    }
+
+
 
 
 

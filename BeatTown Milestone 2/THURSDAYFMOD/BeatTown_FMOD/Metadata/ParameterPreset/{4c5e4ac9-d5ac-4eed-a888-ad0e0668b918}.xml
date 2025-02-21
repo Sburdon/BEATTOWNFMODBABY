@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{4c5e4ac9-d5ac-4eed-a888-ad0e0668b918}">
+		<property name="name">
+			<value>Goon_Slam_Parameter</value>
+		</property>
+		<relationship name="folder">
+			<destination>{7487d79e-a215-4fed-9faf-3b212a705eb9}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{fdcbc734-7d91-4229-863a-7ddb28301718}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{fdcbc734-7d91-4229-863a-7ddb28301718}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>3</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
