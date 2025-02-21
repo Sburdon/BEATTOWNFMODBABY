@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using static StateMachine;
 
@@ -259,6 +260,9 @@ public class PlayerMove : MonoBehaviour
             moveMentHighlight.SetActive(false);
             jumpHighlight.SetActive(false);
 
+        
+            
+
         if (swingScript != null && swingScript.IsSwinging())
             {
                 swingScript.CancelSwing();
@@ -293,6 +297,7 @@ public class PlayerMove : MonoBehaviour
         }
         else return;
     }
+
 
     public void CancelMove()
     {
