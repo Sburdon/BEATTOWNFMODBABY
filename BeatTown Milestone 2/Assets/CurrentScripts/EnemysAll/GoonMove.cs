@@ -1,31 +1,24 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using System.Collections.Generic;
 
-/// <summary>
-/// A very simple Goon movement script with:
-/// - Strict x-first-then-y approach (no BFS).
-/// - Up to (fatigue * 2) tiles each MoveUsingFatigue call.
-/// - Punch setup/resolve logic remains unchanged.
-/// </summary>
 public class GoonMove : MonoBehaviour
 {
     [Header("Tilemap & Electrician References")]
     public Tilemap tilemap;
-    public ElectricianMove electricianMove;    
-    public ElectricianHealth electricianHealth; // optional for direct damage
+    public ElectricianMove electricianMove;
+    public ElectricianHealth electricianHealth;
 
     [Header("Movement Speed")]
     [Tooltip("Movement speed: time in seconds to move 1 tile.")]
     public float moveSpeed = 1f;
 
-    // Track current tile position in the grid
     [HideInInspector]
     public Vector3Int CurrentTilePosition;
 
     [Header("Health (Optional)")]
-    public EnemyHealth enemyHealth; // If the Goon itself can die
+    public EnemyHealth enemyHealth;
 
     private SpriteRenderer spriteRenderer;
 
@@ -33,63 +26,60 @@ public class GoonMove : MonoBehaviour
     [Tooltip("Damage dealt by the Goon's punch.")]
     public int punchDamage = 2;
 
-    [Tooltip("Prefab to spawn if the punch misses, creating a hole.")]
+    [Tooltip("Prefab to spawn if the punch misses (e.g. hole).")]
     public GameObject holePrefab;
 
-    [Tooltip("Indicator prefab for the punch target area.")]
+    [Tooltip("Prefab to spawn for punch telegraph (e.g. red square).")]
     public GameObject punchIndicatorPrefab;
 
-    // Internal punch-charging state
+    // Punch-charging state
     private bool isPunchCharging = false;
     private Vector3Int punchTargetTile;
     private GameObject punchIndicatorInstance;
-
-    // Public so other scripts can check whether Goon is charging a punch
     public bool IsPunchCharging => isPunchCharging;
 
-    private bool canMove; // ask Spencer where to add bool check
-    public bool InPuddle; 
+    private bool canMove;
+    public bool InPuddle;
 
-
+    // ----------------------------------------------------
+    //  AWAKE: attempt to auto-find references if not set
+    // ----------------------------------------------------
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (tilemap == null)
-        {
             tilemap = FindObjectOfType<Tilemap>();
-            if (tilemap == null)
-                Debug.LogError($"GoonMove: No Tilemap found for {name}!");
-        }
 
         if (electricianMove == null)
-        {
             electricianMove = FindObjectOfType<ElectricianMove>();
-        }
+
         if (electricianHealth == null && electricianMove != null)
-        {
             electricianHealth = electricianMove.GetComponent<ElectricianHealth>();
-        }
 
         if (enemyHealth == null)
-        {
             enemyHealth = GetComponent<EnemyHealth>();
-        }
     }
 
+    // ----------------------------------------------------
+    //  START: Additional fallback for references
+    // ----------------------------------------------------
     private void Start()
     {
-        // If still missing references, attempt to find them
+        // If STILL no Electrician reference, try by tag
         if (electricianMove == null)
         {
-            electricianMove = FindObjectOfType<ElectricianMove>();
-            if (electricianMove != null && electricianHealth == null)
+            GameObject eObj = GameObject.FindWithTag("Electrician");
+            if (eObj != null)
             {
-                electricianHealth = electricianMove.GetComponent<ElectricianHealth>();
+                electricianMove = eObj.GetComponent<ElectricianMove>();
+                electricianHealth = eObj.GetComponent<ElectricianHealth>();
             }
         }
 
-        // Convert our starting world position to a tile coordinate
+        if (tilemap == null)
+            tilemap = FindObjectOfType<Tilemap>();
+
         if (tilemap != null)
             CurrentTilePosition = tilemap.WorldToCell(transform.position);
 
@@ -101,152 +91,201 @@ public class GoonMove : MonoBehaviour
         }
     }
 
-    
-
     // --------------------------------------------------------------------
-    // Movement (NO BFS) - Strict x-first-then-y approach
+    // Movement with BFS to a tile adjacent to the Electrician (not the same tile).
     // --------------------------------------------------------------------
-    /// <summary>
-    /// Moves the Goon up to (fatigue * 2) tiles in a direct x-first, then y approach.
-    /// If a tile is blocked (OccupiedTilesManager) or outside tilemap, we stop early.
-    /// </summary>
-// Store tiles the AI cannot return to until it contacts the Electrician
-public IEnumerator MoveUsingFatigue(int fatigue)
-{
-    if (electricianMove == null)
+    public IEnumerator MoveUsingFatigue(int fatigue)
     {
-        Debug.LogWarning("GoonMove: No Electrician to chase!");
-        yield break;
-    }
-
-    int stepsAllowed = fatigue * 2;
-    Vector3Int lastPosition = CurrentTilePosition; // Keep track of the last position to prevent backtracking
-
-    for (int i = 0; i < stepsAllowed; i++)
-    {
-        if (IsAdjacentToElectrician())
+        if (electricianMove == null)
         {
-            Debug.Log($"{name}: Reached the Electrician, stopping movement.");
-            break; // Stop moving if adjacent to the Electrician
+            Debug.LogWarning($"{name}: No ElectricianMove found, cannot chase.");
+            yield break;
         }
 
-        // Calculate the next move based on the heuristic
-        Vector3Int nextTile = GetNextMoveTowardsElectrician(lastPosition);
+        int stepsAllowed = fatigue * 2;
 
-        if (nextTile == CurrentTilePosition)
+        Vector3Int startPos = CurrentTilePosition;
+        Vector3Int electricianTile = electricianMove.CurrentTilePosition;
+
+        // Instead of BFS to the Electrician's tile (which may be "occupied"),
+        // we'll BFS until we find a tile that is "adjacent to ElectricianTile."
+        // Then we treat that tile as our BFS "goal."
+        Vector3Int goal = FindAdjacentGoalTile(electricianTile);
+        if (goal == startPos)
         {
-            Debug.Log($"{name}: No valid moves, stopping movement.");
-            break; // No valid moves, stop movement
+            // if we are already adjacent, no BFS needed
+            Debug.Log($"{name}: Already adjacent to Electrician; no BFS needed.");
+            yield break;
         }
 
-        // Update occupied tiles and move
-        if (OccupiedTilesManager.Instance != null)
+        // Actually run BFS from 'startPos' to 'goal'
+        List<Vector3Int> path = BFSPathToTile(startPos, goal, stepsAllowed);
+
+        if (path.Count == 0)
         {
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
+            Debug.Log($"{name}: No valid BFS path found to adjacency. Standing still.");
+            yield break;
         }
 
-        yield return StartCoroutine(MoveToTile(nextTile));
-        lastPosition = CurrentTilePosition; // Update the last position
-        CurrentTilePosition = nextTile;
-
-        if (OccupiedTilesManager.Instance != null)
+        // Follow that path
+        foreach (var stepTile in path)
         {
-            OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
+            // Unoccupy old tile
+            if (OccupiedTilesManager.Instance != null)
+                OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
+
+            yield return StartCoroutine(MoveToTile(stepTile));
+
+            CurrentTilePosition = stepTile;
+
+            if (OccupiedTilesManager.Instance != null)
+                OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
+
+            // If we become adjacent at any point, can stop early
+            if (IsAdjacentToElectrician())
+            {
+                Debug.Log($"{name}: Stopped BFS early upon reaching adjacency.");
+                break;
+            }
         }
-    }
 
-    yield return null;
-}
-
-/// <summary>
-/// Determines the next move toward the Electrician, avoiding the last position.
-/// </summary>
-private Vector3Int GetNextMoveTowardsElectrician(Vector3Int lastPosition)
-{
-    Vector3Int target = electricianMove.CurrentTilePosition;
-    List<Vector3Int> possibleMoves = GetNeighboringTiles(CurrentTilePosition);
-
-    // Sort possible moves by proximity to the Electrician
-    possibleMoves.Sort((a, b) =>
-    {
-        float distanceA = Vector3Int.Distance(a, target);
-        float distanceB = Vector3Int.Distance(b, target);
-        return distanceA.CompareTo(distanceB);
-    });
-
-    // Choose the first valid move that isn't the last position
-    foreach (var move in possibleMoves)
-    {
-        if (IsMoveValid(move) && move != lastPosition)
-        {
-            return move;
-        }
-    }
-
-    // No valid moves found
-    return CurrentTilePosition;
-}
-
-/// <summary>
-/// Returns a list of neighboring tiles in cardinal directions.
-/// </summary>
-private List<Vector3Int> GetNeighboringTiles(Vector3Int position)
-{
-    return new List<Vector3Int>
-    {
-        position + Vector3Int.right,
-        position + Vector3Int.left,
-        position + Vector3Int.up,
-        position + Vector3Int.down
-    };
-}
-
-/// <summary>
-/// Validates whether the AI can move onto the specified tile.
-/// </summary>
-private bool IsMoveValid(Vector3Int tilePos)
-{
-    if (tilemap == null || !tilemap.HasTile(tilePos)) return false;
-
-    if (OccupiedTilesManager.Instance != null &&
-        OccupiedTilesManager.Instance.IsTileOccupied(tilePos))
-    {
-        return false; // Tile is occupied
-    }
-
-    return true; // Tile is valid
-}
-
-/// <summary>
-/// Moves the AI to the specified tile.
-/// </summary>
-private IEnumerator MoveToTile(Vector3Int tilePos)
-{
-    Vector3 startPos = transform.position;
-    Vector3 endPos = tilemap.GetCellCenterWorld(tilePos);
-    float elapsed = 0f;
-    float travelTime = 1f / moveSpeed; // Adjust move speed here
-
-    // Flip sprite horizontally if needed
-    if (tilePos.x < CurrentTilePosition.x)
-        spriteRenderer.flipX = true;
-    else if (tilePos.x > CurrentTilePosition.x)
-        spriteRenderer.flipX = false;
-
-    while (elapsed < travelTime)
-    {
-        transform.position = Vector3.Lerp(startPos, endPos, elapsed / travelTime);
-        elapsed += Time.deltaTime;
         yield return null;
     }
 
-    transform.position = endPos;
-}
+    // --------------------------------------------------------------------
+    // BFS from 'start' to 'goal', limited to maxSteps.
+    // --------------------------------------------------------------------
+    private List<Vector3Int> BFSPathToTile(Vector3Int start, Vector3Int goal, int maxSteps)
+    {
+        var path = new List<Vector3Int>();
+        if (tilemap == null) return path;
+        if (start == goal) return path;
 
+        // BFS structures
+        var queue = new Queue<Vector3Int>();
+        var cameFrom = new Dictionary<Vector3Int, Vector3Int>();
 
+        queue.Enqueue(start);
+        cameFrom[start] = start; // visited
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            if (current == goal)
+                break;
+
+            foreach (var neighbor in GetNeighboringTiles(current))
+            {
+                if (!cameFrom.ContainsKey(neighbor) && IsMoveValid(neighbor))
+                {
+                    cameFrom[neighbor] = current;
+                    queue.Enqueue(neighbor);
+                }
+            }
+        }
+
+        // If BFS never visited 'goal', no path
+        if (!cameFrom.ContainsKey(goal))
+            return path;
+
+        // Reconstruct path
+        var temp = goal;
+        while (temp != start)
+        {
+            path.Add(temp);
+            temp = cameFrom[temp];
+        }
+        path.Reverse();
+
+        // If path is longer than maxSteps, trim
+        if (path.Count > maxSteps)
+            path = path.GetRange(0, maxSteps);
+
+        return path;
+    }
 
     // --------------------------------------------------------------------
-    // Punch Handling
+    //  Find a tile that is adjacent to 'electricianTile' and also valid
+    // --------------------------------------------------------------------
+    private Vector3Int FindAdjacentGoalTile(Vector3Int electricianTile)
+    {
+        // If we're *already* adjacent, just return CurrentTilePosition
+        if (IsAdjacentToElectrician())
+            return CurrentTilePosition;
+
+        // Check all 4 neighbors of the Electrician's tile
+        foreach (var n in GetNeighboringTiles(electricianTile))
+        {
+            // If it's valid for movement, that can be our BFS "goal"
+            if (IsMoveValid(n))
+            {
+                return n;
+            }
+        }
+
+        // If all adjacent tiles are invalid/occupied, BFS won't succeed anyway.
+        // Return current tile as a fallback to skip BFS entirely.
+        return CurrentTilePosition;
+    }
+
+    // --------------------------------------------------------------------
+    // Move smoothly to a tile
+    // --------------------------------------------------------------------
+    private IEnumerator MoveToTile(Vector3Int tilePos)
+    {
+        Vector3 startPos = transform.position;
+        Vector3 endPos = tilemap.GetCellCenterWorld(tilePos);
+        float elapsed = 0f;
+        float travelTime = 1f / moveSpeed;
+
+        // Flip sprite if needed
+        if (tilePos.x < CurrentTilePosition.x)
+            spriteRenderer.flipX = true;
+        else if (tilePos.x > CurrentTilePosition.x)
+            spriteRenderer.flipX = false;
+
+        while (elapsed < travelTime)
+        {
+            transform.position = Vector3.Lerp(startPos, endPos, elapsed / travelTime);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        transform.position = endPos;
+    }
+
+    // --------------------------------------------------------------------
+    // Return orth-adj neighbors
+    // --------------------------------------------------------------------
+    private List<Vector3Int> GetNeighboringTiles(Vector3Int position)
+    {
+        return new List<Vector3Int>
+        {
+            position + Vector3Int.right,
+            position + Vector3Int.left,
+            position + Vector3Int.up,
+            position + Vector3Int.down
+        };
+    }
+
+    // --------------------------------------------------------------------
+    // Check if tile is valid
+    // --------------------------------------------------------------------
+    private bool IsMoveValid(Vector3Int tilePos)
+    {
+        if (tilemap == null || !tilemap.HasTile(tilePos))
+            return false;
+
+        if (OccupiedTilesManager.Instance != null &&
+            OccupiedTilesManager.Instance.IsTileOccupied(tilePos))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    // --------------------------------------------------------------------
+    // Adjacent to Electrician?
     // --------------------------------------------------------------------
     public bool IsAdjacentToElectrician()
     {
@@ -257,6 +296,9 @@ private IEnumerator MoveToTile(Vector3Int tilePos)
         return (dx + dy) == 1;
     }
 
+    // --------------------------------------------------------------------
+    // Punch Setup
+    // --------------------------------------------------------------------
     public void SetupPunch()
     {
         if (isPunchCharging) return;
@@ -268,24 +310,24 @@ private IEnumerator MoveToTile(Vector3Int tilePos)
 
         punchTargetTile = eTile;
 
+        // Spawn telegraph (red square)
         if (punchIndicatorPrefab != null && tilemap != null)
         {
-            Vector3 indicatorPos = tilemap.GetCellCenterWorld(eTile);
-            punchIndicatorInstance = Instantiate(punchIndicatorPrefab, indicatorPos, Quaternion.identity);
+            Vector3 spawnPos = tilemap.GetCellCenterWorld(punchTargetTile);
+            punchIndicatorInstance = Instantiate(punchIndicatorPrefab, spawnPos, Quaternion.identity);
         }
 
-        Debug.Log($"{name} is charging punch at tile {punchTargetTile}!");
+        Debug.Log($"{name} is telegraphing a punch at tile {punchTargetTile}!");
     }
 
-    /// <summary>
-    /// Called at the end of Player's turn to finalize the punch damage or create a hole if missed.
-    /// </summary>
+    // --------------------------------------------------------------------
+    // Punch Resolve
+    // --------------------------------------------------------------------
     public void ResolvePunch()
     {
         if (!isPunchCharging) return;
         isPunchCharging = false;
 
-        // Remove punch indicator
         if (punchIndicatorInstance != null)
         {
             Destroy(punchIndicatorInstance);
@@ -300,39 +342,35 @@ private IEnumerator MoveToTile(Vector3Int tilePos)
 
         foreach (var col in hits)
         {
-            // Check Electrician
-            ElectricianHealth eh = col.GetComponent<ElectricianHealth>();
-            if (eh != null && eh.currentHealth > 0)
+            if (col.CompareTag("Electrician"))
             {
-                eh.TakeDamage(punchDamage);
+                if (electricianHealth != null)
+                {
+                    electricianHealth.TakeDamage(punchDamage);
+                    Debug.Log($"{name} punched the Electrician for {punchDamage} damage!");
+                }
                 hitSomeone = true;
-                Debug.Log($"{name} punched Electrician for {punchDamage}!");
-            }
-
-            // Or other potential targets
-            PlayerHealth pHealth = col.GetComponent<PlayerHealth>();
-            if (pHealth != null)
-            {
-                pHealth.TakeDamage(punchDamage);
-                hitSomeone = true;
-                Debug.Log($"{name} punched Player for {punchDamage}!");
+                break;
             }
         }
 
-        if (!hitSomeone && holePrefab != null)
+        if (!hitSomeone)
         {
             // Miss => spawn hole
-            Instantiate(holePrefab, worldPos, Quaternion.identity);
-            if (OccupiedTilesManager.Instance != null)
+            if (holePrefab != null)
             {
-                OccupiedTilesManager.Instance.AddOccupiedPosition(punchTargetTile);
-            }
-            Debug.Log($"{name} missed punch. Created hole at {punchTargetTile}.");
-        }
-    }
+                Instantiate(holePrefab, worldPos, Quaternion.identity);
 
-    public void ResetGoon()
-    {
-        StopAllCoroutines();
+                if (OccupiedTilesManager.Instance != null)
+                {
+                    OccupiedTilesManager.Instance.AddOccupiedPosition(punchTargetTile);
+                    Debug.Log($"{name} missed punch, created hole, marking {punchTargetTile} occupied.");
+                }
+            }
+            else
+            {
+                Debug.Log($"{name} missed the punch, no holePrefab assigned.");
+            }
+        }
     }
 }

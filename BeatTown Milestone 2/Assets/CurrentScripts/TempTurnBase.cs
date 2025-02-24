@@ -211,17 +211,26 @@ public class TempTurnBase : MonoBehaviour
     /// <summary>
     /// Called to start the turn for whichever unit is at currentTurnIndex.
     /// </summary>
-    public void StartTurn()
+   public void StartTurn()
+{
+    if (turnUnits.Count == 0) return;
+
+    var currentUnit = turnUnits[currentTurnIndex];
+
+    if (currentUnit is PlayerMove)
     {
-        if (turnUnits.Count == 0) return;
-
-        var currentUnit = turnUnits[currentTurnIndex];
-
-        if (currentUnit is PlayerMove)
+        // Keep hooking in the "spawn Barra" logic
+        if (respawnManager != null)
         {
-            // Keep hooking in the "spawn Barra" logic
             respawnManager.MaintainEnemyCount();
+        }
+        else
+        {
+            Debug.LogError("RespawnManager is null in StartTurn()");
+        }
 
+        if (hook != null) // Check if hook exists before accessing it
+        {
             if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra == true)
             {
                 RespawnManager.Instance.SpawnBarra();
@@ -232,26 +241,32 @@ public class TempTurnBase : MonoBehaviour
                 RespawnManager.Instance.SpawnBarra();
                 spawnBarra1 = false;
             }
+        }
+        else
+        {
+            Debug.LogError("Hook instance is missing! Make sure there is a Hook object in the scene.");
+        }
 
-            StartPlayerTurn();
-        }
-        else if (currentUnit is AIMove ai)
-        {
-            StartCoroutine(ProcessAITurn(ai));
-        }
-        else if (currentUnit is BarraMove barra)
-        {
-            StartCoroutine(ProcessBarraTurn(barra));
-        }
-        else if (currentUnit is GoonMove goon)
-        {
-            StartCoroutine(ProcessGoonTurn(goon));
-        }
-        else if (currentUnit is ElectricianMove electrician)
-        {
-            StartCoroutine(ProcessElectricianTurn(electrician));
-        }
+        StartPlayerTurn();
     }
+    else if (currentUnit is AIMove ai)
+    {
+        StartCoroutine(ProcessAITurn(ai));
+    }
+    else if (currentUnit is BarraMove barra)
+    {
+        StartCoroutine(ProcessBarraTurn(barra));
+    }
+    else if (currentUnit is GoonMove goon)
+    {
+        StartCoroutine(ProcessGoonTurn(goon));
+    }
+    else if (currentUnit is ElectricianMove electrician)
+    {
+        StartCoroutine(ProcessElectricianTurn(electrician));
+    }
+}
+
 
     void Update()
     {

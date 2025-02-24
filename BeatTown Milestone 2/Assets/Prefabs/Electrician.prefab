@@ -140,8 +140,7 @@ MonoBehaviour:
   moveSpeed: 1
   routePositions:
   - {x: 0, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  - {x: 1, y: -2, z: 0}
+  - {x: 0, y: -2, z: 0}
   currentRouteIndex: 0
   CurrentTilePosition: {x: 0, y: 0, z: 0}
   InPuddle: 0
