@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
@@ -68,6 +69,10 @@ public class RespawnManager : MonoBehaviour
         {
             Debug.LogError("RespawnManager: One or more required references are missing.");
             return;
+        }
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            MaintainEnemyCount();
         }
 
         // Example: spawn the Goon on scene start

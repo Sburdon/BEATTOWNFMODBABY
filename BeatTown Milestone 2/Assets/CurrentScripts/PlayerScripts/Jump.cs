@@ -77,6 +77,10 @@ public class Jump : MonoBehaviour
             Debug.Log("Not enough fatigue to jump.");
         }
     }
+    private bool IsTilePresent(Vector3Int tilePosition)
+    {
+        return tilemap.HasTile(tilePosition);
+    }
 
     void Update()
     {
@@ -93,7 +97,7 @@ public class Jump : MonoBehaviour
                 bool isDiagonalMove = (deltaX == 1 && deltaY == 1);
 
                 // Only allow jump if it is a valid straight jump (2 tiles) or a valid diagonal (1 tile)
-                if (IsValidStraightJump(playerTilePosition, clickedTilePosition) || isDiagonalMove)
+                if ((IsValidStraightJump(playerTilePosition, clickedTilePosition) || isDiagonalMove) && IsTilePresent(clickedTilePosition))
                 {
                     targetTilePosition = clickedTilePosition;
                     playerFatigue.UseFatigue(jumpFatigueCost);
@@ -111,7 +115,7 @@ public class Jump : MonoBehaviour
             {
                 Debug.Log("Jump action canceled.");
                 isJumpMode = false;
-                
+
             }
         }
     }
@@ -128,65 +132,78 @@ public class Jump : MonoBehaviour
     }
     private IEnumerator JumpToTarget(Vector3Int targetTilePosition)
     {
-        if(!IsWithinTilemapBounds(targetTilePosition)) {
-          yield break;
+        if (!IsWithinTilemapBounds(targetTilePosition))
+        {
+            yield break;
         }
- 
-            isJumping = true;
 
-            Vector3 startPos = transform.position;
-            Vector3 endPos = tilemap.GetCellCenterWorld(targetTilePosition);
+        isJumping = true;
 
-            float elapsedTime = 0f;
-            float duration = 1f / jumpSpeed;
+        Vector3 startPos = transform.position;
+        Vector3 endPos = tilemap.GetCellCenterWorld(targetTilePosition);
 
-            // Move player to target position
-            while (elapsedTime < duration)
+        float elapsedTime = 0f;
+        float duration = 1f / jumpSpeed;
+
+        // Move player to target position
+        while (elapsedTime < duration)
+        {
+            transform.position = Vector3.Lerp(startPos, endPos, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = endPos;
+
+        // Check if there's an enemy or other objects on the target tile
+        bool bounced = false;
+
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
+        foreach (var collider in colliders)
+        {
+            if (collider.CompareTag("Electrician") || collider.CompareTag("Goon"))
             {
-                transform.position = Vector3.Lerp(startPos, endPos, elapsedTime / duration);
-                elapsedTime += Time.deltaTime;
-                yield return null;
-            }
+                Debug.Log("Landed on an enemy or Barra, no damage dealt.");
 
-            transform.position = endPos;
+                Vector3Int bounceTile = GetRandomAdjacentTile(transform.position);
 
-            // Check if there's an enemy or other objects on the target tile
-            bool bounced = false;
-
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.5f);
-            foreach (var collider in colliders)
-            {
-                if (collider.CompareTag("Electrician") || collider.CompareTag("Goon"))
+                // Ensure the bounce tile is within bounds and valid before moving
+                int maxAttempts = 5;
+                int attempts = 0;
+                while ((!IsValidTile(bounceTile) || !IsWithinTilemapBounds(bounceTile)) && attempts < maxAttempts)
                 {
-                    // If we land on an enemy or Barra, we don't deal damage
-                    Debug.Log("Landed on an enemy or Barra, no damage dealt.");
-
-                    // Start bouncing to random adjacent tile until we find an empty one
-                    Vector3Int bounceTile = GetRandomAdjacentTile(transform.position);
-                    while (!IsValidTile(bounceTile) || !IsWithinTilemapBounds(bounceTile))
-                    {
-                        bounceTile = GetRandomAdjacentTile(bounceTile); // Continue bouncing to another random tile
-                    }
-
-                    // Once we find a valid empty tile, move to it
-                    transform.position = tilemap.GetCellCenterWorld(bounceTile);
-                    bounced = true;
-                    Debug.Log("Bounced to a valid adjacent tile.");
-                    break;
+                    bounceTile = GetRandomAdjacentTile(transform.position);
+                    attempts++;
                 }
-                jumpHighlight.SetActive(false);
-                OccupiedTilesManager.Instance.AddOccupiedPosition(tilemap.WorldToCell(playerMove.CurrentTilePosition));
-                OccupiedTilesManager.Instance.RemoveOccupiedPosition(tilemap.WorldToCell(removePlayerOldPos));
-            }
 
-            // If no bounce was needed (no enemy or Barra), just finish the jump normally
-            if (!bounced)
-            {
-                jumpHighlight.SetActive(false);
-                Debug.Log("Jump action completed.");
-            }
+                // Final safety check
+                if (!IsWithinTilemapBounds(bounceTile))
+                {
+                    Debug.Log("Bounce location is out of bounds, staying in current position.");
+                    transform.position = startPos; // Stay in the original position instead of bouncing off the map
+                }
+                else
+                {
+                    transform.position = tilemap.GetCellCenterWorld(bounceTile);
+                    Debug.Log("Bounced to a valid adjacent tile.");
+                }
 
-            isJumping = false;
+                bounced = true;
+                break;
+            }
+        }
+
+        jumpHighlight.SetActive(false);
+        OccupiedTilesManager.Instance.AddOccupiedPosition(tilemap.WorldToCell(playerMove.CurrentTilePosition));
+        OccupiedTilesManager.Instance.RemoveOccupiedPosition(tilemap.WorldToCell(removePlayerOldPos));
+
+        // If no bounce was needed (no enemy or Barra), just finish the jump normally
+        if (!bounced)
+        {
+            Debug.Log("Jump action completed.");
+        }
+
+        isJumping = false;
     }
 
 
@@ -212,30 +229,29 @@ public class Jump : MonoBehaviour
         Vector3Int currentTile = tilemap.WorldToCell(currentPos);
 
         // Define the adjacent tiles (up, down, left, right)
-        Vector3Int[] adjacentTiles = new Vector3Int[] {
+        Vector3Int[] adjacentTiles = new Vector3Int[]
+        {
         currentTile + Vector3Int.up,
         currentTile + Vector3Int.down,
         currentTile + Vector3Int.left,
         currentTile + Vector3Int.right,
-    };
+        };
 
         // Shuffle the array to ensure randomness
         System.Random rng = new System.Random();
         adjacentTiles = adjacentTiles.OrderBy(tile => rng.Next()).ToArray();
 
-        // Keep trying to find a valid tile until one is found
+        // Try to find a valid tile that is within bounds and unoccupied
         foreach (var tile in adjacentTiles)
         {
-            // Check if the tile is within bounds and valid
             if (IsWithinTilemapBounds(tile) && IsValidTile(tile))
             {
-                OccupiedTilesManager.Instance.AddOccupiedPosition(tilemap.WorldToCell(tile));
-                return tile; // Return the first valid adjacent tile   
-
+                OccupiedTilesManager.Instance.AddOccupiedPosition(tile);
+                return tile;
             }
         }
 
-        // If no valid adjacent tile was found, return the current tile as fallback
+        // If no valid tile is found, return the player's current tile (so they don't fall off)
         return currentTile;
     }
     public void CancelJump()
