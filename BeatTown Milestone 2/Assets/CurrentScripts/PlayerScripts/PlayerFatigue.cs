@@ -12,6 +12,8 @@ public class PlayerFatigue : MonoBehaviour
     public int pushFatigueCost = 1;
     public int moveFatigueCost = 1;
     public int jumpFatigueCost = 2;
+    public int fallFatigueCost = 1; // for falling inside a hole (prone state) 
+    public bool prone = false; // prone state (from Hole) for player. No visual cue YET
 
     [Header("Fatigue Bar Images")]
     public Image[] fatigueImages; // Array to hold references to the fatigue images (0/4 to 4/4)
@@ -25,19 +27,44 @@ public class PlayerFatigue : MonoBehaviour
     public bool CanPerformAction(int fatigueCost)
     {
         return currentFatigue >= fatigueCost;
+        /* if (prone)
+       {
+           currentFatigue = Mathf.Max(currentFatigue - fatigueCost - 1, 0); // Reduce fatigue by +1 for prone state
+           UpdateFatigueBar(); // Update the fatigue bar UI
+       }
+       else
+       {
+           currentFatigue = Mathf.Max(currentFatigue - fatigueCost, 0); // Reduce fatigue
+           UpdateFatigueBar(); // Update the fatigue bar UI
+       }*/
     }
 
     public void UseFatigue(int fatigueCost)
     {
+        /*if (prone)
+        {
+            currentFatigue = Mathf.Max(currentFatigue - fatigueCost - 1, 0); // Reduce fatigue by +1 for prone state
+            UpdateFatigueBar(); // Update the fatigue bar UI
+        }
+        else*/
+        
         currentFatigue = Mathf.Max(currentFatigue - fatigueCost, 0); // Reduce fatigue
         UpdateFatigueBar(); // Update the fatigue bar UI
+        
         Debug.Log("Used " + fatigueCost + " fatigue. Current fatigue: " + currentFatigue);
     }
 
-    public void RecoverFatigue()
+    public void RecoverFatigue() // called in TempTurnBase
     {
+        if (prone)
+        {
+            currentFatigue = maxFatigue - 1; // recover less fatigue for prone state
+        }
+        else
+        { 
+        currentFatigue = maxFatigue; // Recover fatigue 
+        }
 
-        currentFatigue = maxFatigue; // Recover fatigue
         UpdateFatigueBar(); // Update the fatigue bar UI
        
     }
