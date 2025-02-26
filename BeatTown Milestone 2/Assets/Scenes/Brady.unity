@@ -13291,6 +13291,7 @@ MonoBehaviour:
   isPlayerTurn: 1
   RealMoveHighlight: {fileID: 1253888467}
   All_SFX: {fileID: 0}
+  TutorialScript: {fileID: 1143006669}
 --- !u!4 &1562467053
 Transform:
   m_ObjectHideFlags: 0
