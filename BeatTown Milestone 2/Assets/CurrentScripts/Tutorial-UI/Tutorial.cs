@@ -114,7 +114,12 @@ public class Tutorial : MonoBehaviour
     public void StartBarraAnimation()
     {
         isBarraTutorialActive = true;
-        animtut.SetInteger("ChangeBarra", 1); // Ensure this value matches the transition condition in Animator
+        // only set integeer ChangeBarra to 1 ONE TIME using for loop
+        for (int i = 0; i < 1; i++)
+        {
+            animtut.SetInteger("ChangeBarra", 1);
+        }
+        
         Debug.Log("Triggered Barracuda Tutorial.");
     }
 

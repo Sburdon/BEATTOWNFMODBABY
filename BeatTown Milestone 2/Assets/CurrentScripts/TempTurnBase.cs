@@ -47,6 +47,8 @@ public class TempTurnBase : MonoBehaviour
 
     public All_SFX All_SFX;
 
+    public Tutorial TutorialScript;
+
     private int currentUnitIndex = -1; // To track the current unit's index for turn-based rotation
 
     void Start()
@@ -233,14 +235,22 @@ public class TempTurnBase : MonoBehaviour
         {
             if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra == true)
             {
-                RespawnManager.Instance.SpawnBarra();
-                spawnBarra = false;
+                    Debug.Log("First hook kill count reached. Barra tutorial animation triggered.");
+                    RespawnManager.Instance.SpawnBarra();
+                    spawnBarra = false;
+                    // use TutorialManager ref to initiate barra tutorial animation
+                    TutorialScript.StartBarraAnimation();
+
+
             }
             if ((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1 == true)
             {
-                RespawnManager.Instance.SpawnBarra();
-                spawnBarra1 = false;
-            }
+                    RespawnManager.Instance.SpawnBarra();
+                    spawnBarra1 = false;
+                    Debug.Log("Second hook kill count reached. Barra tutorial animation triggered.");
+                    // use TutorialManager ref to initiate barra tutorial animation
+                    TutorialScript.StartBarraAnimation();
+                }
         }
         else
         {
