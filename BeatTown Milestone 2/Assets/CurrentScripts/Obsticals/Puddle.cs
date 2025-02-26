@@ -22,8 +22,8 @@ public class Puddle : MonoBehaviour
         if (tilemap == null)
         {
             tilemap = FindObjectOfType<Tilemap>();
-       //     if (tilemap == null)
-            //    Debug.LogError($"GoonMove: No Tilemap found for {name}!");
+            if (tilemap == null)
+                Debug.LogError($"GoonMove: No Tilemap found for {name}!");
         }
     }
 
