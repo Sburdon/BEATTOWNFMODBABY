@@ -5,10 +5,16 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MainMenu.unity
     guid: cfb1fd60721bd5e44ac4de5a00b86dce
   - enabled: 1
+    path: Assets/Scenes/Level Switcher.unity
+    guid: 5e29cd04fde1d274b8bc0451935565d1
+  - enabled: 1
     path: Assets/Scenes/Brady.unity
     guid: 47a4aec2329d44f478e0df3720128cbe
+  - enabled: 1
+    path: Assets/Scenes/ElecScenario.unity
+    guid: 75889f7cb56b2794db0117c64667eb27
   m_configObjects: {}
