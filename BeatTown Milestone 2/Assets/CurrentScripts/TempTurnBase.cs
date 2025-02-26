@@ -233,23 +233,27 @@ public class TempTurnBase : MonoBehaviour
 
         if (hook != null) // Check if hook exists before accessing it
         {
+            // use for loop to ensure this block gets called one time only
+
             if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra == true)
             {
                     Debug.Log("First hook kill count reached. Barra tutorial animation triggered.");
                     RespawnManager.Instance.SpawnBarra();
                     spawnBarra = false;
-                    // use TutorialManager ref to initiate barra tutorial animation
-                    TutorialScript.StartBarraAnimation();
-
-
+                    // use for loop to make sure this tutorial only happens 
+                    for (int i = 0; i < 1; i++)
+                    {
+                        // use TutorialManager ref to initiate barra tutorial animation
+                        TutorialScript.StartBarraAnimation();
+                    }
             }
             if ((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1 == true)
             {
                     RespawnManager.Instance.SpawnBarra();
                     spawnBarra1 = false;
-                    Debug.Log("Second hook kill count reached. Barra tutorial animation triggered.");
+                 //   Debug.Log("Second hook kill count reached. Barra tutorial animation triggered.");
                     // use TutorialManager ref to initiate barra tutorial animation
-                    TutorialScript.StartBarraAnimation();
+                  //  TutorialScript.StartBarraAnimation();
                 }
         }
         else
