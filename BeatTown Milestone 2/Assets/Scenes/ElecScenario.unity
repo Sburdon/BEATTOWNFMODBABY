@@ -13839,6 +13839,7 @@ MonoBehaviour:
   isPlayerTurn: 1
   RealMoveHighlight: {fileID: 1253888467}
   All_SFX: {fileID: 0}
+  TutorialScript: {fileID: 0}
 --- !u!4 &1562467053
 Transform:
   m_ObjectHideFlags: 0
@@ -17749,7 +17750,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: cc33eef358f434d26b36201e090fed12, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -17930,6 +17931,7 @@ MonoBehaviour:
   uvMappingScript: {fileID: 1977991998}
   moveSpeed: 3
   actionPlaying: 0
+  swingingBack: 0
   animationSet: {fileID: 11400000, guid: 36c53ef0f8fd3a44b90117861879bbd6, type: 2}
 --- !u!114 &1977992000
 MonoBehaviour:
