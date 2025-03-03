@@ -12,6 +12,7 @@ public class PlayerFatigue : MonoBehaviour
     public int pushFatigueCost = 1;
     public int moveFatigueCost = 1;
     public int jumpFatigueCost = 2;
+
     public int fallFatigueCost = 1; // for falling inside a hole (prone state) 
     public bool prone = false; // prone state (from Hole) for player. No visual cue YET
 
@@ -24,22 +25,13 @@ public class PlayerFatigue : MonoBehaviour
         UpdateFatigueBar(); // Update fatigue bar at the start
     }
 
-    public bool CanPerformAction(int fatigueCost)
+    public bool CanPerformAction(int fatigueCost) // main logic to prevent anything but movement out of hole
     {
+
         return currentFatigue >= fatigueCost;
-        /* if (prone)
-       {
-           currentFatigue = Mathf.Max(currentFatigue - fatigueCost - 1, 0); // Reduce fatigue by +1 for prone state
-           UpdateFatigueBar(); // Update the fatigue bar UI
-       }
-       else
-       {
-           currentFatigue = Mathf.Max(currentFatigue - fatigueCost, 0); // Reduce fatigue
-           UpdateFatigueBar(); // Update the fatigue bar UI
-       }*/
     }
 
-    public void UseFatigue(int fatigueCost)
+    public void UseFatigue(int fatigueCost) // called in PlayerMove
     {
         /*if (prone)
         {
@@ -56,7 +48,7 @@ public class PlayerFatigue : MonoBehaviour
 
     public void RecoverFatigue() // called in TempTurnBase
     {
-        if (prone)
+        if (prone) // to handle case 2/2 where player starts next turn while still in hole
         {
             currentFatigue = maxFatigue - 1; // recover less fatigue for prone state
                                              // INSERT METHOD OR REF TO BEGIN LOCKEDMOVE() (1 tile movement to get out of hole)

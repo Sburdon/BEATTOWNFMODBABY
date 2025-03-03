@@ -10,11 +10,13 @@ public class Hole : MonoBehaviour
     private ElectricianMove electricianMove;
     private GoonMove goonMove;
     private PlayerMove playerMove;
-    private GameObject thingInHole; // Electrician, Goon, or Player
+    private GameObject thingInHole; // Electrician, Goon, or Player. Unused for now
+    private Vector3Int holePosition; // Snap thingInHole to the hole's position in the tilemap
 
     [Header("References")]
     public Tilemap tilemap;
-
+  //  public TempTurnBase tempTurnBase;
+    
 
     private void Awake()
     {
@@ -26,7 +28,11 @@ public class Hole : MonoBehaviour
         }
     }
 
-
+    private void Start()
+    {
+        // create holePosition to snap thingInHole to the hole's position in the tilemap
+        holePosition = tilemap.WorldToCell(transform.position);
+    }
     // Called when something enters the hole('s trigger)
     // Purpose: Set the proper reference and flag depending on what type of object hit the hole
     // Use InHole flag within respective scripts to deal with hole fatigue cost
@@ -35,6 +41,7 @@ public class Hole : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        
         // Set the proper reference and flag depending on what type of object hit the hole
         if (collision.gameObject.CompareTag("Electrician"))
         {
@@ -48,11 +55,16 @@ public class Hole : MonoBehaviour
             thingInHole = collision.gameObject;
             //  goonMove.Prone = true; // bool for Goon script (not used for anything yet)
         }
-        else if (collision.gameObject.CompareTag("Player"))
+        else if (collision.gameObject.CompareTag("Player")) // where Russell is currently working (Player) 
         {
+            Debug.LogWarning("Player has fallen into a hole!");
             // add logic to stop Player (mid turn) from moving (until they spend 1 fatigue)
             playerMove = collision.gameObject.GetComponent<PlayerMove>();
             thingInHole = collision.gameObject;
+            // Snap thingInHole to the CENTER OF hole's position in the tilemap (for visual cue
+            thingInHole.transform.position = tilemap.GetCellCenterWorld(holePosition);
+            playerMove.isPlayerInHole = true; // bool in PlayerMove that prevents movement
+
             PlayerFatigue playerFatigue = collision.GetComponent<PlayerFatigue>();
             playerFatigue.prone = true;  // bool in PlayerFatigue that requires + 1 fatigue spent
 

@@ -35,6 +35,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject oneMoveImage;   // Image for one move left
     public GameObject twoMoveImage;   // Image for both moves left
     public bool InPuddle;
+    public bool isPlayerInHole; // flag to prevent movement when player is in hole
 
     public bool pendingMovePurchase = false; // Flag for pending move purchase
     private void Awake()
@@ -124,6 +125,8 @@ public class PlayerMove : MonoBehaviour
                 Debug.Log("Clicked tile is out of range or no moves remaining.");
             }
         }
+        // add method for InHole to prevent ANY movement. Called here
+
     }
     public void ResetPendingMove()
     {
@@ -287,7 +290,7 @@ public class PlayerMove : MonoBehaviour
                     canMove = true;
                 }
             }
-            else
+            else // I believe this is where we should add the 1 tile lockedmovement for Hole - Russell
             {
                 canMove = false;
                 Debug.Log("Not enough fatigue to gain more moves.");
