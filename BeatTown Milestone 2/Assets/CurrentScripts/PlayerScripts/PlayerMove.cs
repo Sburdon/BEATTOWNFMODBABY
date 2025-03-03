@@ -125,7 +125,16 @@ public class PlayerMove : MonoBehaviour
                 Debug.Log("Clicked tile is out of range or no moves remaining.");
             }
         }
-        // add method for InHole to prevent ANY movement. Called here
+        
+        // if (isPlayerInHole) then disable ALL highlights 
+        if (isPlayerInHole)
+        {
+            SwingHighlight.SetActive(false);
+            RealMoveHighlight.SetActive(false);
+            PPShighlight.SetActive(false);
+            moveMentHighlight.SetActive(false);
+            jumpHighlight.SetActive(false);
+        }
 
     }
 
