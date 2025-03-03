@@ -55,7 +55,7 @@ public class Hole : MonoBehaviour
             thingInHole = collision.gameObject;
             //  goonMove.Prone = true; // bool for Goon script (not used for anything yet)
         }
-        else if (collision.gameObject.CompareTag("Player")) // where Russell is currently working (Player) 
+        else if (collision.gameObject.CompareTag("Player")) // where Russell is currently working (Player) (see PlayerFatigue UseGetUpFatigue())
         {
             Debug.LogWarning("Player has fallen into a hole!");
             // add logic to stop Player (mid turn) from moving (until they spend 1 fatigue)
@@ -63,10 +63,13 @@ public class Hole : MonoBehaviour
             thingInHole = collision.gameObject;
             // Snap thingInHole to the CENTER OF hole's position in the tilemap (for visual cue
             thingInHole.transform.position = tilemap.GetCellCenterWorld(holePosition);
-            playerMove.isPlayerInHole = true; // bool in PlayerMove that prevents movement
+
+            playerMove.remainingMoves = 0; // Player can't move while in hole
 
             PlayerFatigue playerFatigue = collision.GetComponent<PlayerFatigue>();
             playerFatigue.prone = true;  // bool in PlayerFatigue that requires + 1 fatigue spent
+
+            playerFatigue.UseGetUpFatigue(); // Player spends 1 fatigue to get out of hole
 
         }
         else

@@ -14,7 +14,7 @@ public class PlayerFatigue : MonoBehaviour
     public int jumpFatigueCost = 2;
 
     public int fallFatigueCost = 1; // for falling inside a hole (prone state) 
-    public bool prone = false; // prone state (from Hole) for player. No visual cue YET
+    public bool prone = false; // prone state (from Hole) for player. No visual cue YET. Referenced in PlayerMove* and Hole* scripts.
 
     [Header("Fatigue Bar Images")]
     public Image[] fatigueImages; // Array to hold references to the fatigue images (0/4 to 4/4)
@@ -38,6 +38,24 @@ public class PlayerFatigue : MonoBehaviour
         
     }
 
+    public void UseGetUpFatigue()
+    {
+        int fatigueCost = fallFatigueCost;
+        // before subtracting fatigue, check if player has enough fatigue to get up
+        if (currentFatigue < fatigueCost)
+        {
+            Debug.Log("Not enough fatigue to get up!");
+            return;
+        }
+        else
+        {
+            currentFatigue -= fatigueCost;
+            UpdateFatigueBar();
+            prone = false; // WHERE IM WORKING RN (broken): set prone back to false since you used fatigue to get up 
+        }
+    }
+
+
     public void UseFatigue(int fatigueCost) // called in PlayerMove
     {
         /*if (prone)
@@ -59,11 +77,13 @@ public class PlayerFatigue : MonoBehaviour
         {
             currentFatigue = maxFatigue - 1; // recover less fatigue for prone state
                                              // INSERT METHOD OR REF TO BEGIN LOCKEDMOVE() (1 tile movement to get out of hole)
+            prone = false; // set prone back to false since you used fatigue to get up
         }
         else
         {
             currentFatigue = maxFatigue; // Recover fatigue 
         }
+       Debug.Log("Recovered fatigue. Current fatigue: " + currentFatigue);
 
         UpdateFatigueBar(); // Update the fatigue bar UI
 

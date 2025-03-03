@@ -35,7 +35,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject oneMoveImage;   // Image for one move left
     public GameObject twoMoveImage;   // Image for both moves left
     public bool InPuddle;
-    public bool isPlayerInHole; // flag to prevent movement when player is in hole
+    
 
     public bool pendingMovePurchase = false; // Flag for pending move purchase
     private void Awake()
@@ -66,6 +66,7 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
 
         if (canMove && Input.GetMouseButtonDown(0)) // Left mouse button
@@ -127,7 +128,7 @@ public class PlayerMove : MonoBehaviour
         }
         
         // if (isPlayerInHole) then disable ALL highlights 
-        if (isPlayerInHole)
+        if (IsPlayerInHole())
         {
             SwingHighlight.SetActive(false);
             RealMoveHighlight.SetActive(false);
@@ -140,7 +141,8 @@ public class PlayerMove : MonoBehaviour
 
     private bool IsPlayerInHole()
     {
-        return isPlayerInHole;
+
+        return playerFatigue.prone;
     }
 
     public void ResetPendingMove()
