@@ -27,8 +27,15 @@ public class PlayerFatigue : MonoBehaviour
 
     public bool CanPerformAction(int fatigueCost) // main logic to prevent anything but movement out of hole
     {
-
-        return currentFatigue >= fatigueCost;
+        if (prone)
+        {
+            return false;
+        }
+        else
+        {
+            return currentFatigue >= fatigueCost;
+        }
+        
     }
 
     public void UseFatigue(int fatigueCost) // called in PlayerMove

@@ -399,7 +399,7 @@ public class TempTurnBase : MonoBehaviour
     // ─────────────────────────────────────
     // End Player Turn
     // ─────────────────────────────────────
-    public void EndPlayerTurn()
+    public void EndPlayerTurn() // called by button press
     {
         if (!isPlayerTurn || isProcessingTurn) return;
 

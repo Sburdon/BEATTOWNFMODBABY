@@ -100,7 +100,7 @@ public class PlayerMove : MonoBehaviour
                         currentMoveCoroutine = StartCoroutine(MoveAlongPath(intermediateTile, clickedTilePosition));
                     }
                 }
-                else if (IsPathClear(CurrentTilePosition, clickedTilePosition))
+                else if (IsPathClear(CurrentTilePosition, clickedTilePosition) && !IsPlayerInHole())
                 {
                     moveAllowed = true;
                     currentMoveCoroutine = StartCoroutine(MoveToTile(clickedTilePosition));
@@ -128,6 +128,12 @@ public class PlayerMove : MonoBehaviour
         // add method for InHole to prevent ANY movement. Called here
 
     }
+
+    private bool IsPlayerInHole()
+    {
+        return isPlayerInHole;
+    }
+
     public void ResetPendingMove()
     {
         if (pendingMovePurchase == true)
