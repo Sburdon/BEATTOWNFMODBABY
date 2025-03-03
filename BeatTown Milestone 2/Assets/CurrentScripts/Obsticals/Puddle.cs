@@ -8,7 +8,7 @@ public class Puddle : MonoBehaviour
 {
 
 
-    [Header("ScriptRefs")] 
+    [Header("ScriptRefs")]
     private ElectricianMove electricianMove;
     private GoonMove goonMove;
     private PlayerMove playerMove;
@@ -22,13 +22,13 @@ public class Puddle : MonoBehaviour
         if (tilemap == null)
         {
             tilemap = FindObjectOfType<Tilemap>();
-            if (tilemap == null)
-                Debug.LogError($"GoonMove: No Tilemap found for {name}!");
+            //     if (tilemap == null)
+            //    Debug.LogError($"GoonMove: No Tilemap found for {name}!");
         }
     }
 
     // Called when something enters the puddle('s trigger)
-    private void OnTriggerEnter2D(Collider2D collision) 
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         // Set the proper reference and flag depending on what type of object hit the puddle
         if (collision.gameObject.CompareTag("Electrician"))
@@ -104,7 +104,7 @@ public class Puddle : MonoBehaviour
 
         // Step tile by tile in the desired direction until we hit a “wall” (no tile) or an occupied tile.
         Vector3Int currentTile = startTile;
-        
+
         while (IsTileValid(currentTile + direction))
         {
             currentTile += direction;
@@ -165,21 +165,21 @@ public class Puddle : MonoBehaviour
             playerMove.CurrentTilePosition = targetTile;
             if (OccupiedTilesManager.Instance != null)
                 OccupiedTilesManager.Instance.AddOccupiedPosition(targetTile);
-           // playerMove.InPuddle = false; // not used for anything yet
+            // playerMove.InPuddle = false; // not used for anything yet
         }
         else if (thing.CompareTag("Goon") && goonMove != null)
         {
             goonMove.CurrentTilePosition = targetTile;
             if (OccupiedTilesManager.Instance != null)
                 OccupiedTilesManager.Instance.AddOccupiedPosition(targetTile);
-          //  goonMove.InPuddle = false; // not used for anything yet
+            //  goonMove.InPuddle = false; // not used for anything yet
         }
         else if (thing.CompareTag("Electrician") && electricianMove != null)
         {
             electricianMove.CurrentTilePosition = targetTile;
             if (OccupiedTilesManager.Instance != null)
                 OccupiedTilesManager.Instance.AddOccupiedPosition(targetTile);
-           // electricianMove.InPuddle = false; // not used for anything yet
+            // electricianMove.InPuddle = false; // not used for anything yet
         }
         yield break;
     }
