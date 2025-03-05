@@ -32,6 +32,7 @@ public class PlayerMove : MonoBehaviour
 
 
     private bool hasFatigueBeenDeductedForMove = false; // Flag to ensure fatigue is only deducted once per move action
+    private bool isLockedMovementActive = false; // bool to check if player has moved during locked state - Russell
 
     public GameObject noMoveImage;    // Image for no moves left
     public GameObject oneMoveImage;   // Image for one move left
@@ -131,12 +132,14 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
+        // Handle locked movement without a button press
         if (playerFatigue.lockedMovement)
         {
-            // start coroutine of one tile locekdmovement 
-            StartCoroutine(LockedMovement());
+            
+            HandleLockedMovement();
+            return; // Exit early to prevent other actions
         }
-        
+
         // if (isPlayerInHole) then disable ALL highlights 
         if (IsPlayerInHole())
         {
@@ -147,6 +150,93 @@ public class PlayerMove : MonoBehaviour
             jumpHighlight.SetActive(false);
         }
 
+    }
+
+  
+    private void HandleLockedMovement()
+    {
+        remainingMoves = 1; // Allow only 1 move
+        UpdateMoveImages(); // Update UI
+        UpdateMoveHighlights(); // Update highlights
+        canMove = true; // Enable movement
+        Debug.Log("LockedMovement activated. You have 1 move available.");
+
+        if (canMove && Input.GetMouseButtonDown(0)) // Left mouse button
+        {
+            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
+
+            int deltaX = Mathf.Abs(clickedTilePosition.x - CurrentTilePosition.x);
+            int deltaY = Mathf.Abs(clickedTilePosition.y - CurrentTilePosition.y);
+
+            // Validate move range (only 1 tile move allowed)
+            if (deltaX + deltaY == 1)
+            {
+                if (IsPathClear(CurrentTilePosition, clickedTilePosition) && !IsTileOccupied(clickedTilePosition))
+                {
+                    StartCoroutine(MoveToTile(clickedTilePosition));
+                    playerFatigue.lockedMovement = false; // End the LockedMovement state after moving
+                    Debug.Log("LockedMovement completed. Player is now free to move normally.");
+                }
+                else
+                {
+                    Debug.Log("Move is blocked; no movement executed.");
+                }
+            }
+            else
+            {
+                Debug.Log("Invalid move during LockedMovement. Only 1 tile move allowed.");
+            }
+        }
+    }
+
+    public void OnMoveButtonPressed()
+    {
+
+        if (tempTurnBase.isPlayerTurn)
+        {
+            Debug.Log("Move button pressed.");
+            tempTurnBase.ResetAllColliders();
+            SwingHighlight.SetActive(false);
+            RealMoveHighlight.SetActive(false);
+            PPShighlight.SetActive(false);
+            moveMentHighlight.SetActive(false);
+            jumpHighlight.SetActive(false);
+
+
+            if (swingScript != null && swingScript.IsSwinging())
+            {
+                swingScript.CancelSwing();
+            }
+
+            // Check if the player has moves left
+            if (remainingMoves > 0)
+            {
+                canMove = true;
+                Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
+                currentAction = ActionType.Move;
+            }
+            else if (remainingMoves <= 0 && !pendingMovePurchase)
+            {
+                // Set pending move purchase if the player wants to gain more moves
+                if (playerFatigue.CanPerformAction(moveFatigueCost) && !playerFatigue.lockedMovement) // idk if check is needed here -Russell
+                {
+                    remainingMoves = maxMoves;
+                    pendingMovePurchase = true; // Indicate that moves are pending purchase
+                    UpdateMoveImages();
+                    Debug.Log("Pending move purchase. You now have " + remainingMoves + " moves available.");
+                    canMove = true;
+                }
+            }
+            else // I believe this is where we should add the 1 tile lockedmovement for Hole - Russell
+            {
+                canMove = false;
+                Debug.Log("Not enough fatigue to gain more moves.");
+            }
+            UpdateMoveImages();
+            UpdateMoveHighlights();
+        }
+        else return;
     }
 
     private bool IsPlayerInHole()
@@ -277,57 +367,11 @@ public class PlayerMove : MonoBehaviour
         yield return MoveToTile(targetTilePosition);
     }
 
-    public void OnMoveButtonPressed()
-    {
 
-        if (tempTurnBase.isPlayerTurn)
-        {
-            Debug.Log("Move button pressed.");
-            tempTurnBase.ResetAllColliders();
-            SwingHighlight.SetActive(false);
-            RealMoveHighlight.SetActive(false);
-            PPShighlight.SetActive(false);
-            moveMentHighlight.SetActive(false);
-            jumpHighlight.SetActive(false);
 
-        
-        if (swingScript != null && swingScript.IsSwinging())
-            {
-                swingScript.CancelSwing();
-            }
-
-        // Check if the player has moves left
-        if (remainingMoves > 0)
-        {
-            canMove = true;
-            Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
-            currentAction = ActionType.Move;
-        }
-        else if (remainingMoves <= 0 && !pendingMovePurchase)
-        {
-            // Set pending move purchase if the player wants to gain more moves
-            if (playerFatigue.CanPerformAction(moveFatigueCost) && !playerFatigue.lockedMovement) // idk if check is needed here -Russell
-            {
-                remainingMoves = maxMoves;
-                pendingMovePurchase = true; // Indicate that moves are pending purchase
-                UpdateMoveImages();
-                Debug.Log("Pending move purchase. You now have " + remainingMoves + " moves available.");
-                canMove = true;
-            }
-        }
-        else // I believe this is where we should add the 1 tile lockedmovement for Hole - Russell
-        {
-            canMove = false;
-            Debug.Log("Not enough fatigue to gain more moves.");
-        }
-        UpdateMoveImages();
-        UpdateMoveHighlights();
-    }
-        else return;
-    }
 
     // coroutine for 1 tile lockedmovement for Hole
-    private IEnumerator LockedMovement() // as long as coroutine is going, give player a 'free' single tile move to get out of the hole.
+    /*private IEnumerator LockedMovement() // as long as coroutine is going, give player a 'free' single tile move to get out of the hole.
         // if this coroutine is active, that means the player has already spent 1 fatigue to 'get up' in PlayerFatigue.
     {
         // give the player a single remaining move and activate relevant highlights
@@ -337,7 +381,7 @@ public class PlayerMove : MonoBehaviour
         canMove = true;
         Debug.Log("LockedMovement coroutine started. You have " + remainingMoves + " moves available.");
 
-        /*if (canMove && Input.GetMouseButtonDown(0)) // Left mouse button
+        *//*if (canMove && Input.GetMouseButtonDown(0)) // Left mouse button
         {
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
@@ -362,10 +406,10 @@ public class PlayerMove : MonoBehaviour
                     Debug.Log("Move is blocked; no movement executed.");
                 }
             }
-        }*/
+        }*//*
         yield return null;
     }
-
+*/
     public void CancelMove()
     {
         if (currentMoveCoroutine != null)
