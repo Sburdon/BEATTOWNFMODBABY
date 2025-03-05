@@ -36,7 +36,6 @@ public class PlayerFatigue : MonoBehaviour
         {
             return currentFatigue >= fatigueCost;
         }
-        
     }
 
     public void UseGetUpFatigue()

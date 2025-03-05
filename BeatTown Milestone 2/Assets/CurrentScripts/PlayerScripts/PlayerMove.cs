@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
 using static StateMachine;
+using static Unity.Collections.AllocatorManager;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -106,6 +108,8 @@ public class PlayerMove : MonoBehaviour
                     moveAllowed = true;
                     currentMoveCoroutine = StartCoroutine(MoveToTile(clickedTilePosition));
                 }
+                
+                                
 
                 if (moveAllowed)
                 {
@@ -129,7 +133,8 @@ public class PlayerMove : MonoBehaviour
 
         if (playerFatigue.lockedMovement)
         {
-            // lockedmovement stuff here
+            // start coroutine of one tile locekdmovement 
+            StartCoroutine(LockedMovement());
         }
         
         // if (isPlayerInHole) then disable ALL highlights 
@@ -321,6 +326,45 @@ public class PlayerMove : MonoBehaviour
         else return;
     }
 
+    // coroutine for 1 tile lockedmovement for Hole
+    private IEnumerator LockedMovement() // as long as coroutine is going, give player a 'free' single tile move to get out of the hole.
+        // if this coroutine is active, that means the player has already spent 1 fatigue to 'get up' in PlayerFatigue.
+    {
+        // give the player a single remaining move and activate relevant highlights
+        remainingMoves = 1;
+        UpdateMoveImages();
+        UpdateMoveHighlights();
+        canMove = true;
+        Debug.Log("LockedMovement coroutine started. You have " + remainingMoves + " moves available.");
+
+        /*if (canMove && Input.GetMouseButtonDown(0)) // Left mouse button
+        {
+            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
+
+            int deltaX = Mathf.Abs(clickedTilePosition.x - CurrentTilePosition.x);
+            int deltaY = Mathf.Abs(clickedTilePosition.y - CurrentTilePosition.y);
+            bool isDiagonalMove = (deltaX == 1 && deltaY == 1);
+
+            // Validate move range
+            if ((deltaX + deltaY <= remainingMoves && (deltaX == 0 || deltaY == 0)) || (isDiagonalMove && remainingMoves >= 2))
+            {
+                bool moveAllowed = false;
+
+                if (IsPathClear(CurrentTilePosition, clickedTilePosition) && !IsPlayerInHole() && !playerFatigue.lockedMovement)
+                {
+                    moveAllowed = true;
+                    currentMoveCoroutine = StartCoroutine(MoveToTile(clickedTilePosition));
+                    yield return new WaitForSeconds(1f);
+                }
+                else
+                {
+                    Debug.Log("Move is blocked; no movement executed.");
+                }
+            }
+        }*/
+        yield return null;
+    }
 
     public void CancelMove()
     {
