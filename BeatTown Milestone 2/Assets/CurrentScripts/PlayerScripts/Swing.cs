@@ -51,6 +51,7 @@ public class Swing : MonoBehaviour
             SwingHighlight.SetActive(false);
             moveMentHighlight.SetActive(false);
             jumpHighlight.SetActive(false);
+
             if (isSwinging)
             {
                 Debug.Log("Already swinging.");

@@ -69,7 +69,7 @@ public class Punch : MonoBehaviour
 
     public void OnPunchButtonPressed()
     {
-        if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
+        if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost) && !playerFatigue.lockedMovement)
         {
             tempTurnBase.ResetAllColliders();
 

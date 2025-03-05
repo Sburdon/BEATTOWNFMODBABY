@@ -47,16 +47,18 @@ public class Jump : MonoBehaviour
 
     public void OnJumpButtonPressed()
     {
-        RealMoveHighlight.SetActive(false);
-        SwingHighlight.SetActive(false);
-        PPShighlight.SetActive(false);
-        moveMentHighlight.SetActive(false);
-        jumpHighlight.SetActive(true);
-        removePlayerOldPos = playerMove.CurrentTilePosition;
-        tempTurnBase.ResetAllColliders();
+        
 
-        if (playerFatigue.CanPerformAction(jumpFatigueCost))
+        if (playerFatigue.CanPerformAction(jumpFatigueCost) && !playerFatigue.lockedMovement)
         {
+            RealMoveHighlight.SetActive(false);
+            SwingHighlight.SetActive(false);
+            PPShighlight.SetActive(false);
+            moveMentHighlight.SetActive(false);
+            jumpHighlight.SetActive(true);
+            removePlayerOldPos = playerMove.CurrentTilePosition;
+            tempTurnBase.ResetAllColliders();
+
             if (isJumping)
             {
                 Debug.Log("Already jumping.");

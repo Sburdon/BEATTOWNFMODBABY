@@ -291,33 +291,33 @@ public class PlayerMove : MonoBehaviour
                 swingScript.CancelSwing();
             }
 
-            // Check if the player has moves left
-            if (remainingMoves > 0)
-            {
-                canMove = true;
-                Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
-                currentAction = ActionType.Move;
-            }
-            else if (remainingMoves <= 0 && !pendingMovePurchase)
-            {
-                // Set pending move purchase if the player wants to gain more moves
-                if (playerFatigue.CanPerformAction(moveFatigueCost))
-                {
-                    remainingMoves = maxMoves;
-                    pendingMovePurchase = true; // Indicate that moves are pending purchase
-                    UpdateMoveImages();
-                    Debug.Log("Pending move purchase. You now have " + remainingMoves + " moves available.");
-                    canMove = true;
-                }
-            }
-            else // I believe this is where we should add the 1 tile lockedmovement for Hole - Russell
-            {
-                canMove = false;
-                Debug.Log("Not enough fatigue to gain more moves.");
-            }
-            UpdateMoveImages();
-            UpdateMoveHighlights();
+        // Check if the player has moves left
+        if (remainingMoves > 0)
+        {
+            canMove = true;
+            Debug.Log("Move button pressed. You have " + remainingMoves + " moves available.");
+            currentAction = ActionType.Move;
         }
+        else if (remainingMoves <= 0 && !pendingMovePurchase)
+        {
+            // Set pending move purchase if the player wants to gain more moves
+            if (playerFatigue.CanPerformAction(moveFatigueCost) && !playerFatigue.lockedMovement) // idk if check is needed here -Russell
+            {
+                remainingMoves = maxMoves;
+                pendingMovePurchase = true; // Indicate that moves are pending purchase
+                UpdateMoveImages();
+                Debug.Log("Pending move purchase. You now have " + remainingMoves + " moves available.");
+                canMove = true;
+            }
+        }
+        else // I believe this is where we should add the 1 tile lockedmovement for Hole - Russell
+        {
+            canMove = false;
+            Debug.Log("Not enough fatigue to gain more moves.");
+        }
+        UpdateMoveImages();
+        UpdateMoveHighlights();
+    }
         else return;
     }
 

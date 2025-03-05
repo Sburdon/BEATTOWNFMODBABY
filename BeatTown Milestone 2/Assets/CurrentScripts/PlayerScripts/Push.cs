@@ -101,7 +101,7 @@ public class Push : MonoBehaviour
     public void OnPushButtonPressed()
     {
         tempTurnBase.ResetAllColliders();
-        if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost))
+        if (playerFatigue.CanPerformAction(playerFatigue.punchFatigueCost) && !playerFatigue.lockedMovement)
         {
             RealMoveHighlight.SetActive(false);
             SwingHighlight.SetActive(false);

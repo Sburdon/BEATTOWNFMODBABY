@@ -1,4 +1,4 @@
-using UnityEngine;
+ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerFatigue : MonoBehaviour
@@ -15,7 +15,7 @@ public class PlayerFatigue : MonoBehaviour
 
     public int fallFatigueCost = 1; // for falling inside a hole (prone state) 
     public bool prone = false; // prone state (from Hole) for player. No visual cue YET. Referenced in PlayerMove* and Hole* scripts.
-    public bool lockedMovement = false; // locked movement state (from Hole) for player. 
+    public bool lockedMovement = false; // locked movement state (from Hole) for player.
 
     [Header("Fatigue Bar Images")]
     public Image[] fatigueImages; // Array to hold references to the fatigue images (0/4 to 4/4)
