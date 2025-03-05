@@ -9,7 +9,7 @@ public class StateMachine : MonoBehaviour
     {
         Idle,
         Move,
-        Punch,
+        Punch, 
         Push,
         React,
         Swing, //state for swing remains the same even if back, just the texture/source/base mask changes 
