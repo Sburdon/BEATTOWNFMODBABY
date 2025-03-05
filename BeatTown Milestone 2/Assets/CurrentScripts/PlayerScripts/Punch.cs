@@ -19,16 +19,13 @@ public class Punch : MonoBehaviour
     public GameObject RealMoveHighlight;
     public GameObject jumpHighlight;
 
-
     private void Awake()
     {
         playerMove = GetComponent<PlayerMove>();
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
         tempTurnBase = FindObjectOfType<TempTurnBase>();
-
     }
-
 
     void Update()
     {
@@ -36,36 +33,31 @@ public class Punch : MonoBehaviour
         {
             if (isPunching)
             {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+                if (hit.collider != null)
                 {
-                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-
-                    if (hit.collider != null)
+                    if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Goon") || hit.collider.CompareTag("Electrician") || hit.collider.CompareTag("Barra")))
                     {
-                        if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Goon") || hit.collider.CompareTag("Electrician") || hit.collider.CompareTag("Barra")))
-                        {
-                            Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
-                            Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
+                        Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
+                        Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
 
-                            if (IsWithinPunchRange(playerPosition, enemyPosition))
-                            {
-                                selectedEnemy = hit.collider.transform;
-                                FlipPlayerIfNeeded(enemyPosition); // Flip player before punching
-                                Debug.Log($"Selected enemy for punch: {selectedEnemy.name}");
-                                TryPunchEnemy();
-                                
-                            }
-                            else
-                                {
-                                    Debug.Log("Selected enemy is out of punch range.");
-                                }
-                            }
+                        if (IsWithinPunchRange(playerPosition, enemyPosition))
+                        {
+                            selectedEnemy = hit.collider.transform;
+                            FlipPlayerIfNeeded(enemyPosition);
+                            TryPunchEnemy();
+                        }
+                        else
+                        {
+                            Debug.Log("Selected enemy is out of punch range.");
                         }
                     }
                 }
             }
         }
-    
+    }
 
     public void OnPunchButtonPressed()
     {
@@ -78,6 +70,7 @@ public class Punch : MonoBehaviour
             PPShighlight.SetActive(true);
             moveMentHighlight.SetActive(false);
             jumpHighlight.SetActive(false);
+
             isPunching = true;
             selectedEnemy = null;
             playerMove.CurrentAction = ActionType.Punch;
@@ -98,32 +91,6 @@ public class Punch : MonoBehaviour
         Debug.Log("Punch action canceled.");
     }
 
-    //void SelectEnemy()
-    //{
-    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-    //    RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-
-    //    if (hit.collider != null)
-    //    {
-    //        if (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Barra"))
-    //        {
-    //            Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
-    //            Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
-
-    //            if (IsWithinPunchRange(playerPosition, enemyPosition))
-    //            {
-    //                selectedEnemy = hit.collider.transform;
-    //                FlipPlayerIfNeeded(enemyPosition); // Flip player before punching
-    //                Debug.Log($"Selected enemy for punch: {selectedEnemy.name}");
-    //            }
-    //            else
-    //            {
-    //                Debug.Log("Selected enemy is out of punch range.");
-    //            }
-    //        }
-    //    }
-    //}
-
     void TryPunchEnemy()
     {
         if (selectedEnemy != null)
@@ -136,7 +103,16 @@ public class Punch : MonoBehaviour
                 All_SFX.PlayFishSlap();
                 stateMachine.ChangeState(WrestlerState.Punch);
 
-                // Set the AI to follow the player for 2 turns
+                // -----------------------------------
+                //  NEW: If the target is a Goon, notify them
+                // -----------------------------------
+                GoonMove goonMove = selectedEnemy.GetComponent<GoonMove>();
+                if (goonMove != null)
+                {
+                    goonMove.OnPunchedByPlayer(); 
+                }
+
+                // Optionally, here's your existing code to have AI chase the player:
                 AIMove aiMoveScript = selectedEnemy.GetComponent<AIMove>();
                 if (aiMoveScript != null)
                 {

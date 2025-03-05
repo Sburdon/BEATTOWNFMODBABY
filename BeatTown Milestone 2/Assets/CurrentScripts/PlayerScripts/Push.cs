@@ -11,7 +11,7 @@ public class Push : MonoBehaviour
     public GameObject PPShighlight;
     public GameObject moveMentHighlight;
     public Tilemap tilemap;
-    public Hook hook; // Hook will be assigned later by RespawnManager
+    public Hook hook;
     private Transform selectedTarget;
     private bool isPushing;
     private PlayerMove playerMove;
@@ -21,16 +21,13 @@ public class Push : MonoBehaviour
     public GameObject RealMoveHighlight;
     public GameObject jumpHighlight;
 
-
     void Awake()
     {
         playerMove = GetComponent<PlayerMove>();
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
         tempTurnBase = FindObjectOfType<TempTurnBase>();
-
     }
-
 
     public void SetHookReference(Hook hookInstance)
     {
@@ -61,7 +58,6 @@ public class Push : MonoBehaviour
                     else if (playerPosition.y > targetPosition.y)
                         direction = Vector3Int.down;
 
-                    // Flip the player if they are not facing the correct direction
                     FlipPlayerIfNeeded(direction);
 
                     Vector3Int furthestTile = FindFurthestTile(targetPosition, direction);
@@ -69,7 +65,6 @@ public class Push : MonoBehaviour
                     if (furthestTile != targetPosition)
                     {
                         OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetPosition);
-
                         StartCoroutine(PushTargetToTile(selectedTarget, furthestTile));
                         playerFatigue.UseFatigue(playerFatigue.pushFatigueCost);
                         selectedTarget = null;
@@ -79,12 +74,12 @@ public class Push : MonoBehaviour
                     {
                         Debug.Log("No valid tile to push to.");
                     }
+                    All_SFX.PlayPush();
                 }
                 else
                 {
                     Debug.Log("No target selected for push.");
                 }
-                All_SFX.PlayPush();
             }
             else
             {
@@ -153,7 +148,7 @@ public class Push : MonoBehaviour
             }
             else
             {
-                Debug.Log("Target is not adjacent to the player (1 tile away in cardinal directions).");
+                Debug.Log("Target not adjacent.");
             }
         }
     }
@@ -176,7 +171,6 @@ public class Push : MonoBehaviour
             else if (playerPosition.y > targetPosition.y)
                 direction = Vector3Int.down;
 
-            // Flip the player if they are not facing the correct direction
             FlipPlayerIfNeeded(direction);
 
             Vector3Int furthestTile = FindFurthestTile(targetPosition, direction);
@@ -184,7 +178,6 @@ public class Push : MonoBehaviour
             if (furthestTile != targetPosition)
             {
                 OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetPosition);
-
                 StartCoroutine(PushTargetToTile(selectedTarget, furthestTile));
                 playerFatigue.UseFatigue(playerFatigue.pushFatigueCost);
                 selectedTarget = null;
@@ -216,6 +209,7 @@ public class Push : MonoBehaviour
     {
         PPShighlight.SetActive(false);
         stateMachine.ChangeState(WrestlerState.Push);
+
         Vector3 startPosition = target.position;
         Vector3 endPosition = tilemap.GetCellCenterWorld(targetTilePosition);
         float travelTime = 0.5f;
@@ -256,6 +250,7 @@ public class Push : MonoBehaviour
         target.position = endPosition;
         Debug.Log($"{target.name} has been pushed to {targetTilePosition}");
 
+        // AIMove or BarraMove
         AIMove targetAIMove = target.GetComponent<AIMove>();
         BarraMove targetBarraMove = target.GetComponent<BarraMove>();
         if (targetAIMove != null)
@@ -271,16 +266,31 @@ public class Push : MonoBehaviour
             OccupiedTilesManager.Instance.AddOccupiedPosition(targetBarraMove.CurrentTilePosition);
         }
 
-        Vector3Int targetTilePos = targetTilePosition;
-        Vector3Int hookTilePos = hook != null ? hook.GetHookPosition() : new Vector3Int();
+        // Goon
+        GoonMove goonMove = target.GetComponent<GoonMove>();
+        if (goonMove != null)
+        {
+            // 1) Store the old tile
+            Vector3Int oldTile = goonMove.CurrentTilePosition;
 
-        if (hook != null && targetTilePos == hookTilePos)
+            // 2) Remove old tile
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(oldTile);
+
+            // 3) Update
+            goonMove.CurrentTilePosition = targetTilePosition;
+            OccupiedTilesManager.Instance.AddOccupiedPosition(goonMove.CurrentTilePosition);
+
+            // 4) Adjust punch telegraph offset
+            goonMove.OnPushedByPlayer(oldTile, targetTilePosition);
+        }
+
+        Vector3Int hookTilePos = hook != null ? hook.GetHookPosition() : new Vector3Int();
+        if (hook != null && targetTilePosition == hookTilePos)
         {
             hook.HandleSwingOrPushIntoHook(target.gameObject);
         }
     }
 
-    // Function to flip the player sprite based on push direction
     private void FlipPlayerIfNeeded(Vector3Int direction)
     {
         if (direction == Vector3Int.left && transform.localScale.x > 0)
@@ -291,14 +301,12 @@ public class Push : MonoBehaviour
         {
             FlipPlayer();
         }
-     
     }
 
-    // Function to flip the player sprite
     private void FlipPlayer()
     {
         Vector3 localScale = transform.localScale;
-        localScale.x *= -1; // Flip the player horizontally
+        localScale.x *= -1;
         transform.localScale = localScale;
     }
 }

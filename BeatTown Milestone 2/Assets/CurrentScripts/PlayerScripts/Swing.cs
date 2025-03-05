@@ -24,15 +24,12 @@ public class Swing : MonoBehaviour
     public GameObject RealMoveHighlight;
     public GameObject jumpHighlight;
 
-
     void Awake()
     {
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
         tempTurnBase = FindObjectOfType<TempTurnBase>();
-
     }
-
 
     public void SetHookReference(Hook hookInstance)
     {
@@ -44,7 +41,7 @@ public class Swing : MonoBehaviour
     {
         tempTurnBase.ResetAllColliders();
 
-        if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost) && !playerFatigue.lockedMovement) // Russell 3/3/25
+        if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost) && !playerFatigue.lockedMovement)
         {
             RealMoveHighlight.SetActive(false);
             PPShighlight.SetActive(true);
@@ -73,18 +70,20 @@ public class Swing : MonoBehaviour
         }
     }
 
-        void Update()
+    void Update()
     {
         if (isSwingMode && !isSwinging)
         {
             if (Input.GetMouseButtonDown(0))
             {
+                // 1) If we have not chosen a target yet, select one
                 if (targetToSwing == null)
                 {
                     SelectTarget();
                 }
                 else
                 {
+                    // 2) We have a target selected. Now pick where to swing them
                     Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     Vector3Int clickedTilePosition = tilemap.WorldToCell(mouseWorldPosition);
                     Vector3Int playerTilePosition = tilemap.WorldToCell(transform.position);
@@ -127,7 +126,6 @@ public class Swing : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-        // Debug logs to check collider state
         if (hit.collider != null)
         {
             Debug.Log($"Hit object: {hit.collider.name} with tag: {hit.collider.tag}, Collider enabled: {hit.collider.enabled}");
@@ -140,12 +138,12 @@ public class Swing : MonoBehaviour
 
             if (AIUtils.IsAdjacent(playerPosition, targetPosition))
             {
-                targetToSwing = hit.collider.gameObject; // Select the enemy
+                targetToSwing = hit.collider.gameObject;
                 Debug.Log($"Selected enemy for swing: {targetToSwing.name}");
                 PPShighlight.SetActive(false);
                 SwingHighlight.SetActive(true);
 
-                // Flip the player based on enemy's position
+                // Flip the player if needed
                 FlipPlayerIfNeeded(targetPosition);
             }
             else
@@ -184,6 +182,7 @@ public class Swing : MonoBehaviour
             targetHealth.OnDeath += OnTargetDeath;
         }
 
+        // Move the target smoothly
         while (elapsedTime < duration)
         {
             if (targetDied)
@@ -203,36 +202,52 @@ public class Swing : MonoBehaviour
             targetHealth.OnDeath -= OnTargetDeath;
         }
 
-        if (targetDied)
+        if (!targetDied)
         {
-            yield break;
-        }
+            // Final position
+            target.transform.position = endPos;
+            Debug.Log($"{target.name} has been swung to {targetTilePosition}");
 
-        target.transform.position = endPos;
+            // If AIMove or BarraMove
+            AIMove targetAIMove = target.GetComponent<AIMove>();
+            BarraMove targetBarraMove = target.GetComponent<BarraMove>();
+            if (targetAIMove != null)
+            {
+                OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetAIMove.CurrentTilePosition);
+                targetAIMove.CurrentTilePosition = targetTilePosition;
+                OccupiedTilesManager.Instance.AddOccupiedPosition(targetAIMove.CurrentTilePosition);
+            }
+            else if (targetBarraMove != null)
+            {
+                OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetBarraMove.CurrentTilePosition);
+                targetBarraMove.CurrentTilePosition = targetTilePosition;
+                OccupiedTilesManager.Instance.AddOccupiedPosition(targetBarraMove.CurrentTilePosition);
+            }
 
-        Debug.Log($"{target.name} has been swung to {targetTilePosition}");
+            // If it's a Goon, we must do oldTile/newTile offset
+            GoonMove goonMove = target.GetComponent<GoonMove>();
+            if (goonMove != null)
+            {
+                // 1) Store old tile
+                Vector3Int oldTile = goonMove.CurrentTilePosition;
 
-        AIMove targetAIMove = target.GetComponent<AIMove>();
-        BarraMove targetBarraMove = target.GetComponent<BarraMove>();
-        if (targetAIMove != null)
-        {
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetAIMove.CurrentTilePosition);
-            targetAIMove.CurrentTilePosition = targetTilePosition;
-            OccupiedTilesManager.Instance.AddOccupiedPosition(targetAIMove.CurrentTilePosition);
-        }
-        else if (targetBarraMove != null)
-        {
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetBarraMove.CurrentTilePosition);
-            targetBarraMove.CurrentTilePosition = targetTilePosition;
-            OccupiedTilesManager.Instance.AddOccupiedPosition(targetBarraMove.CurrentTilePosition);
-        }
+                // 2) Remove old tile from OccupiedTilesManager
+                OccupiedTilesManager.Instance.RemoveOccupiedPosition(oldTile);
 
-        Vector3Int targetTilePos = targetTilePosition;
-        Vector3Int hookTilePos = hook != null ? hook.GetHookPosition() : new Vector3Int();
+                // 3) Update to new tile
+                goonMove.CurrentTilePosition = targetTilePosition;
+                OccupiedTilesManager.Instance.AddOccupiedPosition(goonMove.CurrentTilePosition);
 
-        if (hook != null && targetTilePos == hookTilePos)
-        {
-            hook.HandleSwingOrPushIntoHook(target);
+                // 4) Recalculate punch telegraph
+                goonMove.OnSwungByPlayer(oldTile, targetTilePosition);
+            }
+
+            // If there's a hook, handle hooking
+            Vector3Int hookTilePos = hook != null ? hook.GetHookPosition() : new Vector3Int();
+            if (hook != null && targetTilePosition == hookTilePos)
+            {
+                hook.HandleSwingOrPushIntoHook(target);
+            }
         }
 
         isSwinging = false;
@@ -254,15 +269,16 @@ public class Swing : MonoBehaviour
         targetToSwing = null;
         Debug.Log("Swing action canceled.");
     }
+
     private void FlipPlayerIfNeeded(Vector3Int enemyPosition)
     {
         Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
 
-        if (enemyPosition.x < playerPosition.x && transform.localScale.x > 0) // Enemy is to the left
+        if (enemyPosition.x < playerPosition.x && transform.localScale.x > 0) 
         {
             FlipPlayer();
         }
-        else if (enemyPosition.x > playerPosition.x && transform.localScale.x < 0) // Enemy is to the right
+        else if (enemyPosition.x > playerPosition.x && transform.localScale.x < 0) 
         {
             FlipPlayer();
         }
@@ -271,13 +287,12 @@ public class Swing : MonoBehaviour
     private void FlipPlayer()
     {
         Vector3 localScale = transform.localScale;
-        localScale.x *= -1; // Flip the player horizontally
+        localScale.x *= -1; 
         transform.localScale = localScale;
     }
-
 }
 
-// Utility Class for AI-related Functions
+// Utility for adjacency and tile validity checks
 public static class AIUtils
 {
     public static bool IsAdjacent(Vector3Int origin, Vector3Int target)
@@ -289,15 +304,17 @@ public static class AIUtils
 
     public static bool IsTileValid(Tilemap tilemap, OccupiedTilesManager occupiedManager, Vector3Int tilePosition, Hook hook = null)
     {
-        bool hasTile = tilemap.HasTile(tilePosition);
+        if (!tilemap.HasTile(tilePosition))
+            return false;
+
         bool isOccupied = occupiedManager.IsTileOccupied(tilePosition);
 
+        // Let hooking tile be valid even if "occupied"
         if (hook != null && tilePosition == hook.GetHookPosition())
         {
             isOccupied = false;
         }
 
-        return hasTile && !isOccupied;
+        return !isOccupied;
     }
-
 }

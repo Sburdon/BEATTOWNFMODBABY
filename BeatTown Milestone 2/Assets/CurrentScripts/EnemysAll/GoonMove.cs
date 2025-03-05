@@ -38,12 +38,8 @@ public class GoonMove : MonoBehaviour
     private GameObject punchIndicatorInstance;
     public bool IsPunchCharging => isPunchCharging;
 
-    private bool canMove;
     public bool InPuddle;
 
-    // ----------------------------------------------------
-    //  AWAKE: attempt to auto-find references if not set
-    // ----------------------------------------------------
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -61,9 +57,6 @@ public class GoonMove : MonoBehaviour
             enemyHealth = GetComponent<EnemyHealth>();
     }
 
-    // ----------------------------------------------------
-    //  START: Additional fallback for references
-    // ----------------------------------------------------
     private void Start()
     {
         // If STILL no Electrician reference, try by tag
@@ -91,9 +84,9 @@ public class GoonMove : MonoBehaviour
         }
     }
 
-    // --------------------------------------------------------------------
-    // Movement with BFS to a tile adjacent to the Electrician (not the same tile).
-    // --------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------
+    // Movement with BFS
+    // -----------------------------------------------------------------------------------
     public IEnumerator MoveUsingFatigue(int fatigue)
     {
         if (electricianMove == null)
@@ -103,34 +96,26 @@ public class GoonMove : MonoBehaviour
         }
 
         int stepsAllowed = fatigue * 2;
-
         Vector3Int startPos = CurrentTilePosition;
         Vector3Int electricianTile = electricianMove.CurrentTilePosition;
 
-        // Instead of BFS to the Electrician's tile (which may be "occupied"),
-        // we'll BFS until we find a tile that is "adjacent to ElectricianTile."
-        // Then we treat that tile as our BFS "goal."
         Vector3Int goal = FindAdjacentGoalTile(electricianTile);
         if (goal == startPos)
         {
-            // if we are already adjacent, no BFS needed
             Debug.Log($"{name}: Already adjacent to Electrician; no BFS needed.");
             yield break;
         }
 
-        // Actually run BFS from 'startPos' to 'goal'
         List<Vector3Int> path = BFSPathToTile(startPos, goal, stepsAllowed);
 
         if (path.Count == 0)
         {
-            Debug.Log($"{name}: No valid BFS path found to adjacency. Standing still.");
+            Debug.Log($"{name}: No valid BFS path found. Standing still.");
             yield break;
         }
 
-        // Follow that path
         foreach (var stepTile in path)
         {
-            // Unoccupy old tile
             if (OccupiedTilesManager.Instance != null)
                 OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
 
@@ -141,27 +126,21 @@ public class GoonMove : MonoBehaviour
             if (OccupiedTilesManager.Instance != null)
                 OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
 
-            // If we become adjacent at any point, can stop early
             if (IsAdjacentToElectrician())
             {
-                Debug.Log($"{name}: Stopped BFS early upon reaching adjacency.");
+                Debug.Log($"{name}: Reached adjacency early, stopping BFS.");
                 break;
             }
         }
-
         yield return null;
     }
 
-    // --------------------------------------------------------------------
-    // BFS from 'start' to 'goal', limited to maxSteps.
-    // --------------------------------------------------------------------
     private List<Vector3Int> BFSPathToTile(Vector3Int start, Vector3Int goal, int maxSteps)
     {
         var path = new List<Vector3Int>();
         if (tilemap == null) return path;
         if (start == goal) return path;
 
-        // BFS structures
         var queue = new Queue<Vector3Int>();
         var cameFrom = new Dictionary<Vector3Int, Vector3Int>();
 
@@ -184,11 +163,9 @@ public class GoonMove : MonoBehaviour
             }
         }
 
-        // If BFS never visited 'goal', no path
         if (!cameFrom.ContainsKey(goal))
             return path;
 
-        // Reconstruct path
         var temp = goal;
         while (temp != start)
         {
@@ -197,40 +174,24 @@ public class GoonMove : MonoBehaviour
         }
         path.Reverse();
 
-        // If path is longer than maxSteps, trim
         if (path.Count > maxSteps)
             path = path.GetRange(0, maxSteps);
 
         return path;
     }
 
-    // --------------------------------------------------------------------
-    //  Find a tile that is adjacent to 'electricianTile' and also valid
-    // --------------------------------------------------------------------
     private Vector3Int FindAdjacentGoalTile(Vector3Int electricianTile)
     {
-        // If we're *already* adjacent, just return CurrentTilePosition
         if (IsAdjacentToElectrician())
             return CurrentTilePosition;
 
-        // Check all 4 neighbors of the Electrician's tile
         foreach (var n in GetNeighboringTiles(electricianTile))
         {
-            // If it's valid for movement, that can be our BFS "goal"
-            if (IsMoveValid(n))
-            {
-                return n;
-            }
+            if (IsMoveValid(n)) return n;
         }
-
-        // If all adjacent tiles are invalid/occupied, BFS won't succeed anyway.
-        // Return current tile as a fallback to skip BFS entirely.
         return CurrentTilePosition;
     }
 
-    // --------------------------------------------------------------------
-    // Move smoothly to a tile
-    // --------------------------------------------------------------------
     private IEnumerator MoveToTile(Vector3Int tilePos)
     {
         Vector3 startPos = transform.position;
@@ -238,7 +199,6 @@ public class GoonMove : MonoBehaviour
         float elapsed = 0f;
         float travelTime = 1f / moveSpeed;
 
-        // Flip sprite if needed
         if (tilePos.x < CurrentTilePosition.x)
             spriteRenderer.flipX = true;
         else if (tilePos.x > CurrentTilePosition.x)
@@ -253,9 +213,6 @@ public class GoonMove : MonoBehaviour
         transform.position = endPos;
     }
 
-    // --------------------------------------------------------------------
-    // Return orth-adj neighbors
-    // --------------------------------------------------------------------
     private List<Vector3Int> GetNeighboringTiles(Vector3Int position)
     {
         return new List<Vector3Int>
@@ -267,9 +224,6 @@ public class GoonMove : MonoBehaviour
         };
     }
 
-    // --------------------------------------------------------------------
-    // Check if tile is valid
-    // --------------------------------------------------------------------
     private bool IsMoveValid(Vector3Int tilePos)
     {
         if (tilemap == null || !tilemap.HasTile(tilePos))
@@ -280,13 +234,9 @@ public class GoonMove : MonoBehaviour
         {
             return false;
         }
-
         return true;
     }
 
-    // --------------------------------------------------------------------
-    // Adjacent to Electrician?
-    // --------------------------------------------------------------------
     public bool IsAdjacentToElectrician()
     {
         if (electricianMove == null) return false;
@@ -296,33 +246,26 @@ public class GoonMove : MonoBehaviour
         return (dx + dy) == 1;
     }
 
-    // --------------------------------------------------------------------
-    // Punch Setup
-    // --------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------
+    // PUNCH SETUP / RESOLVE
+    // -----------------------------------------------------------------------------------
     public void SetupPunch()
     {
         if (isPunchCharging) return;
         isPunchCharging = true;
 
-        Vector3Int eTile = (electricianMove != null)
-            ? electricianMove.CurrentTilePosition
-            : CurrentTilePosition;
+        Vector3Int eTile = electricianMove ? electricianMove.CurrentTilePosition : CurrentTilePosition;
 
         punchTargetTile = eTile;
 
-        // Spawn telegraph (red square)
-        if (punchIndicatorPrefab != null && tilemap != null)
+        if (punchIndicatorInstance == null && punchIndicatorPrefab != null && tilemap != null)
         {
             Vector3 spawnPos = tilemap.GetCellCenterWorld(punchTargetTile);
             punchIndicatorInstance = Instantiate(punchIndicatorPrefab, spawnPos, Quaternion.identity);
         }
-
         Debug.Log($"{name} is telegraphing a punch at tile {punchTargetTile}!");
     }
 
-    // --------------------------------------------------------------------
-    // Punch Resolve
-    // --------------------------------------------------------------------
     public void ResolvePunch()
     {
         if (!isPunchCharging) return;
@@ -356,7 +299,6 @@ public class GoonMove : MonoBehaviour
 
         if (!hitSomeone)
         {
-            // Miss => spawn hole
             if (holePrefab != null)
             {
                 Instantiate(holePrefab, worldPos, Quaternion.identity);
@@ -371,6 +313,66 @@ public class GoonMove : MonoBehaviour
             {
                 Debug.Log($"{name} missed the punch, no holePrefab assigned.");
             }
+        }
+    }
+
+    // -----------------------------------------------------------------------------------
+    //  METHODS FOR FORCED MOVEMENT (BY PLAYER)
+    // -----------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Called if the Goon is punched by the player. If it's telegraphing a punch,
+    /// retarget the Electrician's position (so it tries to punch the player back).
+    /// </summary>
+    public void OnPunchedByPlayer()
+    {
+        if (isPunchCharging && electricianMove != null && tilemap != null)
+        {
+            punchTargetTile = electricianMove.CurrentTilePosition;
+
+            if (punchIndicatorInstance != null)
+            {
+                punchIndicatorInstance.transform.position = tilemap.GetCellCenterWorld(punchTargetTile);
+            }
+            Debug.Log($"{name}: Punch target updated to player's tile after being punched.");
+        }
+    }
+
+    /// <summary>
+    /// Called if the Goon is swung by the player. We pass the old tile (before the move)
+    /// and the new tile, so we can figure out the correct offset for the punch target.
+    /// </summary>
+    public void OnSwungByPlayer(Vector3Int oldTile, Vector3Int newTile)
+    {
+        if (isPunchCharging && tilemap != null)
+        {
+            Vector3Int offset = punchTargetTile - oldTile; 
+            punchTargetTile = newTile + offset;
+
+            if (punchIndicatorInstance != null)
+            {
+                punchIndicatorInstance.transform.position = tilemap.GetCellCenterWorld(punchTargetTile);
+            }
+            Debug.Log($"{name}: Punch telegraph repositioned after being swung by the player.");
+        }
+    }
+
+    /// <summary>
+    /// Called if the Goon is pushed by the player. Same idea: we pass old tile
+    /// and new tile, so we can recalc the offset for the punch telegraph.
+    /// </summary>
+    public void OnPushedByPlayer(Vector3Int oldTile, Vector3Int newTile)
+    {
+        if (isPunchCharging && tilemap != null)
+        {
+            Vector3Int offset = punchTargetTile - oldTile;
+            punchTargetTile = newTile + offset;
+
+            if (punchIndicatorInstance != null)
+            {
+                punchIndicatorInstance.transform.position = tilemap.GetCellCenterWorld(punchTargetTile);
+            }
+            Debug.Log($"{name}: Punch telegraph repositioned after being pushed by the player.");
         }
     }
 }

@@ -1,8 +1,9 @@
 using UnityEngine;
+using UnityEngine.SceneManagement; // Needed for SceneManager.LoadScene
 
 /// <summary>
-/// A basic Health script for the Electrician. 
-/// You can expand or modify this to fit your health system.
+/// A basic Health script for the Electrician.
+/// If the Electrician dies, we load a "GameOver" scene.
 /// </summary>
 public class ElectricianHealth : MonoBehaviour
 {
@@ -13,15 +14,15 @@ public class ElectricianHealth : MonoBehaviour
     [Tooltip("Current health points (auto-initialized to maxHealth on Start).")]
     public int currentHealth;
 
-    void Start()
+    private void Start()
     {
         currentHealth = maxHealth;
     }
 
     /// <summary>
-    /// Deal 'damage' to the Electrician. If health falls to 0, you can handle a death event.
+    /// Deal 'damage' to the Electrician. If health falls to 0 or below, handle death.
     /// </summary>
-    /// <param name="damage">The amount of damage to subtract.</param>
+    /// <param name="damage">Amount of damage to subtract.</param>
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
@@ -36,10 +37,13 @@ public class ElectricianHealth : MonoBehaviour
 
     private void Die()
     {
-        // Put any "Electrician died" logic here
-        // e.g., disable them, remove from TurnBase, show game over, etc.
-        Debug.Log("Electrician has died!");
-        // Just disable for now
+        Debug.Log("Electrician has died! Game Over!");
+
+        // Disable the Electrician game object so it can't do anything else
         gameObject.SetActive(false);
+
+        // Now load your "GameOver" scene (or do any other end-of-game logic)
+        // Replace "GameOver" with whatever your actual scene name is:
+        SceneManager.LoadScene("GameOver");
     }
 }

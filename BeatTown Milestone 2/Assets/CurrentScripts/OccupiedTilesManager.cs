@@ -14,48 +14,20 @@ public class OccupiedTilesManager : MonoBehaviour
     private HashSet<Vector3Int> occupiedTiles = new HashSet<Vector3Int>();
 
     void Awake()
+{
+    if (Instance == null)
     {
-        // Implement Singleton Pattern
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // Optional: Persist across scenes
-            Debug.Log("OccupiedTilesManager: Singleton instance initialized.");
-        }
-        else
-        {
-            Destroy(gameObject);
-            Debug.LogWarning("OccupiedTilesManager: Duplicate instance detected and destroyed.");
-        }
-        // Initial assignment if not set via inspector
-        tilemap = FindObjectOfType<Tilemap>();
-
-        if (tilemap == null)
-        {
-            Debug.LogError("Tilemap not found in the scene!");
-        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
+    else
+    {
+        Destroy(gameObject);
+    }
+}
     private void Start()
     {
-        // Implement Singleton Pattern
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // Optional: Persist across scenes
-            Debug.Log("OccupiedTilesManager: Singleton instance initialized.");
-        }
-        else
-        {
-            Destroy(gameObject);
-            Debug.LogWarning("OccupiedTilesManager: Duplicate instance detected and destroyed.");
-        }
-        // Initial assignment if not set via inspector
-        tilemap = FindObjectOfType<Tilemap>();
 
-        if (tilemap == null)
-        {
-            Debug.LogError("Tilemap not found in the scene!");
-        }
     }
 
     /// <summary>
