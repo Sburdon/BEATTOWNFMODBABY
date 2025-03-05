@@ -44,7 +44,7 @@ public class Swing : MonoBehaviour
     {
         tempTurnBase.ResetAllColliders();
 
-        if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost))
+        if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost) && !playerFatigue.lockedMovement) // Russell 3/3/25
         {
             RealMoveHighlight.SetActive(false);
             PPShighlight.SetActive(true);

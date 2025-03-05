@@ -101,7 +101,7 @@ public class PlayerMove : MonoBehaviour
                         currentMoveCoroutine = StartCoroutine(MoveAlongPath(intermediateTile, clickedTilePosition));
                     }
                 }
-                else if (IsPathClear(CurrentTilePosition, clickedTilePosition) && !IsPlayerInHole())
+                else if (IsPathClear(CurrentTilePosition, clickedTilePosition) && !IsPlayerInHole() && !playerFatigue.lockedMovement)
                 {
                     moveAllowed = true;
                     currentMoveCoroutine = StartCoroutine(MoveToTile(clickedTilePosition));
@@ -125,6 +125,11 @@ public class PlayerMove : MonoBehaviour
             {
                 Debug.Log("Clicked tile is out of range or no moves remaining.");
             }
+        }
+
+        if (playerFatigue.lockedMovement)
+        {
+            // lockedmovement stuff here
         }
         
         // if (isPlayerInHole) then disable ALL highlights 
@@ -281,8 +286,6 @@ public class PlayerMove : MonoBehaviour
             jumpHighlight.SetActive(false);
 
         
-            
-
         if (swingScript != null && swingScript.IsSwinging())
             {
                 swingScript.CancelSwing();

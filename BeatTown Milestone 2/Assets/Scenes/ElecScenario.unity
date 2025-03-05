@@ -3068,11 +3068,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -6061500459082646180, guid: 962cd19d8a7c1b04d93dbfb1ce044528,
-        type: 3}
-      propertyPath: tempTurnBase
-      value: 
-      objectReference: {fileID: 1562467052}
     - target: {fileID: 2791572055104085593, guid: 962cd19d8a7c1b04d93dbfb1ce044528,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3127,11 +3122,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Hole
-      objectReference: {fileID: 0}
-    - target: {fileID: 8727196892840035493, guid: 962cd19d8a7c1b04d93dbfb1ce044528,
-        type: 3}
-      propertyPath: m_ExcludeLayers.m_Bits
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -17907,7 +17897,6 @@ MonoBehaviour:
   oneMoveImage: {fileID: 107938138}
   twoMoveImage: {fileID: 526153716}
   InPuddle: 0
-  isPlayerInHole: 0
   pendingMovePurchase: 0
 --- !u!114 &1977991995
 MonoBehaviour:
@@ -17974,6 +17963,7 @@ MonoBehaviour:
   jumpFatigueCost: 2
   fallFatigueCost: 1
   prone: 0
+  lockedMovement: 0
   fatigueImages:
   - {fileID: 1852065843}
   - {fileID: 1419105445}

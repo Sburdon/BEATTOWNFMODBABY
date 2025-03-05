@@ -15,6 +15,7 @@ public class PlayerFatigue : MonoBehaviour
 
     public int fallFatigueCost = 1; // for falling inside a hole (prone state) 
     public bool prone = false; // prone state (from Hole) for player. No visual cue YET. Referenced in PlayerMove* and Hole* scripts.
+    public bool lockedMovement = false; // locked movement state (from Hole) for player. 
 
     [Header("Fatigue Bar Images")]
     public Image[] fatigueImages; // Array to hold references to the fatigue images (0/4 to 4/4)
@@ -52,6 +53,13 @@ public class PlayerFatigue : MonoBehaviour
             currentFatigue -= fatigueCost;
             UpdateFatigueBar();
             prone = false; // WHERE IM WORKING RN (broken): set prone back to false since you used fatigue to get up 
+            // HERE is where we need to add logic for lockedmovement
+            lockedMovement = true;
+            // plan: add check for lockedMovement in PlayerMove
+            // if it ever becomes true, start the LockedMovement() coroutine
+            // at end of LockedMovement(), set lockedMovement back to false
+            // exit the coroutine
+
         }
     }
 
