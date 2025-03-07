@@ -231,6 +231,38 @@ public class RespawnManager : MonoBehaviour
     // ------------------------------------------------------------------
     public void MaintainEnemyCount()
     {
+        // Create a temporary list to store enemies to respawn
+        List<AIMove> enemiesToRespawn = new List<AIMove>();
+
+        // Check for AI units that need to respawn
+        foreach (var enemy in enemies)
+        {
+            if (enemy != null)
+            {
+                AIMove aiMove = enemy.GetComponent<AIMove>();
+                if (aiMove != null && aiMove.isDead)
+                {
+                    if (aiMove.turnsUntilRespawn > 0)
+                    {
+                        aiMove.turnsUntilRespawn--;
+                    }
+                    else
+                    {
+                        // Add to the respawn list
+                        enemiesToRespawn.Add(aiMove);
+                    }
+                }
+            }
+        }
+
+        // Now respawn the enemies that need to be respawned
+        foreach (var aiMove in enemiesToRespawn)
+        {
+            RespawnAIUnit(aiMove);
+            aiMove.isDead = false; // Reset the dead state
+        }
+
+        // Maintain the minimum enemy count
         int currentEnemyCount = enemies.FindAll(enemy => enemy != null && !enemy.CompareTag("Barra")).Count;
 
         while (currentEnemyCount < minEnemies)
@@ -239,8 +271,25 @@ public class RespawnManager : MonoBehaviour
             currentEnemyCount++;
         }
     }
+    private void RespawnAIUnit(AIMove aiMove)
+    {
+        // Logic to respawn the AI unit
+        Vector3Int spawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
+        Vector3 worldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(spawnTile);
 
-    public void EnemyDied(GameObject enemy)
+        GameObject newEnemy = Instantiate(enemyPrefab, worldPosition, Quaternion.identity);
+        enemies.Add(newEnemy);
+        newEnemy.SetActive(true); // Ensure the enemy is active
+        aiMove = newEnemy.GetComponent<AIMove>();
+        aiMove.isDead = false; // Reset the dead state
+        aiMove.CurrentTilePosition = spawnTile;
+        OccupiedTilesManager.Instance.RegisterAI(aiMove);
+        tempTurnBase.AddAIUnit(aiMove);
+
+        Debug.Log($"RespawnManager: Respawned {aiMove.gameObject.name} at {spawnTile}.");
+    }
+
+    public void EnemyDied(GameObject enemy, bool fromPlayerOrBarra)
     {
         if (enemy == null)
         {
@@ -248,11 +297,29 @@ public class RespawnManager : MonoBehaviour
             return;
         }
 
-        enemies.Remove(enemy);
-        Vector3Int enemyTilePosition = OccupiedTilesManager.Instance.tilemap.WorldToCell(enemy.transform.position);
-        OccupiedTilesManager.Instance.RemoveOccupiedPosition(enemyTilePosition);
-
-        Destroy(enemy);
+        AIMove aiMove = enemy.GetComponent<AIMove>();
+        if (aiMove != null)
+        {
+            if (fromPlayerOrBarra)
+            {
+                aiMove.isDead = true;
+                aiMove.turnsUntilRespawn = 1; // Set to 1 turn delay
+                Debug.Log($"{enemy.name} died from player or Barra. Marking for respawn.");
+            }
+            else
+            {
+                // If it died from a hook, remove it immediately
+                enemies.Remove(enemy);
+                Vector3Int enemyTilePosition = OccupiedTilesManager.Instance.tilemap.WorldToCell(enemy.transform.position);
+                OccupiedTilesManager.Instance.RemoveOccupiedPosition(enemyTilePosition);
+                Destroy(enemy);
+                Debug.Log($"{enemy.name} died from hook. Removing immediately.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("RespawnManager: Spawned enemy missing AIMove component.");
+        }
     }
 
     public IEnumerator RespawnCoroutine()

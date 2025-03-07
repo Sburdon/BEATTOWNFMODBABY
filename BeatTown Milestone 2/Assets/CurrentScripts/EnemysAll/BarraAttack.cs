@@ -54,7 +54,7 @@ public class BarraAttack : MonoBehaviour
                 EnemyHealth enemyHealth = hit.GetComponent<EnemyHealth>();
                 if (enemyHealth != null)
                 {
-                    enemyHealth.TakeDamage(attackDamage);
+                    enemyHealth.TakeDamage(attackDamage, true);
                     Debug.Log($"{gameObject.name} attacked {enemyHealth.gameObject.name} for {attackDamage} damage.");
                     yield break; // Attack only one target per action
                 }

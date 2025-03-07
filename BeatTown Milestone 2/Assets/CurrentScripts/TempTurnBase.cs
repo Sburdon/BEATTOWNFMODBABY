@@ -213,14 +213,40 @@ public class TempTurnBase : MonoBehaviour
     /// <summary>
     /// Called to start the turn for whichever unit is at currentTurnIndex.
     /// </summary>
-   public void StartTurn()
-{
-    if (turnUnits.Count == 0) return;
-
-    var currentUnit = turnUnits[currentTurnIndex];
-
-    if (currentUnit is PlayerMove)
+    /// 
+    private void RespawnAIUnit(AIMove aiMove)
     {
+        // Logic to respawn the AI unit
+        // For example, you might instantiate it again or reset its position
+        Debug.Log($"Respawning AI unit: {aiMove.gameObject.name}");
+        // Add your respawn logic here
+    }
+    public void StartTurn()
+   {
+        if (turnUnits.Count == 0) return;
+
+        var currentUnit = turnUnits[currentTurnIndex];
+
+        // Check for AI units that need to respawn
+        foreach (var unit in aiUnits)
+        {
+            if (unit.isDead)
+            {
+                if (unit.turnsUntilRespawn > 0)
+                {
+                    unit.turnsUntilRespawn--;
+                }
+                else
+                {
+                    // Respawn the AI unit
+                    RespawnAIUnit(unit);
+                    unit.isDead = false; // Reset the dead state
+                }
+            }
+        }
+
+        if (currentUnit is PlayerMove)
+        {
         // Keep hooking in the "spawn Barra" logic
         if (respawnManager != null)
         {
@@ -324,16 +350,22 @@ public class TempTurnBase : MonoBehaviour
     {
         if (aiMove != null && aiUnits.Contains(aiMove))
         {
-            aiUnits.Remove(aiMove);
-            turnUnits.Remove(aiMove);
-            UpdateTurnOrderUI();
-            Debug.Log($"TempTurnBase: Removed {aiMove.gameObject.name} from AI units.");
-
-            if (currentUnitIndex >= aiUnits.Count)
+            // Check if the AI died due to player or Barra
+            if (aiMove.isDead)
             {
-                currentUnitIndex = aiUnits.Count - 1;
+                // If it was a player or Barra that caused the death, set the respawn delay
+                aiMove.turnsUntilRespawn = 1; // Delay for one turn
+            }
+            else
+            {
+                // Remove the AI unit immediately if it died from a hook
+                aiUnits.Remove(aiMove);
+                turnUnits.Remove(aiMove);
+                UpdateTurnOrderUI();
+                Debug.Log($"TempTurnBase: Removed {aiMove.gameObject.name} from AI units.");
             }
 
+            // Update the turn order UI
             UpdateTurnOrderUI();
         }
     }

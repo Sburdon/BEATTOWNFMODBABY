@@ -94,7 +94,7 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int amount)
+    public void TakeDamage(int amount, bool fromPlayerOrBarra)
     {
         if (IsDead) return;
 
@@ -103,7 +103,7 @@ public class EnemyHealth : MonoBehaviour
 
         if (CurrentHealth <= 0)
         {
-            Die();
+            Die(fromPlayerOrBarra); // Pass the cause of death
         }
     }
 
@@ -112,9 +112,22 @@ public class EnemyHealth : MonoBehaviour
         CurrentHealth = maxHealth;
         IsDead = false;
         Debug.Log($"{gameObject.name} has been respawned with full health.");
+
+        // Re-instantiate the health slider
+        if (healthSliderPrefab != null)
+        {
+            GameObject sliderObj = Instantiate(healthSliderPrefab, transform.position, Quaternion.identity, GameObject.Find("Canvas").transform);
+            healthSlider = sliderObj.GetComponent<Slider>();
+            healthSlider.gameObject.SetActive(true); // Show the slider
+            UpdateHealthSlider(); // Update the slider to reflect full health
+        }
+        else
+        {
+            Debug.LogError("Health Slider Prefab is not assigned in the Inspector!");
+        }
     }
 
-    public void Die()
+    public void Die(bool fromPlayerOrBarra)
     {
         if (IsDead) return;
 
@@ -122,6 +135,13 @@ public class EnemyHealth : MonoBehaviour
         IsDead = true;
 
         OnDeath?.Invoke();
+
+        // Destroy the health slider if it exists
+        if (healthSlider != null)
+        {
+            Destroy(healthSlider.gameObject); // Clean up the slider when the enemy dies
+            healthSlider = null; // Clear the reference
+        }
 
         if (tempTurnBase != null)
         {
@@ -137,9 +157,10 @@ public class EnemyHealth : MonoBehaviour
 
         if (respawnManager != null)
         {
-            respawnManager.EnemyDied(gameObject);
+            respawnManager.EnemyDied(gameObject, fromPlayerOrBarra); // Pass the cause of death
         }
 
+        // Instead of destroying, just deactivate the GameObject
         gameObject.SetActive(false);
     }
 

@@ -51,7 +51,7 @@ public class AIAttack : MonoBehaviour
                 EnemyHealth eh = hitCollider.GetComponent<EnemyHealth>();
                 if (eh != null && !eh.IsDead)
                 {
-                    eh.TakeDamage(attackDamage);
+                    eh.TakeDamage(attackDamage, false);
                     Debug.Log($"{gameObject.name} attacked {eh.gameObject.name} for {attackDamage} damage.");
                 }
             }

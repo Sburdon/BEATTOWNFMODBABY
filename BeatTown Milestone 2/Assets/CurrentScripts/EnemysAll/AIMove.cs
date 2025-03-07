@@ -27,7 +27,9 @@ public class AIMove : MonoBehaviour
     private SpriteRenderer spriteRenderer;
 
     // Number of turns the AI will follow the player after being punched
-    private int followPlayerTurns = 0; 
+    private int followPlayerTurns = 0;
+    public bool isDead = false;
+    public int turnsUntilRespawn = 0;
 
     void Awake()
     {

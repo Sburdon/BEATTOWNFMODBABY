@@ -183,7 +183,7 @@ public class Hook : MonoBehaviour
         EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
         if (enemyHealth != null)
         {
-            enemyHealth.TakeDamage(enemyHealth.maxHealth);
+            enemyHealth.TakeDamage(enemyHealth.maxHealth, false);
         }
 
         All_SFX.PlayCaught();

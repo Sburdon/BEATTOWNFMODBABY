@@ -98,7 +98,7 @@ public class Punch : MonoBehaviour
             EnemyHealth enemyScript = selectedEnemy.GetComponent<EnemyHealth>();
             if (enemyScript != null)
             {
-                enemyScript.TakeDamage(punchDamage);
+                enemyScript.TakeDamage(punchDamage, true);
                 Debug.Log($"{selectedEnemy.name} has been punched and took {punchDamage} damage!");
                 All_SFX.PlayFishSlap();
                 stateMachine.ChangeState(WrestlerState.Punch);
