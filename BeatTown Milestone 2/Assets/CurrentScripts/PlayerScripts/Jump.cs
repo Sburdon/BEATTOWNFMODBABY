@@ -246,7 +246,7 @@ public class Jump : MonoBehaviour
         // Try to find a valid tile that is within bounds and unoccupied
         foreach (var tile in adjacentTiles)
         {
-            if (IsWithinTilemapBounds(tile) && IsValidTile(tile))
+            if (IsValidTile(tile) && !IsCollidingWithWall(tile))
             {
                 OccupiedTilesManager.Instance.AddOccupiedPosition(tile);
                 return tile;
@@ -255,6 +255,24 @@ public class Jump : MonoBehaviour
 
         // If no valid tile is found, return the player's current tile (so they don't fall off)
         return currentTile;
+    }
+
+    // Check if the tile is colliding with a wall
+    private bool IsCollidingWithWall(Vector3Int tilePosition)
+    {
+        Vector3 worldPos = tilemap.GetCellCenterWorld(tilePosition);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(worldPos, 0.1f);
+
+        foreach (var collider in colliders)
+        {
+            if (collider.CompareTag("Wall")) // Ensure your wall colliders are tagged correctly
+            {
+                Debug.Log("DAMN WALL GET OUT OF MY WAY!");
+                return true; // Tile is not valid if it's a wall
+            }
+        }
+
+        return false; // Tile is valid if no walls were found
     }
     public void CancelJump()
     {
