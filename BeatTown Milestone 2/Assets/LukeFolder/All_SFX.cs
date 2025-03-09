@@ -21,6 +21,11 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance Jump;
     FMOD.Studio.EventInstance Slip;
     FMOD.Studio.EventInstance Fall;
+    FMOD.Studio.EventInstance Wood_Stock;
+    FMOD.Studio.EventInstance Leaves;
+    FMOD.Studio.EventInstance Trees;
+
+
 
     int Cuda_Count = 0;
 
@@ -46,6 +51,10 @@ public class All_SFX : MonoBehaviour
         Jump = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Jump");
         Slip = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Slip");
         Fall = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Electrician_UI/Fall");
+        Wood_Stock = FMODUnity.RuntimeManager.CreateInstance("event:/Wood_Stock");
+        Leaves = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Lumber_UI/Leaves");
+        Trees = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Lumber_UI/Tree_Fall");
+
 
 
     }
@@ -145,6 +154,24 @@ public class All_SFX : MonoBehaviour
 
 
     }
+
+
+    public void PlayWoodStock()
+    {
+        Wood_Stock.start();
+
+    }
+
+    public void PlayLeaves()
+    {
+        Leaves.start();
+    }
+
+    public void PlayTrees()
+    {
+        Leaves.start()
+    }
+
 
 
 
