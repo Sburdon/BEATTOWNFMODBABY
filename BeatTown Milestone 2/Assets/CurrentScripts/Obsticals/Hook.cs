@@ -7,6 +7,12 @@ public class Hook : MonoBehaviour
 {
     public static Hook Instance { get; private set; }
 
+    public delegate void HookSpawnedEvent(Hook hook);
+    public static event HookSpawnedEvent OnHookSpawned;
+
+    public delegate void HookKillCountChangedEvent(int killCount);
+    public static event HookKillCountChangedEvent OnHookKillCountChanged;
+
     [Header("References")]
     public Tilemap tilemap;
     public PlayerMove player;
@@ -29,6 +35,7 @@ public class Hook : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
     }
 
@@ -37,6 +44,9 @@ public class Hook : MonoBehaviour
         hookPosition = tilemap.WorldToCell(transform.position);
         OccupiedTilesManager.Instance.AddOccupiedPosition(hookPosition);
         UpdateFishCountText();
+
+        // Notify listeners that the Hook has spawned
+        OnHookSpawned?.Invoke(this);
     }
 
     private void UpdateFishCountText()
@@ -68,8 +78,6 @@ public class Hook : MonoBehaviour
         if (newHookPosition == Vector3Int.zero)
         {
             Debug.LogWarning("Hook: No available positions found to respawn. Trying nearest available tile.");
-
-            // Retry by finding the first available tile in tilemap bounds
             newHookPosition = FindFirstAvailableTile(player.CurrentTilePosition);
         }
 
@@ -87,7 +95,6 @@ public class Hook : MonoBehaviour
         Debug.Log($"Hook respawned at {newHookPosition}");
     }
 
-    // Helper method to find the first available tile within tilemap bounds
     private Vector3Int FindFirstAvailableTile(Vector3Int playerPosition)
     {
         BoundsInt bounds = tilemap.cellBounds;
@@ -99,47 +106,18 @@ public class Hook : MonoBehaviour
                 Vector3Int tilePosition = new Vector3Int(x, y, 0);
                 if (tilemap.HasTile(tilePosition) &&
                     !OccupiedTilesManager.Instance.IsTileOccupied(tilePosition) &&
-                    Mathf.Abs(tilePosition.x - playerPosition.x) + Mathf.Abs(tilePosition.y - playerPosition.y) >= 2) // Ensures at least 2 tiles away from player
+                    Mathf.Abs(tilePosition.x - playerPosition.x) + Mathf.Abs(tilePosition.y - playerPosition.y) >= 2)
                 {
-                    return tilePosition; // Return the first available tile found
+                    return tilePosition;
                 }
             }
         }
-        return Vector3Int.zero; // Return zero if no available position is found
+        return Vector3Int.zero;
     }
-
-
-
-
-
-    // Fallback method to find the nearest available position within tilemap bounds
-    private Vector3Int FindNearestAvailablePosition(Vector3Int referencePosition)
-    {
-        BoundsInt bounds = tilemap.cellBounds;
-
-        // Iterate over the tilemap bounds to find the first unoccupied tile that meets the criteria
-        for (int x = bounds.xMin; x <= bounds.xMax; x++)
-        {
-            for (int y = bounds.yMin; y <= bounds.yMax; y++)
-            {
-                Vector3Int tilePosition = new Vector3Int(x, y, 0);
-                if (tilemap.HasTile(tilePosition) &&
-                    !OccupiedTilesManager.Instance.IsTileOccupied(tilePosition) &&
-                    Mathf.Abs(tilePosition.x - referencePosition.x) + Mathf.Abs(tilePosition.y - referencePosition.y) >= 2) // Ensures at least 2 tiles away
-                {
-                    return tilePosition; // Return the first available tile found
-                }
-            }
-        }
-
-        return Vector3Int.zero; // Return zero if no available position is found
-    }
-
-
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy") || other.CompareTag("Barra")) // Check if the object that hit the hook is an Enemy or Barra
+        if (other.CompareTag("Enemy") || other.CompareTag("Barra"))
         {
             HandleEnemyHit(other.gameObject);
         }
@@ -161,6 +139,9 @@ public class Hook : MonoBehaviour
 
         hookKillCount++;
         UpdateFishCountText();
+
+        // Notify that the hook kill count has changed
+        OnHookKillCountChanged?.Invoke(hookKillCount);
 
         AIMove aiMove = enemy.GetComponent<AIMove>();
         BarraMove barraMove = enemy.GetComponent<BarraMove>();
@@ -189,9 +170,7 @@ public class Hook : MonoBehaviour
         All_SFX.PlayCaught();
 
         Destroy(enemy);
-
         RespawnHook();
-
 
         if (hookKillCount >= 6)
         {

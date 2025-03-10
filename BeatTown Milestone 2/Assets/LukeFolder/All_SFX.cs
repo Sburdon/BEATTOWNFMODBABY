@@ -9,7 +9,7 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance UISelect;
     FMOD.Studio.EventInstance UIDENY;
     FMOD.Studio.EventInstance CUANG;
-    FMOD.Studio.EventInstance FishBattle;
+    public FMOD.Studio.EventInstance FishBattle;
     FMOD.Studio.EventInstance Shock_Value;
     FMOD.Studio.EventInstance FishSlap;
     FMOD.Studio.EventInstance Swing;
@@ -27,7 +27,7 @@ public class All_SFX : MonoBehaviour
 
 
 
-    int Cuda_Count = 0;
+    
 
 
 
@@ -57,14 +57,13 @@ public class All_SFX : MonoBehaviour
 
 
 
+
     }
 
     public void UpdateCudaCount()
     {
 
-        Cuda_Count++ ;
-
-        FishBattle.setParameterByName("Cuda_Count", Cuda_Count);
+        FishBattle.setParameterByName("Cuda_Count", 1);
 
     }
 
@@ -121,34 +120,34 @@ public class All_SFX : MonoBehaviour
         Caught.start();
     }
 
-    public void PlayUIDENY()
+    public void PlayUIDENY() // When out of fatigue selecting button
     {
         UIDENY.start();
     }
 
-    public void PlayPanelFix()
+    public void PlayPanelFix() // Electrician fixing panel
     {
         Panel_Fix.start();
     }
 
-    public void PlayPanelAdded()
+    public void PlayPanelAdded() // Increase of tally mark when panel fixed
     {
         Panel_Added.start();
 
 
     }
 
-    public void PlayJump()
+    public void PlayJump() // Start right when Jump starts
     {
         Jump.start();
     }
 
-    public void PlaySlip()
+    public void PlaySlip() // When anything hits a puddle
     {
         Slip.start();
     }
 
-    public void PlayFall()
+    public void PlayFall() // Falling in the hole
     {
         Fall.start();
 
@@ -169,7 +168,7 @@ public class All_SFX : MonoBehaviour
 
     public void PlayTrees()
     {
-        Leaves.start()
+        Leaves.start();
     }
 
 
