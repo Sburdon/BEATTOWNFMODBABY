@@ -60,7 +60,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: dcbe595c32d4f4dabad9528276ca4f8a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -159,6 +159,9 @@ MonoBehaviour:
   playerMove: {fileID: 0}
   moveDistance: 2
   moveSpeed: 2.4
+  enemyHealth: {fileID: 0}
+  isDead: 0
+  turnsUntilRespawn: 0
 --- !u!114 &7059847366657219671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,3 +250,4 @@ MonoBehaviour:
   moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 783f22c8736450d4db0bb121ed8cfa5d, type: 2}
+  isFishOrGoon: 1

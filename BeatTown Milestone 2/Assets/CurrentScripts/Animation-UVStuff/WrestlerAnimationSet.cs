@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "WrestlerAnimationSet", menuName = "Animation/WrestlerAnimationSet", order = 1)]
 public class WrestlerAnimationSet : ScriptableObject
 {
+    //general textures
     public Texture2D idleTexture;
     public Texture2D moveTexture;
     public Texture2D punchTexture;
@@ -13,6 +14,18 @@ public class WrestlerAnimationSet : ScriptableObject
     public Texture2D pushTexture;
     public Texture2D reactTexture;
 
-    public Texture2D sourceTexture;
     public Texture2D baseMask;  // common base mask if applicable for all animations
+
+    // **Random Selection for Fish/Goon**
+    public Texture2D sourceTexture1;  
+    public Texture2D sourceTexture2;
+    public Texture2D sourceTexture3;
+    public Texture2D sourceTexture4;
+
+    //electrician textures 
+    public Texture2D jumpTexture;  
+    public Texture2D fallTexture;  
+    public Texture2D getOutTexture;
+    public Texture2D goonPunchForward;
+    public Texture2D goonPunchDown;
 }

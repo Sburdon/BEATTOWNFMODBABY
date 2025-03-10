@@ -12,7 +12,13 @@ public class StateMachine : MonoBehaviour
         Punch,
         Push,
         React,
-        Swing
+        Swing,
+        Jump, //new
+        Fall, //new
+        GetOut, //new
+        //goon specific
+        WindupPunch,
+        PunchDown
     }
 
     public WrestlerState currentState;
@@ -27,6 +33,12 @@ public class StateMachine : MonoBehaviour
     private List<Sprite> swingFrames;
     private List<Sprite> pushFrames;
     private List<Sprite> reactFrames;
+    //new
+    private List<Sprite> jumpFrames;
+    private List<Sprite> fallFrames;
+    private List<Sprite> getOutFrames;
+    private List<Sprite> windupPunchFrames;
+    private List<Sprite> punchDownFrames;
 
     // Movement variables
     public float moveSpeed = 3f;
@@ -38,6 +50,10 @@ public class StateMachine : MonoBehaviour
     private SpriteRenderer spriteRenderer;
 
     public WrestlerAnimationSet animationSet;
+    private Texture2D chosenSourceTexture;
+
+    //set this in inspector for all fish and goons
+    public bool isFishOrGoon = false;
 
     private float frameTimer = 0f;    // timer to track time between frames
 
@@ -67,23 +83,62 @@ public class StateMachine : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
 
+        // randomize source texture if this is a fish/goon
+        if (isFishOrGoon)
+        {
+            int randomIndex = Random.Range(0, 4);
+            switch (randomIndex)
+            {
+                case 0: chosenSourceTexture = animationSet.sourceTexture1; break;
+                case 1: chosenSourceTexture = animationSet.sourceTexture2; break;
+                case 2: chosenSourceTexture = animationSet.sourceTexture3; break;
+                case 3: chosenSourceTexture = animationSet.sourceTexture4; break;
+                default: chosenSourceTexture = animationSet.sourceTexture1; break;
+            }
+        }
+        else
+        {
+            chosenSourceTexture = animationSet.sourceTexture1;
+        }
+
         uvMappingScript._texture = animationSet.idleTexture;
-        idleFrames = uvMappingScript.MapOntoTexture(animationSet.sourceTexture, animationSet.baseMask);
+        idleFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
 
         uvMappingScript._texture = animationSet.moveTexture;
-        moveFrames = uvMappingScript.MapOntoTexture(animationSet.sourceTexture, animationSet.baseMask);
+        moveFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
 
         uvMappingScript._texture = animationSet.punchTexture;
-        punchFrames = uvMappingScript.MapOntoTexture(animationSet.sourceTexture, animationSet.baseMask);
+        punchFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
 
         uvMappingScript._texture = animationSet.swingTexture;
-        swingFrames = uvMappingScript.MapOntoTexture(animationSet.sourceTexture, animationSet.baseMask);
+        swingFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
 
         uvMappingScript._texture = animationSet.pushTexture;
-        pushFrames = uvMappingScript.MapOntoTexture(animationSet.sourceTexture, animationSet.baseMask);
+        pushFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
 
         uvMappingScript._texture = animationSet.reactTexture;
-        reactFrames = uvMappingScript.MapOntoTexture(animationSet.sourceTexture, animationSet.baseMask);
+        reactFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
+
+        //electrician states
+        jumpFrames = (animationSet.jumpTexture != null) 
+            ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
+            : new List<Sprite>();
+
+        fallFrames = (animationSet.fallTexture != null) 
+            ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
+            : new List<Sprite>();
+
+        getOutFrames = (animationSet.getOutTexture != null) 
+            ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
+            : new List<Sprite>();
+
+        windupPunchFrames = (animationSet.goonPunchForward != null) 
+            ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
+            : new List<Sprite>();
+
+        punchDownFrames = (animationSet.goonPunchDown != null) 
+            ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
+            : new List<Sprite>();
 
         ChangeState(WrestlerState.Idle);
     }

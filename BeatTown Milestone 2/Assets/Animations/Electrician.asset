@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948fafe9bbb31b04d9300b2d0bb48659, type: 3}
+  m_Name: Electrician
+  m_EditorClassIdentifier: 
+  idleTexture: {fileID: 2800000, guid: 261126f2492192e428986a59f10927d6, type: 3}
+  moveTexture: {fileID: 2800000, guid: 2998b448a5c591442957d5734c6fbafd, type: 3}
+  punchTexture: {fileID: 2800000, guid: 724b369cb74a65448bbf665f9797c1de, type: 3}
+  swingTexture: {fileID: 2800000, guid: d19fb298a6358e7408ca639ca896c75c, type: 3}
+  pushTexture: {fileID: 2800000, guid: 6c69ed2d2f1486f439223738bbb26b2d, type: 3}
+  reactTexture: {fileID: 2800000, guid: 47f494b73fda67642b237c4d008bbecc, type: 3}
+  baseMask: {fileID: 2800000, guid: b23e00bba6b1a8b4eba37847f57dc1fa, type: 3}
+  sourceTexture1: {fileID: 2800000, guid: 69ff53a3fbc2945f5a8696cad1c7329b, type: 3}
+  sourceTexture2: {fileID: 0}
+  sourceTexture3: {fileID: 0}
+  sourceTexture4: {fileID: 0}
+  jumpTexture: {fileID: 2800000, guid: 50b9f90afd1ca484e84991fa3ff58f31, type: 3}
+  fallTexture: {fileID: 2800000, guid: 5d3dffe37a7cc48a7ba500f07c09a54b, type: 3}
+  getOutTexture: {fileID: 2800000, guid: 9ca055568ed1f475dbb40917e08f0f32, type: 3}
