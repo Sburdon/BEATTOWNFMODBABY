@@ -18000,7 +18000,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   uvMappingScript: {fileID: 1977991998}
-  moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 36c53ef0f8fd3a44b90117861879bbd6, type: 2}
   isFishOrGoon: 0
@@ -18107,7 +18106,7 @@ MonoBehaviour:
   tempTurnBase: {fileID: 1562467052}
   tilemap: {fileID: 644845377}
   jumpHeight: 5
-  jumpSpeed: 5
+  jumpSpeed: 2
   jumpFatigueCost: 2
   All_SFX: {fileID: 0}
   SwingHighlight: {fileID: 1959559090}

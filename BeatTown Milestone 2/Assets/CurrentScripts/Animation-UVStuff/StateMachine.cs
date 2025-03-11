@@ -41,8 +41,6 @@ public class StateMachine : MonoBehaviour
     private List<Sprite> punchDownFrames;
 
     // Movement variables
-    public float moveSpeed = 3f;
-    private bool canMove = true;
     public bool actionPlaying;
 
     private int curFrame = 0;
@@ -120,17 +118,22 @@ public class StateMachine : MonoBehaviour
         reactFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
 
         //electrician states
-        jumpFrames = (animationSet.jumpTexture != null) 
-            ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
-            : new List<Sprite>();
+        if ((animationSet.jumpTexture != null))
+        {
+            //electrician states
+            uvMappingScript._texture = animationSet.jumpTexture;
+            jumpFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
+        }
 
-        fallFrames = (animationSet.fallTexture != null) 
-            ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
-            : new List<Sprite>();
+        if ((animationSet.fallTexture != null))
+        {
+            fallFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
+        }
 
-        getOutFrames = (animationSet.getOutTexture != null) 
-            ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
-            : new List<Sprite>();
+        if ((animationSet.getOutTexture != null))
+        {
+            getOutFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
+        }
 
         windupPunchFrames = (animationSet.goonPunchForward != null) 
             ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
@@ -146,36 +149,7 @@ public class StateMachine : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        HandleInput();
         HandleState();
-    }
-
-    //// handles player input to switch between states
-    void HandleInput()
-    {
-        if (Input.GetAxisRaw("Horizontal") != 0 && currentState != WrestlerState.React && canMove)
-        {
-            ChangeState(WrestlerState.Move);
-        }
-
-        if (Input.GetKeyDown(KeyCode.P) && canMove)
-        {
-            ChangeState(WrestlerState.Punch);
-        }
-
-        if (Input.GetKeyDown(KeyCode.S) && canMove)
-        {
-            ChangeState(WrestlerState.Swing);
-        }
-
-        if (Input.GetKeyDown(KeyCode.O) && canMove)
-        {
-            ChangeState(WrestlerState.Push);
-        }
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            ChangeState(WrestlerState.React);
-        }
     }
 
     void HandleState()
@@ -238,14 +212,57 @@ public class StateMachine : MonoBehaviour
                     ChangeState(WrestlerState.Idle);
                 }
                 break;
+            
+            case WrestlerState.Jump:
+                actionPlaying = true;
+                PlayAnimation(jumpFrames);
+                if (HasAnimationCompleted(jumpFrames))
+                {
+                    actionPlaying = false;
+                    ChangeState(WrestlerState.Idle);
+                }
+                break;
+            
+            case WrestlerState.Fall:
+                actionPlaying = true;
+                PlayAnimation(fallFrames);
+                if (HasAnimationCompleted(fallFrames))
+                {
+                    actionPlaying = false;
+                    ChangeState(WrestlerState.Idle);
+                }
+                break;
+            
+            case WrestlerState.GetOut:
+                actionPlaying = true;
+                PlayAnimation(getOutFrames);
+                if (HasAnimationCompleted(getOutFrames))
+                {
+                    actionPlaying = false;
+                    ChangeState(WrestlerState.Idle);
+                }
+                break;
+            
+            case WrestlerState.WindupPunch:
+                actionPlaying = true;
+                PlayAnimation(windupPunchFrames);
+                if (HasAnimationCompleted(windupPunchFrames))
+                {
+                    actionPlaying = false;
+                    ChangeState(WrestlerState.Idle);
+                }
+                break;
+            
+            case WrestlerState.PunchDown:
+                actionPlaying = true;
+                PlayAnimation(punchDownFrames);
+                if (HasAnimationCompleted(punchDownFrames))
+                {
+                    actionPlaying = false;
+                    ChangeState(WrestlerState.Idle);
+                }
+                break;
         }
-    }
-
-    // move character for move state
-    void MoveCharacter()
-    {
-        float move = Input.GetAxis("Horizontal") * moveSpeed * Time.deltaTime;
-        transform.Translate(move, 0, 0);
     }
 
     // Plays the animation for the current state

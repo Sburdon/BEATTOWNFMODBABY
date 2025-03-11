@@ -21,6 +21,7 @@ public class GoonMove : MonoBehaviour
     public EnemyHealth enemyHealth;
 
     private SpriteRenderer spriteRenderer;
+    private StateMachine stateMachine;
 
     [Header("Punch Settings")]
     [Tooltip("Damage dealt by the Goon's punch.")]
@@ -43,6 +44,7 @@ public class GoonMove : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        stateMachine = GetComponent<StateMachine>();
 
         if (tilemap == null)
             tilemap = FindObjectOfType<Tilemap>();
@@ -198,6 +200,7 @@ public class GoonMove : MonoBehaviour
         Vector3 endPos = tilemap.GetCellCenterWorld(tilePos);
         float elapsed = 0f;
         float travelTime = 1f / moveSpeed;
+        stateMachine.ChangeState(StateMachine.WrestlerState.Move);
 
         if (tilePos.x < CurrentTilePosition.x)
             spriteRenderer.flipX = true;
@@ -211,6 +214,7 @@ public class GoonMove : MonoBehaviour
             yield return null;
         }
         transform.position = endPos;
+        stateMachine.ChangeState(StateMachine.WrestlerState.Idle);
     }
 
     private List<Vector3Int> GetNeighboringTiles(Vector3Int position)
