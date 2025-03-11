@@ -135,13 +135,15 @@ public class StateMachine : MonoBehaviour
             getOutFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
         }
 
-        windupPunchFrames = (animationSet.goonPunchForward != null) 
-            ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
-            : new List<Sprite>();
+        if ((animationSet.goonPunchForward != null))
+        {
+            windupPunchFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
+        }
 
-        punchDownFrames = (animationSet.goonPunchDown != null) 
-            ? uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask) 
-            : new List<Sprite>();
+        if ((animationSet.goonPunchDown != null))
+        {
+            punchDownFrames = uvMappingScript.MapOntoTexture(chosenSourceTexture, animationSet.baseMask);
+        }
 
         ChangeState(WrestlerState.Idle);
     }
