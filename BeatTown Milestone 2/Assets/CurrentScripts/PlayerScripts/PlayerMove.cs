@@ -21,6 +21,7 @@ public class PlayerMove : MonoBehaviour
     private ActionType currentAction; // Current action type for the player
     private Swing swingScript; // Reference to the Swing script
     private StateMachine stateMachine;
+    private SpriteRenderer spriteRenderer;
     public Vector3Int CurrentTilePosition { get;  set; } // Current tile position in grid coordinates
     private Coroutine currentMoveCoroutine; // Store reference to the current move coroutine
     private PlayerFatigue playerFatigue; // Reference to the PlayerFatigue script
@@ -43,6 +44,7 @@ public class PlayerMove : MonoBehaviour
     public bool pendingMovePurchase = false; // Flag for pending move purchase
     private void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
         UpdatePlayerPosition();
     }
@@ -439,6 +441,12 @@ public class PlayerMove : MonoBehaviour
         {
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
+
+        Vector3 scale = transform.localScale;
+        if (targetTilePosition.x < CurrentTilePosition.x)
+            scale.x += 1;
+        else if (targetTilePosition.x > CurrentTilePosition.x)
+            scale.x *= -1;
 
         Vector3 startPosition = transform.position;
         stateMachine.ChangeState(WrestlerState.Move);

@@ -18,5 +18,11 @@ MonoBehaviour:
   swingTexture: {fileID: 2800000, guid: d19fb298a6358e7408ca639ca896c75c, type: 3}
   pushTexture: {fileID: 2800000, guid: 6c69ed2d2f1486f439223738bbb26b2d, type: 3}
   reactTexture: {fileID: 2800000, guid: 47f494b73fda67642b237c4d008bbecc, type: 3}
-  sourceTexture: {fileID: 2800000, guid: ebfa436fde026b9429be1a0d13dbcd4c, type: 3}
   baseMask: {fileID: 2800000, guid: b23e00bba6b1a8b4eba37847f57dc1fa, type: 3}
+  sourceTexture1: {fileID: 2800000, guid: ebfa436fde026b9429be1a0d13dbcd4c, type: 3}
+  sourceTexture2: {fileID: 0}
+  sourceTexture3: {fileID: 0}
+  sourceTexture4: {fileID: 0}
+  jumpTexture: {fileID: 2800000, guid: 50b9f90afd1ca484e84991fa3ff58f31, type: 3}
+  fallTexture: {fileID: 2800000, guid: 5d3dffe37a7cc48a7ba500f07c09a54b, type: 3}
+  getOutTexture: {fileID: 2800000, guid: 9ca055568ed1f475dbb40917e08f0f32, type: 3}

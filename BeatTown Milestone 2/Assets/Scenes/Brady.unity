@@ -615,7 +615,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 482e4e9039f69bd4488a3d49852b8bcb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 60d344f0db1e24087882c3c4afa23803, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -18025,7 +18025,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 7.5, y: 7.5}
+  m_Size: {x: 0.28, y: 0.28}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -18166,7 +18166,7 @@ MonoBehaviour:
   _texture: {fileID: 0}
   sourceTexture: {fileID: 0}
   baseMask: {fileID: 0}
-  sm: {fileID: 0}
+  sm: {fileID: 1977991999}
 --- !u!114 &1977991999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18181,9 +18181,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   uvMappingScript: {fileID: 1977991998}
-  moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 36c53ef0f8fd3a44b90117861879bbd6, type: 2}
+  isFishOrGoon: 0
 --- !u!114 &1977992000
 MonoBehaviour:
   m_ObjectHideFlags: 0

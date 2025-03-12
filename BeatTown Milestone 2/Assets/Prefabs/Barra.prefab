@@ -244,9 +244,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   uvMappingScript: {fileID: 3584107739911414736}
-  moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 1b61796a7dbbd61458e9191ecfedcd73, type: 2}
+  isFishOrGoon: 0
 --- !u!95 &-8722220608973156056
 Animator:
   serializedVersion: 5

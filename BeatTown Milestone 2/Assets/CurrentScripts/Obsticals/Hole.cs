@@ -41,18 +41,20 @@ public class Hole : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        StateMachine stateMachine = collision.gameObject.GetComponent<StateMachine>();
         // Set the proper reference and flag depending on what type of object hit the hole
         if (collision.gameObject.CompareTag("Electrician"))
         {
             electricianMove = collision.gameObject.GetComponent<ElectricianMove>();
             thingInHole = collision.gameObject;
+            stateMachine.ChangeState(StateMachine.WrestlerState.Fall);
             //   electricianMove.Prone = true; // bool for Electrician script (not used for anything yet)
         }
         else if (collision.gameObject.CompareTag("Goon"))
         {
             goonMove = collision.gameObject.GetComponent<GoonMove>();
             thingInHole = collision.gameObject;
+            stateMachine.ChangeState(StateMachine.WrestlerState.Fall);
             //  goonMove.Prone = true; // bool for Goon script (not used for anything yet)
         }
         else if (collision.gameObject.CompareTag("Player")) // where Russell is currently working (Player) (see PlayerFatigue UseGetUpFatigue())
@@ -61,9 +63,10 @@ public class Hole : MonoBehaviour
             // add logic to stop Player (mid turn) from moving (until they spend 1 fatigue)
             playerMove = collision.gameObject.GetComponent<PlayerMove>();
             thingInHole = collision.gameObject;
+            stateMachine.ChangeState(StateMachine.WrestlerState.Fall);
             // Snap thingInHole to the CENTER OF hole's position in the tilemap (for visual cue
             thingInHole.transform.position = tilemap.GetCellCenterWorld(holePosition);
-
+            
             playerMove.remainingMoves = 0; // Player can't move while in hole
 
             PlayerFatigue playerFatigue = collision.GetComponent<PlayerFatigue>();

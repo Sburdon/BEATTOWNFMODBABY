@@ -25,6 +25,7 @@ public class ElectricianMove : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
     public bool InPuddle;
+    private StateMachine stateMachine;
 
     private int fatigue = 2; // Fatigue resets to 2 at the start of each turn
 
@@ -36,7 +37,7 @@ public class ElectricianMove : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (tilemap == null)
             tilemap = FindObjectOfType<Tilemap>();
-
+        stateMachine = GetComponent<StateMachine>();
     }
 
     private void Start()
@@ -238,6 +239,7 @@ private IEnumerator RemoveSpawnOccupiedTile()
         Vector3 endPos = tilemap.GetCellCenterWorld(tile);
         float elapsed = 0f;
         float travelTime = 1f / moveSpeed;
+        stateMachine.ChangeState(StateMachine.WrestlerState.Move);
 
         if (tile.x < CurrentTilePosition.x)
             spriteRenderer.flipX = true;
