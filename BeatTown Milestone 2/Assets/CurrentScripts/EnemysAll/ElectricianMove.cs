@@ -28,11 +28,15 @@ public class ElectricianMove : MonoBehaviour
 
     private int fatigue = 2; // Fatigue resets to 2 at the start of each turn
 
+    private All_SFX allSFX; // Reference to the sound manager
+
     private void Awake()
     {
+         allSFX = FindObjectOfType<All_SFX>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (tilemap == null)
             tilemap = FindObjectOfType<Tilemap>();
+
     }
 
     private void Start()
@@ -140,44 +144,44 @@ private IEnumerator RemoveSpawnOccupiedTile()
     /// <summary>
     /// Fixes the panel at the current position, replacing the broken panel with a fixed one.
     /// </summary>
-    public IEnumerator FixPanel()
+   public IEnumerator FixPanel()
+{
+    if (!panelObjects.ContainsKey(CurrentTilePosition) || panelObjects[CurrentTilePosition] == null)
     {
-        // If there is no panel at this position, return
-        if (!panelObjects.ContainsKey(CurrentTilePosition))
-        {
-            yield break;
-        }
-
-        // If the panel is already fixed, return
-        if (panelObjects[CurrentTilePosition] == null)
-        {
-            yield break;
-        }
-
-        // Check if enough fatigue is available
-        if (fatigue < 1)
-        {
-            Debug.Log("Electrician: Not enough fatigue to fix the panel!");
-            yield break;
-        }
-
-        Debug.Log($"Electrician: Fixing panel at {CurrentTilePosition}...");
-        yield return new WaitForSeconds(1.5f); // Simulate fixing time
-
-        // Replace broken panel with fixed panel
-        GameObject brokenPanel = panelObjects[CurrentTilePosition];
-        Destroy(brokenPanel); // Remove broken panel
-
-        if (fixedPanelPrefab != null)
-        {
-            Vector3 worldPos = tilemap.GetCellCenterWorld(CurrentTilePosition);
-            GameObject fixedPanel = Instantiate(fixedPanelPrefab, worldPos, Quaternion.identity);
-            panelObjects[CurrentTilePosition] = fixedPanel; // Update reference
-        }
-
-        fatigue--; // Deduct 1 fatigue for fixing panel
-        Debug.Log("Electrician: Panel fixed!");
+        yield break;
     }
+
+    if (fatigue < 1)
+    {
+        Debug.Log("Electrician: Not enough fatigue to fix the panel!");
+        yield break;
+    }
+
+    Debug.Log($"Electrician: Fixing panel at {CurrentTilePosition}...");
+
+    // Play the panel fix sound effect
+    allSFX?.PlayPanelFix();
+
+    yield return new WaitForSeconds(1.5f); // Simulate fixing time
+
+    GameObject brokenPanel = panelObjects[CurrentTilePosition];
+    Destroy(brokenPanel);
+
+    if (fixedPanelPrefab != null)
+    {
+        Vector3 worldPos = tilemap.GetCellCenterWorld(CurrentTilePosition);
+        GameObject fixedPanel = Instantiate(fixedPanelPrefab, worldPos, Quaternion.identity);
+        panelObjects[CurrentTilePosition] = fixedPanel;
+    }
+
+    fatigue--;
+
+    // Play the panel added sound effect
+    allSFX?.PlayPanelAdded();
+
+    Debug.Log("Electrician: Panel fixed!");
+}
+
 
     /// <summary>
     /// Calculates the best movement path, prioritizing orthogonal movement.
