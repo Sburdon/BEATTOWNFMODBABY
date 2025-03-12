@@ -121,7 +121,7 @@ MonoBehaviour:
   CurrentTilePosition: {x: 0, y: 0, z: 0}
   enemyHealth: {fileID: 0}
   punchDamage: 2
-  holePrefab: {fileID: 7427065677506070554, guid: f3c4ed9c52e3cc040bae8e73ba4e5897,
+  holePrefab: {fileID: 7427065677506070554, guid: 962cd19d8a7c1b04d93dbfb1ce044528,
     type: 3}
   punchIndicatorPrefab: {fileID: 5677381966219801058, guid: 35bab3f6bd9c5864aadcb33ef3109648,
     type: 3}
