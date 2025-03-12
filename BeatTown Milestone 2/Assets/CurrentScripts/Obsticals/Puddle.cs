@@ -6,8 +6,6 @@ using UnityEngine.Tilemaps;
 
 public class Puddle : MonoBehaviour
 {
-
-
     [Header("ScriptRefs")]
     private ElectricianMove electricianMove;
     private GoonMove goonMove;
@@ -16,6 +14,10 @@ public class Puddle : MonoBehaviour
 
     [Header("References")]
     public Tilemap tilemap;
+
+    // Serialize field for array of 4 colliders , one for each side of the puddle
+    [SerializeField] private Collider2D[] colliders;
+
 
     private void Awake()
     {
@@ -26,6 +28,10 @@ public class Puddle : MonoBehaviour
             //    Debug.LogError($"GoonMove: No Tilemap found for {name}!");
         }
     }
+
+    // OnCollisionEnter2D for something crossing into collider2D children of Puddle
+
+    
 
     // Called when something enters the puddle('s trigger)
     private void OnTriggerEnter2D(Collider2D collision)
