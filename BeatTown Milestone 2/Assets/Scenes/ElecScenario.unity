@@ -1131,7 +1131,7 @@ MonoBehaviour:
   goonSpawnTile: {x: 0, y: 0, z: 0}
   electricianPrefab: {fileID: 7856497740735355207, guid: be8ccf3335ca07d46a91d210fdab7d7c,
     type: 3}
-  electricianSpawnTile: {x: 1, y: 1, z: 0}
+  electricianSpawnTile: {x: -3, y: 1, z: 0}
   initialEnemiesToSpawn: 0
   minEnemies: 0
   respawnDelay: 0.5
@@ -14146,6 +14146,50 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!1 &1591755012
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1591755014}
+  - component: {fileID: 1591755013}
+  m_Layer: 0
+  m_Name: AllSFXManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1591755013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1591755012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b25e7569ca7e6d34992cc3b5aaf13d01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1591755014
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1591755012}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.93397516, y: 0.702111, z: 87.27442}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1614736929
 GameObject:
   m_ObjectHideFlags: 0
@@ -19529,3 +19573,4 @@ SceneRoots:
   - {fileID: 1766197736}
   - {fileID: 1635339908}
   - {fileID: 222071679}
+  - {fileID: 1591755014}
