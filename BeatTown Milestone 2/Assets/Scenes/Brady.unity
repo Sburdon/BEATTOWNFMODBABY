@@ -615,7 +615,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 482e4e9039f69bd4488a3d49852b8bcb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 60d344f0db1e24087882c3c4afa23803, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -17999,7 +17999,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: cc33eef358f434d26b36201e090fed12, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -18184,6 +18184,7 @@ MonoBehaviour:
   moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 36c53ef0f8fd3a44b90117861879bbd6, type: 2}
+  isFishOrGoon: 0
 --- !u!114 &1977992000
 MonoBehaviour:
   m_ObjectHideFlags: 0

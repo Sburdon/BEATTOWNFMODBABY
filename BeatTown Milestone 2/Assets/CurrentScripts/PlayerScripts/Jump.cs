@@ -10,7 +10,7 @@ public class Jump : MonoBehaviour
     public TempTurnBase tempTurnBase;
     public Tilemap tilemap;
     public float jumpHeight = 5f; // Adjust this value as needed
-    public float jumpSpeed = 2f;
+    public float jumpSpeed = 0.2f;
     private Vector3Int targetTilePosition;
     private GameObject targetToJumpOn;
     private bool isJumpMode = false;
@@ -146,6 +146,9 @@ public class Jump : MonoBehaviour
 
         float elapsedTime = 0f;
         float duration = 1f / jumpSpeed;
+        
+        stateMachine.ChangeState(StateMachine.WrestlerState.Jump);
+        yield return new WaitForSeconds(0.5f);
 
         // Move player to target position
         while (elapsedTime < duration)
@@ -206,6 +209,7 @@ public class Jump : MonoBehaviour
         }
 
         isJumping = false;
+        stateMachine.ChangeState(StateMachine.WrestlerState.Idle);
     }
 
 

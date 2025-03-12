@@ -25,12 +25,14 @@ public class ElectricianMove : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private bool canMove; // ask Spencer where to add bool check 
     public bool InPuddle;
+    private StateMachine stateMachine;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (tilemap == null)
             tilemap = FindObjectOfType<Tilemap>();
+        stateMachine = GetComponent<StateMachine>();
     }
 
     private void Start()
@@ -134,6 +136,7 @@ public class ElectricianMove : MonoBehaviour
         Vector3 endPos = tilemap.GetCellCenterWorld(tile);
         float elapsed = 0f;
         float travelTime = 1f / moveSpeed;
+        stateMachine.ChangeState(StateMachine.WrestlerState.Move);
 
         // Sprite flip
         if (tile.x < CurrentTilePosition.x)

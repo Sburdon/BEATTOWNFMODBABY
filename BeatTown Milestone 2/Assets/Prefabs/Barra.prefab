@@ -61,7 +61,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: dcbe595c32d4f4dabad9528276ca4f8a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -247,6 +247,7 @@ MonoBehaviour:
   moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 1b61796a7dbbd61458e9191ecfedcd73, type: 2}
+  isFishOrGoon: 0
 --- !u!95 &-8722220608973156056
 Animator:
   serializedVersion: 5
