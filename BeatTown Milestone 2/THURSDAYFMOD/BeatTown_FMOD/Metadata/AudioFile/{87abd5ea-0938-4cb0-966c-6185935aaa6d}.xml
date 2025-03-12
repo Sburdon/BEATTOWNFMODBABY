@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{87abd5ea-0938-4cb0-966c-6185935aaa6d}">
+		<property name="assetPath">
+			<value>BEAVER.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>1.5638321995464852</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{734611d2-be86-42f5-bf8c-3b966c31cf8a}</destination>
+		</relationship>
+	</object>
+</objects>
