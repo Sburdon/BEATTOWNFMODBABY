@@ -48,6 +48,13 @@ public class Hook : MonoBehaviour
         // Notify listeners that the Hook has spawned
         OnHookSpawned?.Invoke(this);
     }
+    public void CatchAI(AIMove ai)
+    {
+        ai.isDead = true; // Flag for respawn
+        RespawnManager.Instance.EnemyDied(ai.gameObject, false); // Trigger standard respawn
+                                                                 // Optional: Disable renderer instead of destroying
+        ai.gameObject.SetActive(false);
+    }
 
     private void UpdateFishCountText()
     {

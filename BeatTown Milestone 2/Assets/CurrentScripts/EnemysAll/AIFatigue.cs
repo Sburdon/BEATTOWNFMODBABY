@@ -6,7 +6,7 @@ public class AIFatigue : MonoBehaviour
     [Header("Fatigue Settings")]
     public int maxFatigue = 2; // Total fatigue per turn
 
-    private int currentFatigue;
+    public int currentFatigue;
     private AIMove aiMove;
     private AIAttack aiAttack;
 

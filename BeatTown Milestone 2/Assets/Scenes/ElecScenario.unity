@@ -13894,6 +13894,11 @@ MonoBehaviour:
   enemyRedSprite: {fileID: 21300000, guid: c69fa4295e9088843adf54d62761d9f2, type: 3}
   barraBlueSprite: {fileID: 21300000, guid: 5022d49213b23f34c9e73a4bece25cac, type: 3}
   barraRedSprite: {fileID: 21300000, guid: 76b673cb7f91b9344b29d86d3d3e67a2, type: 3}
+  goonRedSprite: {fileID: 21300000, guid: 186ebef1f729a0b4589db267dfaf5539, type: 3}
+  goonBlueSprite: {fileID: 21300000, guid: d0bcf7f157ec8b04fad622e75040718b, type: 3}
+  electBlueSprite: {fileID: 21300000, guid: 19de963a4fe5d6844b2fdcd4bc210b05, type: 3}
+  electRedSprite: {fileID: 21300000, guid: a7d5b8993da6e764a8013476e46f8c9f, type: 3}
+  enemySpritesScene2: []
   turnOrderPrefab: {fileID: 122606133422700438, guid: 0076737d9bf349743abeeba6f6d31d02,
     type: 3}
   PPShighlight: {fileID: 1563459242}

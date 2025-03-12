@@ -9,6 +9,7 @@ public class RespawnManager : MonoBehaviour
 {
     public static RespawnManager Instance { get; private set; }
 
+
     [Header("Prefabs")]
     public GameObject enemyPrefab;
     public GameObject barraAIPrefab;
@@ -35,6 +36,7 @@ public class RespawnManager : MonoBehaviour
 
     private List<GameObject> enemies = new List<GameObject>();
     private TempTurnBase tempTurnBase;
+    private EnemyHealth enemyHealth;
     private Tilemap tilemap;
     private PlayerMove playerMove;
     private Text fishCountText;
@@ -55,6 +57,7 @@ public class RespawnManager : MonoBehaviour
 
     void Start()
     {
+        enemyHealth = FindAnyObjectByType<EnemyHealth>();
         tempTurnBase = FindObjectOfType<TempTurnBase>();
         tilemap = FindObjectOfType<Tilemap>();
         playerMove = FindObjectOfType<PlayerMove>();
@@ -175,91 +178,82 @@ public class RespawnManager : MonoBehaviour
     // ------------------------------------------------------------------
     // Hook Spawning
     // ------------------------------------------------------------------
-   private void SpawnHooks(int count)
-{
-    // If there’s no hook prefab, we still stop here
-    if (hookPrefab == null)
-    {
-        Debug.LogError("RespawnManager: hookPrefab is not assigned.");
-        return;
-    }
+    private void SpawnHooks(int count)
+    { // If there’s no hook prefab, we still stop here if (hookPrefab == null) { Debug.LogError("RespawnManager: hookPrefab is not assigned."); return; }
+
 
     // If count is zero, skip everything else
-    if (count <= 0)
-    {
-        Debug.Log("RespawnManager: No hooks to spawn. Skipping hook spawning.");
-        return;
+        if (count <= 0)
+        {
+            Debug.Log("RespawnManager: No hooks to spawn. Skipping hook spawning.");
+            return;
+        }
+
+        // If count > 0, run the original loop
+        for (int i = 0; i < count; i++)
+        {
+            Vector3Int hookSpawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
+            Vector3 hookWorldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(hookSpawnTile);
+
+            GameObject hookInstance = Instantiate(hookPrefab, hookWorldPosition, Quaternion.identity);
+            OccupiedTilesManager.Instance.AddOccupiedPosition(hookSpawnTile);
+
+            // Set references
+            Hook hookScript = hookInstance.GetComponent<Hook>();
+            if (hookScript != null)
+            {
+                hookScript.tilemap = tilemap;
+                hookScript.player = playerMove;
+                hookScript.fishCountText = fishCountText;
+            }
+            else
+            {
+                Debug.LogError("RespawnManager: Hook prefab missing Hook component!");
+            }
+
+            // Only set Swing/Push references on the very first hook
+            if (i == 0)
+            {
+                Swing swingScript = FindObjectOfType<Swing>();
+                Push pushScript = FindObjectOfType<Push>();
+
+                if (swingScript != null) swingScript.hook = hookScript;
+                if (pushScript != null) pushScript.hook = hookScript;
+            }
+        }
     }
 
-    // If count > 0, run the original loop
-    for (int i = 0; i < count; i++)
-    {
-        Vector3Int hookSpawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
-        Vector3 hookWorldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(hookSpawnTile);
 
-        GameObject hookInstance = Instantiate(hookPrefab, hookWorldPosition, Quaternion.identity);
-        OccupiedTilesManager.Instance.AddOccupiedPosition(hookSpawnTile);
-
-        // Set references
-        Hook hookScript = hookInstance.GetComponent<Hook>();
-        if (hookScript != null)
-        {
-            hookScript.tilemap = tilemap;
-            hookScript.player = playerMove;
-            hookScript.fishCountText = fishCountText;
-        }
-        else
-        {
-            Debug.LogError("RespawnManager: Hook prefab missing Hook component!");
-        }
-
-        // Only set Swing/Push references on the very first hook
-        if (i == 0)
-        {
-            Swing swingScript = FindObjectOfType<Swing>();
-            Push pushScript = FindObjectOfType<Push>();
-
-            if (swingScript != null) swingScript.hook = hookScript;
-            if (pushScript != null) pushScript.hook = hookScript;
-        }
-    }
-}
-
-
-    // ------------------------------------------------------------------
-    // Regular Enemy Logic
-    // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// Regular Enemy Logic
+// ------------------------------------------------------------------
     public void MaintainEnemyCount()
     {
-        // Create a temporary list to store enemies to respawn
         List<AIMove> enemiesToRespawn = new List<AIMove>();
 
-        // Check for AI units that need to respawn
         foreach (var enemy in enemies)
         {
-            if (enemy != null)
+            if (enemy == null) continue;
+
+            AIMove aiMove = enemy.GetComponent<AIMove>();
+            if (aiMove != null && aiMove.isDead)
             {
-                AIMove aiMove = enemy.GetComponent<AIMove>();
-                if (aiMove != null && aiMove.isDead)
+                if (aiMove.turnsUntilRespawn > 0)
                 {
-                    if (aiMove.turnsUntilRespawn > 0)
-                    {
-                        aiMove.turnsUntilRespawn--;
-                    }
-                    else
-                    {
-                        // Add to the respawn list
-                        enemiesToRespawn.Add(aiMove);
-                    }
+                    aiMove.turnsUntilRespawn--; // Decrement timer
+                }
+                else
+                {
+                    enemiesToRespawn.Add(aiMove); // Queue for respawn
                 }
             }
         }
 
-        // Now respawn the enemies that need to be respawned
+        // Respawn queued units
         foreach (var aiMove in enemiesToRespawn)
         {
             RespawnAIUnit(aiMove);
-            aiMove.isDead = false; // Reset the dead state
+            aiMove.isDead = false;
         }
 
         // Maintain the minimum enemy count
@@ -273,20 +267,23 @@ public class RespawnManager : MonoBehaviour
     }
     private void RespawnAIUnit(AIMove aiMove)
     {
-        // Logic to respawn the AI unit
+        // Find a new available tile
         Vector3Int spawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
-        Vector3 worldPosition = OccupiedTilesManager.Instance.tilemap.GetCellCenterWorld(spawnTile);
+        Vector3 worldPosition = tilemap.GetCellCenterWorld(spawnTile);
 
-        GameObject newEnemy = Instantiate(enemyPrefab, worldPosition, Quaternion.identity);
-        enemies.Add(newEnemy);
-        newEnemy.SetActive(true); // Ensure the enemy is active
-        aiMove = newEnemy.GetComponent<AIMove>();
-        aiMove.isDead = false; // Reset the dead state
+        // Reactivate and reposition
+
+        aiMove.enemyHealth.health = aiMove.enemyHealth.maxHealth;
+        aiMove.gameObject.SetActive(true);
+        aiMove.transform.position = worldPosition;
         aiMove.CurrentTilePosition = spawnTile;
         OccupiedTilesManager.Instance.RegisterAI(aiMove);
         tempTurnBase.AddAIUnit(aiMove);
 
-        Debug.Log($"RespawnManager: Respawned {aiMove.gameObject.name} at {spawnTile}.");
+
+        // Re-register the new tile
+        OccupiedTilesManager.Instance.RegisterAI(aiMove);
+        Debug.Log($"{aiMove.gameObject.name} respawned at {spawnTile}.");
     }
 
     public void EnemyDied(GameObject enemy, bool fromPlayerOrBarra)
@@ -300,25 +297,18 @@ public class RespawnManager : MonoBehaviour
         AIMove aiMove = enemy.GetComponent<AIMove>();
         if (aiMove != null)
         {
-            if (fromPlayerOrBarra)
-            {
-                aiMove.isDead = true;
-                aiMove.turnsUntilRespawn = 1; // Set to 1 turn delay
-                Debug.Log($"{enemy.name} died from player or Barra. Marking for respawn.");
-            }
-            else
-            {
-                // If it died from a hook, remove it immediately
-                enemies.Remove(enemy);
-                Vector3Int enemyTilePosition = OccupiedTilesManager.Instance.tilemap.WorldToCell(enemy.transform.position);
-                OccupiedTilesManager.Instance.RemoveOccupiedPosition(enemyTilePosition);
-                Destroy(enemy);
-                Debug.Log($"{enemy.name} died from hook. Removing immediately.");
-            }
+            // Free up the tile the AI was occupying
+            Vector3Int enemyTile = tilemap.WorldToCell(enemy.transform.position);
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(enemyTile);
+
+            // Mark for respawn with 1-turn delay
+            aiMove.isDead = true;
+            aiMove.turnsUntilRespawn = 1;
+            Debug.Log($"{enemy.name} removed from tile {enemyTile}.");
         }
         else
         {
-            Debug.LogWarning("RespawnManager: Spawned enemy missing AIMove component.");
+            Debug.LogWarning("RespawnManager: Enemy missing AIMove component.");
         }
     }
 

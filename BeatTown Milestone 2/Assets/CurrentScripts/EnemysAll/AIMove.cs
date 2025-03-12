@@ -23,6 +23,7 @@ public class AIMove : MonoBehaviour
     public Vector3Int CurrentTilePosition { get; set; }
 
     public EnemyHealth enemyHealth;
+    private TempTurnBase turnBase;
     private StateMachine stateMachine;
     private SpriteRenderer spriteRenderer;
 
@@ -35,6 +36,7 @@ public class AIMove : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         enemyHealth = GetComponent<EnemyHealth>();
+        turnBase = GetComponent<TempTurnBase>();
 
         if (tilemap == null)
         {
@@ -330,6 +332,23 @@ public class AIMove : MonoBehaviour
         }
         return false;
     }
+    public void ResetAIforRespawn()
+    {
+        Vector3 spawnPosition = transform.position; // Store the current position
+        Destroy(gameObject); // Destroy the current instance
+
+
+        // Create a new instance at the stored position
+        AIMove newAI = Instantiate(this, spawnPosition, Quaternion.identity);
+
+        // Optionally, reset any specific properties for the new instance
+        newAI.isDead = false; // Reset dead state
+        newAI.turnsUntilRespawn = 0; // Reset respawn timer
+        newAI.CurrentTilePosition = tilemap.WorldToCell(spawnPosition); // Reset position
+        newAI.enemyHealth.ResetHealth(); // Reset health
+        OccupiedTilesManager.Instance.RegisterAI(newAI); // Re-register 
+    }
+    
 
     public void ResetAI()
     {

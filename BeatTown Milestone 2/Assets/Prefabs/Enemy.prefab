@@ -159,6 +159,9 @@ MonoBehaviour:
   playerMove: {fileID: 0}
   moveDistance: 2
   moveSpeed: 2.4
+  enemyHealth: {fileID: 0}
+  isDead: 0
+  turnsUntilRespawn: 0
 --- !u!114 &7059847366657219671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,6 +206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxFatigue: 2
+  currentFatigue: 0
 --- !u!50 &-7287659099874763
 Rigidbody2D:
   serializedVersion: 4

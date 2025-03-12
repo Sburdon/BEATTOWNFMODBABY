@@ -1,12 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class TempTurnBase : MonoBehaviour
 {
-    [Header("UI Components")]
-    public GameObject turnOrderPanel; // The panel holding turn order images
+    [Header("UI Components")] public GameObject turnOrderPanel; // The panel holding turn order images
+
 
     public Sprite playerBlueSprite;
     public Sprite playerRedSprite;
@@ -15,9 +16,17 @@ public class TempTurnBase : MonoBehaviour
     public Sprite barraBlueSprite;
     public Sprite barraRedSprite; // Blue picture for the active turn
 
+    public Sprite goonRedSprite;
+    public Sprite goonBlueSprite;
+    public Sprite electBlueSprite;
+    public Sprite electRedSprite;
+
+
+    [Header("Enemy Sprites for Scene 2")]
+    public Sprite[] enemySpritesScene2;
+
     public GameObject turnOrderPrefab; // Prefab for each turn order image
 
-    private List<Image> turnOrderImages = new List<Image>();
 
     [Header("AI Units")]
     public GameObject PPShighlight;
@@ -37,13 +46,14 @@ public class TempTurnBase : MonoBehaviour
     private RespawnManager respawnManager;
     private Hook hook;
 
-    public bool isPlayerTurn = true;
+    public bool isPlayerTurn = false;
     private bool isProcessingTurn = false;
     public GameObject RealMoveHighlight;
     private bool spawnBarra = true;
     private bool spawnBarra1 = true;
     private List<object> turnUnits = new List<object>();
-    private int currentTurnIndex = 0;
+    private int currentTurnIndex = 0;//was 0
+    private bool hasPlayerTurnBeenSkipped = false;
 
     public All_SFX All_SFX;
 
@@ -53,23 +63,26 @@ public class TempTurnBase : MonoBehaviour
 
     void Start()
     {
+        hook = Hook.Instance;
+        respawnManager = RespawnManager.Instance;
+
+
         if (playerMove == null)
             playerMove = FindObjectOfType<PlayerMove>();
 
         if (playerFatigue == null)
             playerFatigue = FindObjectOfType<PlayerFatigue>();
 
-        hook = Hook.Instance;
-        respawnManager = RespawnManager.Instance;
-
         if (respawnManager == null)
         {
             Debug.LogError("RespawnManager instance not found in the scene.");
         }
 
+
         ResetAllColliders();
         InitializeTurnOrder();
         UpdateTurnOrderUI();
+        StartTurn();
     }
 
     /// <summary>
@@ -79,24 +92,30 @@ public class TempTurnBase : MonoBehaviour
     {
         turnUnits.Clear();
 
-        // Player always first
-        turnUnits.Add(playerMove);
+        // Check the active scene
+        if (SceneManager.GetActiveScene().buildIndex == 3) // Replace "Scene2" with your actual scene name
+        {
+            // Scene 2 order: Electrician, Goon, Player
+            foreach (var electrician in electricianUnits)
+                turnUnits.Add(electrician);
 
-        // Standard AI
-        foreach (var ai in aiUnits)
-            turnUnits.Add(ai);
+            foreach (var goon in goonUnits)
+                turnUnits.Add(goon);
 
-        // Goon units
-        foreach (var goon in goonUnits)
-            turnUnits.Add(goon);
+            // Add player last
+            turnUnits.Add(playerMove);
+        }
+        else
+        {
+            // Default order: Player, AI, Goon, Electrician, Barra
+            turnUnits.Add(playerMove);
 
-        // Electrician units
-        foreach (var electrician in electricianUnits)
-            turnUnits.Add(electrician);
+            foreach (var ai in aiUnits)
+                turnUnits.Add(ai);
 
-        // Barra
-        foreach (var barra in barraUnits)
-            turnUnits.Add(barra);
+            foreach (var barra in barraUnits)
+                turnUnits.Add(barra);
+        }
     }
 
     /// <summary>
@@ -214,98 +233,67 @@ public class TempTurnBase : MonoBehaviour
     /// Called to start the turn for whichever unit is at currentTurnIndex.
     /// </summary>
     /// 
-    private void RespawnAIUnit(AIMove aiMove)
-    {
-        // Logic to respawn the AI unit
-        // For example, you might instantiate it again or reset its position
-        Debug.Log($"Respawning AI unit: {aiMove.gameObject.name}");
-        // Add your respawn logic here
-    }
+
     public void StartTurn()
-   {
+    {
         if (turnUnits.Count == 0) return;
 
         var currentUnit = turnUnits[currentTurnIndex];
 
-        // Check for AI units that need to respawn
-        foreach (var unit in aiUnits)
+        // Immediately skip dead AI units
+        if (currentUnit is AIMove ai && ai.isDead)
         {
-            if (unit.isDead)
-            {
-                if (unit.turnsUntilRespawn > 0)
-                {
-                    unit.turnsUntilRespawn--;
-                }
-                else
-                {
-                    // Respawn the AI unit
-                    RespawnAIUnit(unit);
-                    unit.isDead = false; // Reset the dead state
-                }
-            }
+            RotateTurnOrder();
+            StartTurn();
+            return;
         }
 
         if (currentUnit is PlayerMove)
         {
-        // Keep hooking in the "spawn Barra" logic
-        if (respawnManager != null)
-        {
-            respawnManager.MaintainEnemyCount();
-        }
-        else
-        {
-            Debug.LogError("RespawnManager is null in StartTurn()");
-        }
-
-        if (hook != null) // Check if hook exists before accessing it
-        {
-            // use for loop to ensure this block gets called one time only
-
-            if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra == true)
+            // Respawn management only during player's turn
+            if (respawnManager != null)
             {
-                    Debug.Log("First hook kill count reached. Barra tutorial animation triggered.");
+                respawnManager.MaintainEnemyCount();
+            }
+            else
+            {
+                Debug.LogError("RespawnManager is null in StartTurn()");
+            }
+
+            // Hook and Barra spawning logic
+            if (hook != null)
+            {
+                if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra)
+                {
                     RespawnManager.Instance.SpawnBarra();
                     spawnBarra = false;
-                    // use for loop to make sure this tutorial only happens 
-                    for (int i = 0; i < 1; i++)
-                    {
-                        // use TutorialManager ref to initiate barra tutorial animation
-                        TutorialScript.StartBarraAnimation();
-                    }
-            }
-            if ((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1 == true)
-            {
+                    TutorialScript.StartBarraAnimation();
+                }
+                if ((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1)
+                {
                     RespawnManager.Instance.SpawnBarra();
                     spawnBarra1 = false;
-                 //   Debug.Log("Second hook kill count reached. Barra tutorial animation triggered.");
-                    // use TutorialManager ref to initiate barra tutorial animation
-                  //  TutorialScript.StartBarraAnimation();
                 }
+            }
+            StartPlayerTurn();
         }
-        else
+        else if (currentUnit is AIMove aiUnit)
         {
-            Debug.LogError("Hook instance is missing! Make sure there is a Hook object in the scene.");
+            StartCoroutine(ProcessAITurn(aiUnit));
         }
-
-        StartPlayerTurn();
+        else if (currentUnit is BarraMove barra)
+        {
+            StartCoroutine(ProcessBarraTurn(barra));
+        }
+        else if (currentUnit is GoonMove goon)
+        {
+            StartCoroutine(ProcessGoonTurn(goon));
+        }
+        else if (currentUnit is ElectricianMove electrician)
+        {
+            StartCoroutine(ProcessElectricianTurn(electrician));
+        }
     }
-    else if (currentUnit is AIMove ai)
-    {
-        StartCoroutine(ProcessAITurn(ai));
-    }
-    else if (currentUnit is BarraMove barra)
-    {
-        StartCoroutine(ProcessBarraTurn(barra));
-    }
-    else if (currentUnit is GoonMove goon)
-    {
-        StartCoroutine(ProcessGoonTurn(goon));
-    }
-    else if (currentUnit is ElectricianMove electrician)
-    {
-        StartCoroutine(ProcessElectricianTurn(electrician));
-    }
-}
 
 
     void Update()
@@ -321,15 +309,24 @@ public class TempTurnBase : MonoBehaviour
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         GameObject[] barras = GameObject.FindGameObjectsWithTag("Barra");
+        GameObject[] goons = GameObject.FindGameObjectsWithTag("Goon");
+        GameObject[] elects = GameObject.FindGameObjectsWithTag("Electrician");
 
         foreach (GameObject enemy in enemies)
         {
             ResetCollider(enemy);
         }
-
         foreach (GameObject barra in barras)
         {
             ResetCollider(barra);
+        }
+        foreach (GameObject elect in elects)
+        {
+            ResetCollider(elect);
+        }
+        foreach (GameObject goon in goons)
+        {
+            ResetCollider(goon);
         }
     }
 
@@ -438,7 +435,7 @@ public class TempTurnBase : MonoBehaviour
         // If you want to handle some Goon-specific logic at the end of the player's turn:
         foreach (var goon in goonUnits)
         {
-            goon.ResolvePunch(); 
+            goon.ResolvePunch();
         }
 
         PPShighlight.SetActive(false);
@@ -624,13 +621,11 @@ public class TempTurnBase : MonoBehaviour
             }
             else if (unit is GoonMove)
             {
-                // Goon -> treat as Enemy icon, or you can make a new tag if you have a new sprite
-                turnOrderList.Add(CreateTurnOrderIcon(unit, "Enemy"));
+                turnOrderList.Add(CreateTurnOrderIcon(unit, "Goon"));
             }
             else if (unit is ElectricianMove)
             {
-                // Electrician -> also treat as Enemy icon, unless you have a special sprite
-                turnOrderList.Add(CreateTurnOrderIcon(unit, "Enemy"));
+                turnOrderList.Add(CreateTurnOrderIcon(unit, "Electrician"));
             }
         }
 
@@ -651,6 +646,14 @@ public class TempTurnBase : MonoBehaviour
             else if (icon.CompareTag("Barra"))
             {
                 unitImage.sprite = (i == currentTurnIndex) ? barraBlueSprite : barraRedSprite;
+            }
+            else if (icon.CompareTag("Electrician"))
+            {
+                unitImage.sprite = (i == currentTurnIndex) ? electBlueSprite : electRedSprite;
+            }
+            else if (icon.CompareTag("Goon"))
+            {
+                unitImage.sprite = (i == currentTurnIndex) ? goonBlueSprite : goonRedSprite;
             }
         }
     }

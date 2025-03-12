@@ -6,8 +6,9 @@ using UnityEngine.UI; // For UI Slider
 public class EnemyHealth : MonoBehaviour
 {
     public int maxHealth = 3; // Maximum health value
-    [SerializeField]
-    private int health;        // Current health
+    [SerializeField] 
+    public int health; // Current health
+
 
     public GameObject healthSliderPrefab; // Reference to the health slider prefab
     private Slider healthSlider;          // Instance of the slider
@@ -81,7 +82,7 @@ public class EnemyHealth : MonoBehaviour
         if (healthSlider != null && healthSlider.gameObject.activeSelf)
         {
             RectTransform sliderRect = healthSlider.GetComponent<RectTransform>();
-            sliderRect.anchoredPosition = new Vector2(879f, -94.00001f);
+            sliderRect.anchoredPosition = new Vector2(879f, -120f);
         }
     }
 
