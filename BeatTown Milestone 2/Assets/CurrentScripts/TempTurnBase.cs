@@ -516,18 +516,21 @@ public class TempTurnBase : MonoBehaviour
     }
 
     private IEnumerator ProcessElectricianTurn(ElectricianMove electrician)
-    {
-        isProcessingTurn = true;
-        Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
+{
+    isProcessingTurn = true;
+    Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
 
-        // If ElectricianMove has its own routine:
-        yield return StartCoroutine(electrician.MoveAction());
+    // Reset fatigue at the start of the turn
+    electrician.ResetFatigue();
 
-        // Then continue
-        RotateTurnOrder();
-        StartTurn();
-        isProcessingTurn = false;
-    }
+    // Execute movement and panel fixing
+    yield return StartCoroutine(electrician.MoveAction());
+
+    // Rotate turn order and proceed to next turn
+    RotateTurnOrder();
+    StartTurn();
+    isProcessingTurn = false;
+}
 
     // ─────────────────────────────────────
     // Start Player Turn

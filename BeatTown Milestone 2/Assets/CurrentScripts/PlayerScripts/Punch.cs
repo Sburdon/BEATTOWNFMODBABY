@@ -92,50 +92,60 @@ public class Punch : MonoBehaviour
     }
 
     void TryPunchEnemy()
+{
+    if (selectedEnemy != null)
     {
-        if (selectedEnemy != null)
+        // Check if the enemy has EnemyHealth (for general enemies)
+        EnemyHealth enemyScript = selectedEnemy.GetComponent<EnemyHealth>();
+
+        // Also check for GoonHealth specifically
+        GoonHealth goonHealth = selectedEnemy.GetComponent<GoonHealth>();
+
+        if (enemyScript != null)
         {
-            EnemyHealth enemyScript = selectedEnemy.GetComponent<EnemyHealth>();
-            if (enemyScript != null)
-            {
-                enemyScript.TakeDamage(punchDamage, true);
-                Debug.Log($"{selectedEnemy.name} has been punched and took {punchDamage} damage!");
-                All_SFX.PlayFishSlap();
-                stateMachine.ChangeState(WrestlerState.Punch);
-
-                // -----------------------------------
-                //  NEW: If the target is a Goon, notify them
-                // -----------------------------------
-                GoonMove goonMove = selectedEnemy.GetComponent<GoonMove>();
-                if (goonMove != null)
-                {
-                    goonMove.OnPunchedByPlayer(); 
-                }
-
-                // Optionally, here's your existing code to have AI chase the player:
-                AIMove aiMoveScript = selectedEnemy.GetComponent<AIMove>();
-                if (aiMoveScript != null)
-                {
-                    aiMoveScript.SetFollowPlayerForTurns(3);
-                }
-
-                playerFatigue.UseFatigue(playerFatigue.punchFatigueCost);
-            }
-            else
-            {
-                Debug.Log("Selected enemy does not have a valid damage method.");
-            }
-
-            PPShighlight.SetActive(false);
-            isPunching = false;
-            selectedEnemy = null;
-            playerMove.CurrentAction = ActionType.None;
+            enemyScript.TakeDamage(punchDamage, true);
+            Debug.Log($"{selectedEnemy.name} has been punched and took {punchDamage} damage!");
+            All_SFX.PlayFishSlap();
+            stateMachine.ChangeState(WrestlerState.Punch);
+        }
+        else if (goonHealth != null)
+        {
+            goonHealth.TakeDamage(punchDamage);
+            Debug.Log($"{selectedEnemy.name} (Goon) has been punched and took {punchDamage} damage!");
+            All_SFX.PlayFishSlap();
+            stateMachine.ChangeState(WrestlerState.Punch);
         }
         else
         {
-            Debug.Log("No enemy selected to punch.");
+            Debug.Log("Selected enemy does not have a valid damage method.");
+            return;
         }
+
+        // Ensure Goon punch telegraph updates
+        GoonMove goonMove = selectedEnemy.GetComponent<GoonMove>();
+        if (goonMove != null)
+        {
+            goonMove.OnPunchedByPlayer();
+        }
+
+        // If the enemy is a regular AI, have them chase the player
+        AIMove aiMoveScript = selectedEnemy.GetComponent<AIMove>();
+        if (aiMoveScript != null)
+        {
+            aiMoveScript.SetFollowPlayerForTurns(3);
+        }
+
+        playerFatigue.UseFatigue(playerFatigue.punchFatigueCost);
+        PPShighlight.SetActive(false);
+        isPunching = false;
+        selectedEnemy = null;
+        playerMove.CurrentAction = ActionType.None;
     }
+    else
+    {
+        Debug.Log("No enemy selected to punch.");
+    }
+}
 
     bool IsWithinPunchRange(Vector3Int playerPosition, Vector3Int enemyPosition)
     {

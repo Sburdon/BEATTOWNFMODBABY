@@ -267,54 +267,67 @@ public class GoonMove : MonoBehaviour
     }
 
     public void ResolvePunch()
+{
+    if (!isPunchCharging) return;
+    isPunchCharging = false;
+
+    if (punchIndicatorInstance != null)
     {
-        if (!isPunchCharging) return;
-        isPunchCharging = false;
+        Destroy(punchIndicatorInstance);
+        punchIndicatorInstance = null;
+    }
 
-        if (punchIndicatorInstance != null)
+    if (tilemap == null) return;
+
+    Vector3 worldPos = tilemap.GetCellCenterWorld(punchTargetTile);
+    Collider2D[] hits = Physics2D.OverlapPointAll(worldPos);
+    bool hitSomeone = false;
+
+    foreach (var col in hits)
+    {
+        // Check if the player was hit
+        PlayerHealth playerHealth = col.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
         {
-            Destroy(punchIndicatorInstance);
-            punchIndicatorInstance = null;
+            playerHealth.TakeDamage(punchDamage);
+            Debug.Log($"{name} punched the Player for {punchDamage} damage!");
+            hitSomeone = true;
+            break; // Exit loop since we hit the player
         }
 
-        if (tilemap == null) return;
-
-        Vector3 worldPos = tilemap.GetCellCenterWorld(punchTargetTile);
-        Collider2D[] hits = Physics2D.OverlapPointAll(worldPos);
-        bool hitSomeone = false;
-
-        foreach (var col in hits)
+        // Check if the Electrician was hit (keep existing logic)
+        if (col.CompareTag("Electrician"))
         {
-            if (col.CompareTag("Electrician"))
+            if (electricianHealth != null)
             {
-                if (electricianHealth != null)
-                {
-                    electricianHealth.TakeDamage(punchDamage);
-                    Debug.Log($"{name} punched the Electrician for {punchDamage} damage!");
-                }
-                hitSomeone = true;
-                break;
+                electricianHealth.TakeDamage(punchDamage);
+                Debug.Log($"{name} punched the Electrician for {punchDamage} damage!");
             }
-        }
-
-        if (!hitSomeone)
-        {
-            if (holePrefab != null)
-            {
-                Instantiate(holePrefab, worldPos, Quaternion.identity);
-
-                if (OccupiedTilesManager.Instance != null)
-                {
-                    OccupiedTilesManager.Instance.AddOccupiedPosition(punchTargetTile);
-                    Debug.Log($"{name} missed punch, created hole, marking {punchTargetTile} occupied.");
-                }
-            }
-            else
-            {
-                Debug.Log($"{name} missed the punch, no holePrefab assigned.");
-            }
+            hitSomeone = true;
+            break;
         }
     }
+
+    // If the punch hit no one, spawn a hole (keep original functionality)
+    if (!hitSomeone)
+    {
+        if (holePrefab != null)
+        {
+            Instantiate(holePrefab, worldPos, Quaternion.identity);
+
+            if (OccupiedTilesManager.Instance != null)
+            {
+                OccupiedTilesManager.Instance.AddOccupiedPosition(punchTargetTile);
+                Debug.Log($"{name} missed punch, created hole, marking {punchTargetTile} occupied.");
+            }
+        }
+        else
+        {
+            Debug.Log($"{name} missed the punch, no holePrefab assigned.");
+        }
+    }
+}
+
 
     // -----------------------------------------------------------------------------------
     //  METHODS FOR FORCED MOVEMENT (BY PLAYER)
@@ -324,19 +337,43 @@ public class GoonMove : MonoBehaviour
     /// Called if the Goon is punched by the player. If it's telegraphing a punch,
     /// retarget the Electrician's position (so it tries to punch the player back).
     /// </summary>
-    public void OnPunchedByPlayer()
-    {
-        if (isPunchCharging && electricianMove != null && tilemap != null)
-        {
-            punchTargetTile = electricianMove.CurrentTilePosition;
+public void OnPunchedByPlayer()
+{
+    Debug.Log($"{name} was punched! Checking if it is telegraphing a punch...");
 
-            if (punchIndicatorInstance != null)
-            {
-                punchIndicatorInstance.transform.position = tilemap.GetCellCenterWorld(punchTargetTile);
-            }
-            Debug.Log($"{name}: Punch target updated to player's tile after being punched.");
+    // Find the actual Player object
+    PlayerMove player = FindObjectOfType<PlayerMove>();
+
+    if (isPunchCharging && player != null && tilemap != null)
+    {
+        // Get the player's current tile position
+        Vector3Int playerTile = tilemap.WorldToCell(player.transform.position);
+        Debug.Log($"{name}: Player's ACTUAL position is {playerTile}, updating punch target...");
+
+        // Ensure that we are actually setting a new target
+        if (playerTile != punchTargetTile)
+        {
+            punchTargetTile = playerTile;
+            Debug.Log($"{name}: Punch target CHANGED to {punchTargetTile}!");
         }
+        else
+        {
+            Debug.Log($"{name}: Punch target is the same, something might be wrong.");
+        }
+
+        // Force the visual update
+        UpdatePunchTelegraph();
     }
+    else
+    {
+        Debug.Log($"{name}: Not telegraphing a punch OR Player not found, so nothing changed.");
+    }
+}
+
+
+
+
+
 
     /// <summary>
     /// Called if the Goon is swung by the player. We pass the old tile (before the move)
@@ -375,4 +412,29 @@ public class GoonMove : MonoBehaviour
             Debug.Log($"{name}: Punch telegraph repositioned after being pushed by the player.");
         }
     }
+
+    public void UpdatePunchTelegraph()
+    {
+    if (tilemap == null) return;
+
+    Vector3 worldPos = tilemap.GetCellCenterWorld(punchTargetTile);
+
+    if (punchIndicatorInstance != null)
+    {
+        // Move the existing indicator
+        punchIndicatorInstance.transform.position = worldPos;
+        Debug.Log($"{name}: Punch indicator MOVED to {punchTargetTile}");
+    }
+    else if (punchIndicatorPrefab != null)
+    {
+        // If indicator was somehow destroyed, create a new one
+        punchIndicatorInstance = Instantiate(punchIndicatorPrefab, worldPos, Quaternion.identity);
+        Debug.Log($"{name}: Punch indicator RECREATED at {punchTargetTile}");
+    }
+    else
+    {
+        Debug.LogWarning($"{name}: Punch indicator prefab is NULL! Make sure it's assigned.");
+    }
+    }
+
 }

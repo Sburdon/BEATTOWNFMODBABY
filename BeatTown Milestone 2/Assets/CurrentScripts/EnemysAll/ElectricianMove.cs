@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-/// <summary>
-/// An Electrician script that moves along a route (list of tile coords) orthogonally,
-/// without referencing AIMove. 
-/// </summary>
 public class ElectricianMove : MonoBehaviour
 {
     [Header("Tile & Movement")]
@@ -19,12 +15,18 @@ public class ElectricianMove : MonoBehaviour
     public List<Vector3Int> routePositions = new List<Vector3Int>();
     public int currentRouteIndex = 0;
 
+    [Header("Panel System")]
+    public GameObject brokenPanelPrefab; // Assign in Inspector
+    public GameObject fixedPanelPrefab;  // Assign in Inspector
+    private Dictionary<Vector3Int, GameObject> panelObjects = new Dictionary<Vector3Int, GameObject>();
+
     [HideInInspector]
     public Vector3Int CurrentTilePosition;
 
     private SpriteRenderer spriteRenderer;
-    private bool canMove; // ask Spencer where to add bool check 
     public bool InPuddle;
+
+    private int fatigue = 2; // Fatigue resets to 2 at the start of each turn
 
     private void Awake()
     {
@@ -34,49 +36,151 @@ public class ElectricianMove : MonoBehaviour
     }
 
     private void Start()
-    {
-        if (tilemap != null)
-            CurrentTilePosition = tilemap.WorldToCell(transform.position);
+{
+    if (tilemap != null)
+        CurrentTilePosition = tilemap.WorldToCell(transform.position);
 
-        // Optionally register Electrician in OccupiedTilesManager
-        if (OccupiedTilesManager.Instance != null)
-        {
-            OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
-        }
+    if (OccupiedTilesManager.Instance != null)
+    {
+        OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
+    }
+
+    // Remove the initial spawn position after the first move
+    StartCoroutine(RemoveSpawnOccupiedTile());
+
+    // Spawn broken panels at designated positions
+    SpawnBrokenPanels();
+}
+
+private IEnumerator RemoveSpawnOccupiedTile()
+{
+    yield return new WaitForSeconds(0.1f); // Ensure it happens after first frame
+    if (OccupiedTilesManager.Instance != null)
+    {
+        OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
+    }
+}
+
+    /// <summary>
+    /// Resets the Electrician's fatigue at the start of each turn.
+    /// </summary>
+    public void ResetFatigue()
+    {
+        fatigue = 2;
+        Debug.Log("Electrician: Fatigue reset to 2.");
     }
 
     /// <summary>
-    /// Called each time the Electrician takes a turn (e.g., from TempTurnBase).
-    /// Moves toward the next route position up to moveDistance steps orthogonally.
+    /// Handles the Electrician's movement and fatigue usage.
     /// </summary>
     public IEnumerator MoveAction()
+{
+    if (currentRouteIndex >= routePositions.Count)
     {
-        if (currentRouteIndex >= routePositions.Count)
-        {
-            yield break; // done route
-        }
+        yield break; // No more route positions left
+    }
 
-        Vector3Int destinationTile = routePositions[currentRouteIndex];
-        // Build orth path from current tile to destination
+    Vector3Int destinationTile = routePositions[currentRouteIndex];
+
+    // Move only if enough fatigue is available
+    if (fatigue >= 1)
+    {
         List<Vector3Int> path = CalculateOrthPath(CurrentTilePosition, destinationTile);
 
-        // Limit to moveDistance
-        if (path.Count > moveDistance)
-            path = path.GetRange(0, moveDistance);
+        int maxSteps = (fatigue >= 1) ? 2 : 0; // Each fatigue allows 2 steps
+        if (path.Count > maxSteps)
+            path = path.GetRange(0, maxSteps);
 
         if (path.Count > 0)
+        {
+            fatigue--; // Deduct 1 fatigue per movement (2 tiles)
             yield return StartCoroutine(MoveAlongPath(path));
+        }
+        else
+        {
+            Debug.Log("Electrician: Not enough fatigue to move!");
+        }
+    }
 
-        // If we fully arrived at the route tile
-        if (CurrentTilePosition == destinationTile)
-            currentRouteIndex++;
+    // **After moving, check if the panel is there and fix it**
+    if (panelObjects.ContainsKey(CurrentTilePosition))
+    {
+        yield return StartCoroutine(FixPanel());
+    }
 
-        yield return null;
+    // If fully reached the destination, advance the route
+    if (CurrentTilePosition == destinationTile)
+    {
+        currentRouteIndex++;
+    }
+
+    yield return null;
+}
+
+
+    /// <summary>
+    /// Spawns broken panels at designated route positions.
+    /// </summary>
+    private void SpawnBrokenPanels()
+    {
+        if (brokenPanelPrefab == null)
+        {
+            Debug.LogWarning("ElectricianMove: Broken Panel Prefab is not assigned!");
+            return;
+        }
+
+        foreach (Vector3Int panelTile in routePositions)
+        {
+            Vector3 worldPos = tilemap.GetCellCenterWorld(panelTile);
+            GameObject brokenPanel = Instantiate(brokenPanelPrefab, worldPos, Quaternion.identity);
+            panelObjects[panelTile] = brokenPanel;
+        }
     }
 
     /// <summary>
-    /// Purely orth moves from start to end (x first, then y),
-    /// verifying each tile with IsMoveValid().
+    /// Fixes the panel at the current position, replacing the broken panel with a fixed one.
+    /// </summary>
+    public IEnumerator FixPanel()
+    {
+        // If there is no panel at this position, return
+        if (!panelObjects.ContainsKey(CurrentTilePosition))
+        {
+            yield break;
+        }
+
+        // If the panel is already fixed, return
+        if (panelObjects[CurrentTilePosition] == null)
+        {
+            yield break;
+        }
+
+        // Check if enough fatigue is available
+        if (fatigue < 1)
+        {
+            Debug.Log("Electrician: Not enough fatigue to fix the panel!");
+            yield break;
+        }
+
+        Debug.Log($"Electrician: Fixing panel at {CurrentTilePosition}...");
+        yield return new WaitForSeconds(1.5f); // Simulate fixing time
+
+        // Replace broken panel with fixed panel
+        GameObject brokenPanel = panelObjects[CurrentTilePosition];
+        Destroy(brokenPanel); // Remove broken panel
+
+        if (fixedPanelPrefab != null)
+        {
+            Vector3 worldPos = tilemap.GetCellCenterWorld(CurrentTilePosition);
+            GameObject fixedPanel = Instantiate(fixedPanelPrefab, worldPos, Quaternion.identity);
+            panelObjects[CurrentTilePosition] = fixedPanel; // Update reference
+        }
+
+        fatigue--; // Deduct 1 fatigue for fixing panel
+        Debug.Log("Electrician: Panel fixed!");
+    }
+
+    /// <summary>
+    /// Calculates the best movement path, prioritizing orthogonal movement.
     /// </summary>
     private List<Vector3Int> CalculateOrthPath(Vector3Int start, Vector3Int end)
     {
@@ -90,7 +194,6 @@ public class ElectricianMove : MonoBehaviour
         int x = start.x;
         int y = start.y;
 
-        // Move horizontally first
         for (int i = 0; i < Mathf.Abs(dx); i++)
         {
             x += stepX;
@@ -99,7 +202,6 @@ public class ElectricianMove : MonoBehaviour
             path.Add(nextPos);
         }
 
-        // Then move vertically
         for (int i = 0; i < Mathf.Abs(dy); i++)
         {
             y += stepY;
@@ -115,14 +217,12 @@ public class ElectricianMove : MonoBehaviour
     {
         foreach (Vector3Int tile in path)
         {
-            // Unoccupy old tile
             if (OccupiedTilesManager.Instance != null)
                 OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
 
             yield return StartCoroutine(MoveToTile(tile));
             CurrentTilePosition = tile;
 
-            // Re-occupy new tile
             if (OccupiedTilesManager.Instance != null)
                 OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
         }
@@ -135,7 +235,6 @@ public class ElectricianMove : MonoBehaviour
         float elapsed = 0f;
         float travelTime = 1f / moveSpeed;
 
-        // Sprite flip
         if (tile.x < CurrentTilePosition.x)
             spriteRenderer.flipX = true;
         else if (tile.x > CurrentTilePosition.x)
@@ -153,12 +252,9 @@ public class ElectricianMove : MonoBehaviour
     private bool IsMoveValid(Vector3Int tilePos)
     {
         if (tilemap == null) return false;
-        // Must have a tile on tilemap
         if (!tilemap.HasTile(tilePos)) return false;
-        // Must not be in occupied tiles
         if (OccupiedTilesManager.Instance != null && OccupiedTilesManager.Instance.IsTileOccupied(tilePos))
             return false;
-        // Must not be blocked by other objects
         return !IsBlockedByObject(tilePos);
     }
 
@@ -168,7 +264,6 @@ public class ElectricianMove : MonoBehaviour
         Collider2D[] colliders = Physics2D.OverlapPointAll(checkPos);
         foreach (var col in colliders)
         {
-            // If it's a Player or Enemy (not itself), treat as blocked
             if (col.CompareTag("Player") || (col.CompareTag("Enemy") && col.gameObject != this.gameObject))
                 return true;
         }

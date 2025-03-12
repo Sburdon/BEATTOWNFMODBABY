@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4858879070415540499}
   - component: {fileID: -493358338824373106}
   - component: {fileID: 4984803539388990014}
+  - component: {fileID: -6685875106266579186}
   m_Layer: 22
   m_Name: Electrician
   m_TagString: Electrician
@@ -138,11 +139,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemap: {fileID: 0}
   moveDistance: 2
-  moveSpeed: 1
+  moveSpeed: 1.5
   routePositions:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: -2, z: 0}
   currentRouteIndex: 0
+  brokenPanelPrefab: {fileID: 5413405559751626241, guid: b6c135019efb972499ed5c8c9027c95a,
+    type: 3}
+  fixedPanelPrefab: {fileID: 5972618989130388026, guid: 9f43a96a7060b78469dd624e7ac5f898,
+    type: 3}
   CurrentTilePosition: {x: 0, y: 0, z: 0}
   InPuddle: 0
 --- !u!114 &-493358338824373106
@@ -186,3 +191,16 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-6685875106266579186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7856497740735355207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcb421c8d9530ac48babadb99f673a85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxFatigue: 2
