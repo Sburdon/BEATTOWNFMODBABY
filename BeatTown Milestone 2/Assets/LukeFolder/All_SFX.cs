@@ -24,6 +24,7 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance Wood_Stock;
     FMOD.Studio.EventInstance Leaves;
     FMOD.Studio.EventInstance Trees;
+    FMOD.Studio.EventInstance BEAVER;
 
 
 
@@ -54,6 +55,7 @@ public class All_SFX : MonoBehaviour
         Wood_Stock = FMODUnity.RuntimeManager.CreateInstance("event:/Wood_Stock");
         Leaves = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Lumber_UI/Leaves");
         Trees = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Lumber_UI/Tree_Fall");
+        BEAVER = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Lumber_UI/Beaver");
 
 
 
@@ -171,7 +173,10 @@ public class All_SFX : MonoBehaviour
         Leaves.start();
     }
 
-
+    public void PlayBeaver()
+    {
+        BEAVER.start();
+    }
 
 
 
