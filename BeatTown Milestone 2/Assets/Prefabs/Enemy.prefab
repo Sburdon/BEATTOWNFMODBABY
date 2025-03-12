@@ -60,7 +60,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dcbe595c32d4f4dabad9528276ca4f8a, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -247,7 +247,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   uvMappingScript: {fileID: -4431514041361390980}
-  moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 783f22c8736450d4db0bb121ed8cfa5d, type: 2}
   isFishOrGoon: 1

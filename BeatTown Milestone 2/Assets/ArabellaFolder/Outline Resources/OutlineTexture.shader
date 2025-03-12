@@ -46,13 +46,14 @@ Shader "Custom/OutlineTexture"
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 texSize = float2(1.0, 1.0) / _ScreenParams.xy; // Adjust outline thickness
+
                 float alpha = tex2D(_MainTex, i.uv).a;
 
-                // Sample surrounding pixels
-                float alphaLeft   = tex2D(_MainTex, i.uv + float2(-_OutlineThickness, 0)).a;
-                float alphaRight  = tex2D(_MainTex, i.uv + float2(_OutlineThickness, 0)).a;
-                float alphaUp     = tex2D(_MainTex, i.uv + float2(0, _OutlineThickness)).a;
-                float alphaDown   = tex2D(_MainTex, i.uv + float2(0, -_OutlineThickness)).a;
+                // Sample surrounding pixels with absolute offsets
+                float alphaLeft   = tex2D(_MainTex, i.uv + float2(-abs(_OutlineThickness), 0)).a;
+                float alphaRight  = tex2D(_MainTex, i.uv + float2(abs(_OutlineThickness), 0)).a;
+                float alphaUp     = tex2D(_MainTex, i.uv + float2(0, abs(_OutlineThickness))).a;
+                float alphaDown   = tex2D(_MainTex, i.uv + float2(0, -abs(_OutlineThickness))).a;
 
                 bool isOutline = (alpha == 0) && (alphaLeft > 0 || alphaRight > 0 || alphaUp > 0 || alphaDown > 0);
 
@@ -61,7 +62,7 @@ Shader "Custom/OutlineTexture"
                     return _OutlineColor;
                 }
 
-                return tex2D(_MainTex, i.uv); // Render the normal texture
+                return tex2D(_MainTex, i.uv) * fixed4(1, 1, 1, 1); // Force full visibility
             }
             ENDCG
         }
