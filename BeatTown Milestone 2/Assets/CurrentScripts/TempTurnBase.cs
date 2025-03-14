@@ -180,9 +180,7 @@ public class TempTurnBase : MonoBehaviour
         // Slide out the current unit's icon to the right
         LeanTween.move(
             currentUnit.GetComponent<RectTransform>(),
-            new Vector2(moveDistanceCur, currentUnit.GetComponent<RectTransform>().anchoredPosition.y),
-            0.5f
-        ).setEaseOutCubic();
+            new Vector2(moveDistanceCur, currentUnit.GetComponent<RectTransform>().anchoredPosition.y), 0.5f).setEaseOutCubic();
 
         // Slide the other icons left
         for (int i = 0; i < turnOrderPanel.transform.childCount; i++)
@@ -195,10 +193,7 @@ public class TempTurnBase : MonoBehaviour
                 otherUnit.GetComponent<RectTransform>(),
                 new Vector2(
                     otherUnit.GetComponent<RectTransform>().anchoredPosition.x - moveDistanceLeft,
-                    otherUnit.GetComponent<RectTransform>().anchoredPosition.y
-                ),
-                0.5f
-            ).setEaseOutCubic();
+                    otherUnit.GetComponent<RectTransform>().anchoredPosition.y), 0.5f).setEaseOutCubic();
         }
 
         // Wait for the slide-out to complete
@@ -224,9 +219,7 @@ public class TempTurnBase : MonoBehaviour
 
         LeanTween.move(
             nextUnit.GetComponent<RectTransform>(),
-            new Vector2(0f, nextUnit.GetComponent<RectTransform>().anchoredPosition.y),
-            0.5f
-        ).setEaseInCubic();
+            new Vector2(0f, nextUnit.GetComponent<RectTransform>().anchoredPosition.y), 0.5f).setEaseInCubic();
     }
 
     /// <summary>
