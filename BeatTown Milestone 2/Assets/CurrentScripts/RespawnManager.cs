@@ -266,25 +266,13 @@ public class RespawnManager : MonoBehaviour
         }
     }
     private void RespawnAIUnit(AIMove aiMove)
-    {
-        // Find a new available tile
-        Vector3Int spawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
-        Vector3 worldPosition = tilemap.GetCellCenterWorld(spawnTile);
+{
+    // Pick your spawnTile as you do now
+    Vector3Int spawnTile = OccupiedTilesManager.Instance.GetRandomAvailablePosition(Vector3Int.zero);
 
-        // Reactivate and reposition
-
-        aiMove.enemyHealth.health = aiMove.enemyHealth.maxHealth;
-        aiMove.gameObject.SetActive(true);
-        aiMove.transform.position = worldPosition;
-        aiMove.CurrentTilePosition = spawnTile;
-        OccupiedTilesManager.Instance.RegisterAI(aiMove);
-        tempTurnBase.AddAIUnit(aiMove);
-
-
-        // Re-register the new tile
-        OccupiedTilesManager.Instance.RegisterAI(aiMove);
-        Debug.Log($"{aiMove.gameObject.name} respawned at {spawnTile}.");
-    }
+    // Simply tell the AI to perform its own “Respawn” steps
+    aiMove.RespawnAI(spawnTile);
+}
 
     public void EnemyDied(GameObject enemy, bool fromPlayerOrBarra)
     {

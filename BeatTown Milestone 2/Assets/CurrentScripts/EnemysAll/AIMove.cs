@@ -332,22 +332,28 @@ public class AIMove : MonoBehaviour
         }
         return false;
     }
-    public void ResetAIforRespawn()
+
+    public void RespawnAI(Vector3Int spawnTile)
     {
-        Vector3 spawnPosition = transform.position; // Store the current position
-        Destroy(gameObject); // Destroy the current instance
+        isDead = false;
+        turnsUntilRespawn = 0;
+        if (enemyHealth) enemyHealth.ResetHealth();
+        
+        // ** Reset follow logic on respawn: **
+        followPlayerTurns = 0;
 
+        transform.position = tilemap.GetCellCenterWorld(spawnTile);
+        CurrentTilePosition = spawnTile;
+        gameObject.SetActive(true);
 
-        // Create a new instance at the stored position
-        AIMove newAI = Instantiate(this, spawnPosition, Quaternion.identity);
+        OccupiedTilesManager.Instance.RegisterAI(this);
 
-        // Optionally, reset any specific properties for the new instance
-        newAI.isDead = false; // Reset dead state
-        newAI.turnsUntilRespawn = 0; // Reset respawn timer
-        newAI.CurrentTilePosition = tilemap.WorldToCell(spawnPosition); // Reset position
-        newAI.enemyHealth.ResetHealth(); // Reset health
-        OccupiedTilesManager.Instance.RegisterAI(newAI); // Re-register 
+        TempTurnBase turnBase = FindObjectOfType<TempTurnBase>();
+        if (turnBase != null) turnBase.AddAIUnit(this);
     }
+
+
+   
     
 
     public void ResetAI()
