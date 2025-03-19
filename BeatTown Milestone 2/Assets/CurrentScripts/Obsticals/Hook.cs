@@ -30,7 +30,7 @@ public class Hook : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(this.gameObject);
+            
         }
         else
         {
