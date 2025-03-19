@@ -289,16 +289,28 @@ public class RespawnManager : MonoBehaviour
             Vector3Int enemyTile = tilemap.WorldToCell(enemy.transform.position);
             OccupiedTilesManager.Instance.RemoveOccupiedPosition(enemyTile);
 
-            // Mark for respawn with 1-turn delay
-            aiMove.isDead = true;
-            aiMove.turnsUntilRespawn = 1;
-            Debug.Log($"{enemy.name} removed from tile {enemyTile}.");
+            // If killed by player or Barra, set a 1-turn respawn delay:
+            if (fromPlayerOrBarra)
+            {
+                aiMove.isDead = true;
+                aiMove.turnsUntilRespawn = 1;
+                Debug.Log($"{enemy.name} removed from tile {enemyTile}. (Killed by player/Barra)");
+            }
+            else
+            {
+                // If it died from something else (e.g. hooking itself?), you can do no delay or remove it permanently.
+                // For example, spawn it immediately or skip respawn:
+                aiMove.isDead = true;
+                aiMove.turnsUntilRespawn = 0;
+                Debug.Log($"{enemy.name} removed from tile {enemyTile}. (Killed by something else)");
+            }
         }
         else
         {
             Debug.LogWarning("RespawnManager: Enemy missing AIMove component.");
         }
     }
+
 
     public IEnumerator RespawnCoroutine()
     {

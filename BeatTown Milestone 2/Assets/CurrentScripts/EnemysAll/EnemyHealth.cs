@@ -104,9 +104,10 @@ public class EnemyHealth : MonoBehaviour
 
         if (CurrentHealth <= 0)
         {
-            Die(fromPlayerOrBarra); // Pass the cause of death
+            Die(fromPlayerOrBarra);  // Pass it along here
         }
     }
+
 
     public void ResetHealth()
     {
@@ -137,13 +138,13 @@ public class EnemyHealth : MonoBehaviour
 
         OnDeath?.Invoke();
 
-        // Destroy the health slider if it exists
         if (healthSlider != null)
         {
-            Destroy(healthSlider.gameObject); // Clean up the slider when the enemy dies
-            healthSlider = null; // Clear the reference
+            Destroy(healthSlider.gameObject);
+            healthSlider = null;
         }
 
+        // Tell TempTurnBase to remove this unit from the turn order
         if (tempTurnBase != null)
         {
             if (TryGetComponent(out AIMove aiMoveComponent))
@@ -156,14 +157,16 @@ public class EnemyHealth : MonoBehaviour
             }
         }
 
+        // Pass fromPlayerOrBarra to RespawnManager
         if (respawnManager != null)
         {
-            respawnManager.EnemyDied(gameObject, fromPlayerOrBarra); // Pass the cause of death
+            respawnManager.EnemyDied(gameObject, fromPlayerOrBarra);
         }
 
-        // Instead of destroying, just deactivate the GameObject
+        // Disable this enemy, rather than destroy
         gameObject.SetActive(false);
     }
+
 
     private void UpdateHealthSlider()
     {
