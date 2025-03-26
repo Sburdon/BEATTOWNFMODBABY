@@ -6,187 +6,109 @@ using UnityEngine.Tilemaps;
 
 public class Puddle : MonoBehaviour
 {
-    [Header("ScriptRefs")]
-    private ElectricianMove electricianMove;
-    private GoonMove goonMove;
-    private PlayerMove playerMove;
-    private GameObject thingInPuddle; // Electrician, Goon, or Player
-
     [Header("References")]
     public Tilemap tilemap;
+    public Hook hook;
+    public StateMachine stateMachine; // For animation states (optional)
 
-    // Serialize field for array of 4 colliders , one for each side of the puddle
-    [SerializeField] private Collider2D[] colliders;
+    [Header("Child Colliders")]
+    [SerializeField] private Collider2D slideDown;
+    [SerializeField] private Collider2D slideUp;
+    [SerializeField] private Collider2D slideLeft;
+    [SerializeField] private Collider2D slideRight;
 
+    private GameObject thingInPuddle; // Tracks who's sliding
 
     private void Awake()
     {
-        if (tilemap == null)
+        if (tilemap == null) tilemap = FindObjectOfType<Tilemap>();
+
+        // Assign directions to child colliders (via tags or manual assignment)
+        slideDown.gameObject.AddComponent<PuddleChildCollider>().Initialize(this, Vector3Int.down);
+        slideUp.gameObject.AddComponent<PuddleChildCollider>().Initialize(this, Vector3Int.up);
+        slideLeft.gameObject.AddComponent<PuddleChildCollider>().Initialize(this, Vector3Int.left);
+        slideRight.gameObject.AddComponent<PuddleChildCollider>().Initialize(this, Vector3Int.right);
+    }
+
+    // Called by child colliders when something enters
+    public void OnObjectEntered(Transform target, Vector3Int slideDirection)
+    {
+        if (thingInPuddle != null) return; // Only one at a time
+
+        
+        thingInPuddle = target.gameObject;
+        Vector3Int targetTile = tilemap.WorldToCell(target.position);
+        Vector3Int furthestTile = FindFurthestTile(targetTile, slideDirection);
+
+        if (furthestTile != targetTile)
         {
-            tilemap = FindObjectOfType<Tilemap>();
-            //     if (tilemap == null)
-            //    Debug.LogError($"GoonMove: No Tilemap found for {name}!");
+            StartCoroutine(SlideObject(target, furthestTile));
         }
     }
 
-    // OnCollisionEnter2D for something crossing into collider2D children of Puddle
-
-    
-
-    // Called when something enters the puddle('s trigger)
-    private void OnTriggerEnter2D(Collider2D collision)
+    // Reused from Push.cs: Finds the farthest valid tile in a direction
+    private Vector3Int FindFurthestTile(Vector3Int startTile, Vector3Int direction)
     {
-        // Set the proper reference and flag depending on what type of object hit the puddle
-        if (collision.gameObject.CompareTag("Electrician"))
-        {
-            electricianMove = collision.gameObject.GetComponent<ElectricianMove>();
-            thingInPuddle = collision.gameObject;
-            electricianMove.InPuddle = true; // bool for Electrician script (not used for anything yet)
-        }
-        else if (collision.gameObject.CompareTag("Goon"))
-        {
-            goonMove = collision.gameObject.GetComponent<GoonMove>();
-            thingInPuddle = collision.gameObject;
-            goonMove.InPuddle = true; // bool for Goon script (not used for anything yet)
-        }
-        else if (collision.gameObject.CompareTag("Player"))
-        {
-            playerMove = collision.gameObject.GetComponent<PlayerMove>();
-            thingInPuddle = collision.gameObject;
-            playerMove.InPuddle = true; // bool for Player script (not used for anything yet)
-        }
-        else
-        {
-            return;
-        }
-
-        // the object “as far as possible” in the direction it’s (supposed to be) facing.
-        ThingInPuddle(thingInPuddle);
-    }
-
-    /// <summary>
-    /// Determines the slide direction (always right for now), computes the furthest valid tile, and starts the sliding coroutine.
-    /// </summary>
-    /// <param name="thing">The object (Player, Goon, or Electrician) in the puddle.</param>
-    /// 
-    private void ThingInPuddle(GameObject thing)
-    {
-        // Get the object's current tile and determine the slide direction 
-        Vector3Int startTile = Vector3Int.zero;
-        Vector3Int direction = Vector3Int.zero;
-
-        if (thing.CompareTag("Player"))
-        {
-            startTile = playerMove.CurrentTilePosition;
-            // Default to sliding right
-            direction = Vector3Int.right;
-
-        }
-        else if (thing.CompareTag("Goon"))
-        {
-            startTile = goonMove.CurrentTilePosition;
-            // Default to sliding right
-            direction = Vector3Int.right;
-
-        }
-
-        else if (thing.CompareTag("Electrician"))
-        {
-            startTile = electricianMove.CurrentTilePosition;
-            // Default to sliding right
-            direction = Vector3Int.right;
-
-        }
-
-        // In case something went wrong
-        Debug.Log("Something went wrong with puddle;");
-
-        // Remove the current tile from the occupied–tiles list so the sliding object does not block itself.
-        if (OccupiedTilesManager.Instance != null)
-        {
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(startTile);
-        }
-
-
-        // Step tile by tile in the desired direction until we hit a “wall” (no tile) or an occupied tile.
         Vector3Int currentTile = startTile;
-
-        while (IsTileValid(currentTile + direction))
+        while (AIUtils.IsTileValid(tilemap, OccupiedTilesManager.Instance, currentTile + direction, hook))
         {
             currentTile += direction;
         }
-        Vector3Int targetTile = currentTile;
-
-        // Start Coroutine that will animate the sldie 
-        StartCoroutine(SlideObjectToTile(thing, targetTile));
+        return currentTile;
     }
 
-
-    /// <summary>
-    /// Checks whether the given tile is “valid” for sliding into:
-    /// (1) It must exist on the tilemap (i.e. not be a wall)
-    /// (2) It must not already be occupied.
-    /// </summary>
-    private bool IsTileValid(Vector3Int tilePos)
+    // Reused from Push.cs: Smoothly slides the object
+    private IEnumerator SlideObject(Transform target, Vector3Int targetTilePosition)
     {
-        if (tilemap == null)
-        {
-            Debug.LogError("Puddle: Tilemap not set!");
-            return false;
-        }
-        if (!tilemap.HasTile(tilePos)) // no tile means a wall or non-traversable cell
-        {
-            return false;
-        }
-        if (OccupiedTilesManager.Instance != null && OccupiedTilesManager.Instance.IsTileOccupied(tilePos))
-        {
-            return false;
-        }
-        return true;
-    }
+        Vector3 startPos = target.position;
+        Vector3 endPos = tilemap.GetCellCenterWorld(targetTilePosition);
+        float duration = 0.5f;
+        float elapsed = 0f;
 
-
-    /// <summary>
-    /// Slides the object from its current world position to the center of targetTile.
-    /// Updates its current tile position and re–marks the target tile as occupied.
-    /// </summary>
-    private IEnumerator SlideObjectToTile(GameObject thing, Vector3Int targetTile)
-    {
-        Vector3 startPos = thing.transform.position;
-        Vector3 endPos = tilemap.GetCellCenterWorld(targetTile);
-        float travelTime = 0.5f;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < travelTime)
+        while (elapsed < duration)
         {
-            thing.transform.position = Vector3.Lerp(startPos, endPos, elapsedTime / travelTime);
-            elapsedTime += Time.deltaTime;
+            target.position = Vector3.Lerp(startPos, endPos, elapsed / duration);
+            elapsed += Time.deltaTime;
             yield return null;
         }
-        thing.transform.position = endPos;
 
-        // Now update the object’s movement script to reflect its new tile.
-        if (thing.CompareTag("Player") && playerMove != null)
+        target.position = endPos;
+        UpdateTilePosition(target, targetTilePosition); // Update occupied tiles
+        thingInPuddle = null; // Reset
+    }
+
+    // Handles updating tile positions for AI/Player/Goon (reused from Push.cs)
+    private void UpdateTilePosition(Transform target, Vector3Int newTile)
+    {
+        // Player
+        PlayerMove playerMove = target.GetComponent<PlayerMove>();
+        if (playerMove != null)
         {
-            playerMove.CurrentTilePosition = targetTile;
-            if (OccupiedTilesManager.Instance != null)
-                OccupiedTilesManager.Instance.AddOccupiedPosition(targetTile);
-            // playerMove.InPuddle = false; // not used for anything yet
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(playerMove.CurrentTilePosition);
+            playerMove.CurrentTilePosition = newTile;
+            OccupiedTilesManager.Instance.AddOccupiedPosition(newTile);
+            return;
         }
-        else if (thing.CompareTag("Goon") && goonMove != null)
+
+        // AI (Electrician, etc.)
+        AIMove aiMove = target.GetComponent<AIMove>();
+        if (aiMove != null)
         {
-            goonMove.CurrentTilePosition = targetTile;
-            if (OccupiedTilesManager.Instance != null)
-                OccupiedTilesManager.Instance.AddOccupiedPosition(targetTile);
-            //  goonMove.InPuddle = false; // not used for anything yet
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(aiMove.CurrentTilePosition);
+            aiMove.CurrentTilePosition = newTile;
+            OccupiedTilesManager.Instance.AddOccupiedPosition(newTile);
+            return;
         }
-        else if (thing.CompareTag("Electrician") && electricianMove != null)
+
+        // Goon
+        GoonMove goonMove = target.GetComponent<GoonMove>();
+        if (goonMove != null)
         {
-            electricianMove.CurrentTilePosition = targetTile;
-            if (OccupiedTilesManager.Instance != null)
-                OccupiedTilesManager.Instance.AddOccupiedPosition(targetTile);
-            // electricianMove.InPuddle = false; // not used for anything yet
+            Vector3Int oldTile = goonMove.CurrentTilePosition;
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(oldTile);
+            goonMove.CurrentTilePosition = newTile;
+            OccupiedTilesManager.Instance.AddOccupiedPosition(newTile);
+            goonMove.OnPushedByPlayer(oldTile, newTile); // Notify Goon
         }
-        yield break;
     }
 }
