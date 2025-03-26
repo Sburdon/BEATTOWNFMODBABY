@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5931619026240414754}
   - component: {fileID: 2697729647983671335}
   - component: {fileID: 6018408131302679070}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: SlideRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 4039719077867003222}
   - component: {fileID: 9212940366105534627}
   - component: {fileID: 1251167100808584533}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: SlideUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -248,7 +248,7 @@ GameObject:
   - component: {fileID: 5052153063379419777}
   - component: {fileID: 5236070623775646313}
   - component: {fileID: 2745564143249484059}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: SlideLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -365,7 +365,7 @@ GameObject:
   - component: {fileID: 7877505047227021887}
   - component: {fileID: 3892741917361358956}
   - component: {fileID: 3536425890719807432}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: Puddle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -459,10 +459,10 @@ MonoBehaviour:
   tilemap: {fileID: 0}
   hook: {fileID: 0}
   stateMachine: {fileID: 0}
-  slideDown: {fileID: 0}
-  slideUp: {fileID: 0}
-  slideLeft: {fileID: 0}
-  slideRight: {fileID: 0}
+  slideDown: {fileID: 7436840408190951650}
+  slideUp: {fileID: 1251167100808584533}
+  slideLeft: {fileID: 2745564143249484059}
+  slideRight: {fileID: 6018408131302679070}
 --- !u!1 &5630371919661200023
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,7 +475,7 @@ GameObject:
   - component: {fileID: 971619293866755805}
   - component: {fileID: 3915381966016295451}
   - component: {fileID: 7436840408190951650}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: SlideDown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
