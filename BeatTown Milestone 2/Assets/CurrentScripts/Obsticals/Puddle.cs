@@ -64,6 +64,10 @@ public class Puddle : MonoBehaviour
         float duration = 0.5f;
         float elapsed = 0f;
 
+        // Store the ORIGINAL tile (puddle tile) before sliding
+        Vector3Int puddleTile = tilemap.WorldToCell(startPos);
+
+        // Slide the Player
         while (elapsed < duration)
         {
             target.position = Vector3.Lerp(startPos, endPos, elapsed / duration);
@@ -71,9 +75,26 @@ public class Puddle : MonoBehaviour
             yield return null;
         }
 
+        // Ensure final position is exact
         target.position = endPos;
-        UpdateTilePosition(target, targetTilePosition); // Update occupied tiles
-        thingInPuddle = null; // Reset
+
+        // Update Player's tile position
+        PlayerMove playerMove = target.GetComponent<PlayerMove>();
+        if (playerMove != null)
+        {
+            playerMove.CurrentTilePosition = targetTilePosition;
+            Debug.Log($"Player slid FROM {puddleTile} TO {targetTilePosition}");
+        }
+
+        // Free the PUDDLE TILE and occupy the NEW TILE
+        OccupiedTilesManager.Instance.RemoveOccupiedPosition(puddleTile); // Clear the puddle
+        OccupiedTilesManager.Instance.AddOccupiedPosition(targetTilePosition); // Occupy destination
+
+        thingInPuddle = null;
+        Physics2D.SyncTransforms(); // Force-update collision states (sometimes necessary according to Unity docs idk)
+        Debug.Log("Physics2D state synced");
+
+        Debug.Log($"Puddle at {puddleTile} freed. Player now at {targetTilePosition}");
     }
 
     // Handles updating tile positions for AI/Player/Goon (reused from Push.cs)
@@ -83,9 +104,13 @@ public class Puddle : MonoBehaviour
         PlayerMove playerMove = target.GetComponent<PlayerMove>();
         if (playerMove != null)
         {
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(playerMove.CurrentTilePosition);
-            playerMove.CurrentTilePosition = newTile;
+            Vector3Int oldTile = playerMove.CurrentTilePosition;
+            Debug.Log($"Freeing tile: {oldTile}"); 
+            OccupiedTilesManager.Instance.RemoveOccupiedPosition(oldTile);
+
+            Debug.Log($"Occupying tile: {newTile}");
             OccupiedTilesManager.Instance.AddOccupiedPosition(newTile);
+            playerMove.CurrentTilePosition = newTile;
             return;
         }
 
