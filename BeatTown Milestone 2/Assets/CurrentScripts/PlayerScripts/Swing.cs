@@ -23,12 +23,15 @@ public class Swing : MonoBehaviour
     public All_SFX All_SFX;
     public GameObject RealMoveHighlight;
     public GameObject jumpHighlight;
+    private ButtonHoverAnimation buttonHoverAnimation;
+    public bool disableSwing;
 
     void Awake()
     {
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
         tempTurnBase = FindObjectOfType<TempTurnBase>();
+        buttonHoverAnimation = FindObjectOfType<ButtonHoverAnimation>();
     }
 
     public void SetHookReference(Hook hookInstance)
@@ -43,6 +46,7 @@ public class Swing : MonoBehaviour
 
         if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost) && !playerFatigue.lockedMovement)
         {
+            disableSwing = false;
             RealMoveHighlight.SetActive(false);
             PPShighlight.SetActive(true);
             SwingHighlight.SetActive(false);
@@ -67,11 +71,23 @@ public class Swing : MonoBehaviour
         else
         {
             Debug.Log("Not enough fatigue to swing.");
+            buttonHoverAnimation.disableSwing();
+            disableSwing = true;
         }
     }
 
     void Update()
     {
+        if (playerFatigue.CanPerformAction(playerFatigue.swingFatigueCost) && !playerFatigue.lockedMovement)
+        {
+            disableSwing = false;
+        }
+        else
+        {
+            disableSwing = true;
+        }
+
+
         if (isSwingMode && !isSwinging)
         {
             if (Input.GetMouseButtonDown(0))

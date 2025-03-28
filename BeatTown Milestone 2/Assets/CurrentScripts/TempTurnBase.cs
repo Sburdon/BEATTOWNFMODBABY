@@ -46,7 +46,7 @@ public class TempTurnBase : MonoBehaviour
     private RespawnManager respawnManager;
     private Hook hook;
 
-    public bool isPlayerTurn = false;
+    public bool isPlayerTurn = true;
     private bool isProcessingTurn = false;
     public GameObject RealMoveHighlight;
     private bool spawnBarra = true;
