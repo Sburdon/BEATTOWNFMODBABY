@@ -4067,7 +4067,7 @@ MonoBehaviour:
       type: 3}
     m_SelectedSprite: {fileID: 1288297876, guid: c0a1fceed686aaf4da014ff44808b516,
       type: 3}
-    m_DisabledSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 21300000, guid: 6faf581fa3148b54d9f349469d6e8af3, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -4230,6 +4230,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   childAnimator: {fileID: 751423554}
+  myButton: {fileID: 539697138}
+  swingButton: {fileID: 1766274695}
+  moveButton: {fileID: 1620997631}
 --- !u!1 &559996908
 GameObject:
   m_ObjectHideFlags: 0
@@ -7507,11 +7510,13 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 21300000, guid: c3c9e8b2037c0a84dad5e3d5d0130a2b,
+    m_HighlightedSprite: {fileID: 647614223, guid: c0a1fceed686aaf4da014ff44808b516,
       type: 3}
-    m_PressedSprite: {fileID: 21300000, guid: c3c9e8b2037c0a84dad5e3d5d0130a2b, type: 3}
-    m_SelectedSprite: {fileID: 21300000, guid: c3c9e8b2037c0a84dad5e3d5d0130a2b, type: 3}
-    m_DisabledSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 1288297876, guid: c0a1fceed686aaf4da014ff44808b516,
+      type: 3}
+    m_SelectedSprite: {fileID: 1288297876, guid: c0a1fceed686aaf4da014ff44808b516,
+      type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: 6faf581fa3148b54d9f349469d6e8af3, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -7615,7 +7620,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 676a6ea1e9b567648befbc3d3dff3d79, type: 3}
+  m_Sprite: {fileID: -74599601, guid: c0a1fceed686aaf4da014ff44808b516, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8508,7 +8513,7 @@ MonoBehaviour:
       type: 3}
     m_SelectedSprite: {fileID: 1288297876, guid: c0a1fceed686aaf4da014ff44808b516,
       type: 3}
-    m_DisabledSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 21300000, guid: 6faf581fa3148b54d9f349469d6e8af3, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -8658,6 +8663,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   childAnimator: {fileID: 1886956855}
+  myButton: {fileID: 539697138}
+  swingButton: {fileID: 1766274695}
+  moveButton: {fileID: 1620997631}
 --- !u!1 &925308356
 GameObject:
   m_ObjectHideFlags: 0
@@ -14486,7 +14494,7 @@ MonoBehaviour:
       type: 3}
     m_SelectedSprite: {fileID: 1288297876, guid: c0a1fceed686aaf4da014ff44808b516,
       type: 3}
-    m_DisabledSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 21300000, guid: 6faf581fa3148b54d9f349469d6e8af3, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -14657,6 +14665,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   childAnimator: {fileID: 1872111468}
+  myButton: {fileID: 539697138}
+  swingButton: {fileID: 1766274695}
+  moveButton: {fileID: 1620997631}
 --- !u!1 &1635339906
 GameObject:
   m_ObjectHideFlags: 0
@@ -15653,7 +15664,7 @@ MonoBehaviour:
       type: 3}
     m_SelectedSprite: {fileID: 1288297876, guid: c0a1fceed686aaf4da014ff44808b516,
       type: 3}
-    m_DisabledSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 21300000, guid: 6faf581fa3148b54d9f349469d6e8af3, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -15808,6 +15819,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   childAnimator: {fileID: 11160238}
+  myButton: {fileID: 539697138}
+  swingButton: {fileID: 1766274695}
+  moveButton: {fileID: 1620997631}
 --- !u!1 &1784561172
 GameObject:
   m_ObjectHideFlags: 0
@@ -18190,6 +18204,7 @@ MonoBehaviour:
   All_SFX: {fileID: 1977992003}
   RealMoveHighlight: {fileID: 1253888467}
   jumpHighlight: {fileID: 582571621}
+  disableSwing: 0
 --- !u!114 &1977991996
 MonoBehaviour:
   m_ObjectHideFlags: 0

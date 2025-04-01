@@ -40,6 +40,7 @@ public class BarraAttack : MonoBehaviour
             if (hit.CompareTag("Player"))
             {
                 stateMachine.ChangeState(WrestlerState.Punch);
+                yield return new WaitForSeconds(0.6f);
                 PlayerHealth playerHealth = hit.GetComponent<PlayerHealth>();
                 if (playerHealth != null)
                 {
@@ -51,6 +52,7 @@ public class BarraAttack : MonoBehaviour
             else if (hit.CompareTag("Enemy"))
             {
                 stateMachine.ChangeState(WrestlerState.Punch);
+                yield return new WaitForSeconds(0.6f);
                 EnemyHealth enemyHealth = hit.GetComponent<EnemyHealth>();
                 if (enemyHealth != null)
                 {

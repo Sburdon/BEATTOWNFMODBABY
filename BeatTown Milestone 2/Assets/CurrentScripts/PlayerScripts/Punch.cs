@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using static StateMachine;
@@ -92,60 +93,71 @@ public class Punch : MonoBehaviour
     }
 
     void TryPunchEnemy()
-{
-    if (selectedEnemy != null)
     {
-        // Check if the enemy has EnemyHealth (for general enemies)
-        EnemyHealth enemyScript = selectedEnemy.GetComponent<EnemyHealth>();
-
-        // Also check for GoonHealth specifically
-        GoonHealth goonHealth = selectedEnemy.GetComponent<GoonHealth>();
-
-        if (enemyScript != null)
+        if (selectedEnemy != null)
         {
-            enemyScript.TakeDamage(punchDamage, true);
-            Debug.Log($"{selectedEnemy.name} has been punched and took {punchDamage} damage!");
-            All_SFX.PlayFishSlap();
+            // Trigger animation first
             stateMachine.ChangeState(WrestlerState.Punch);
-        }
-        else if (goonHealth != null)
-        {
-            goonHealth.TakeDamage(punchDamage);
-            Debug.Log($"{selectedEnemy.name} (Goon) has been punched and took {punchDamage} damage!");
             All_SFX.PlayFishSlap();
-            stateMachine.ChangeState(WrestlerState.Punch);
+
+            // Start the coroutine to delay damage application
+            StartCoroutine(DelayedPunchDamage(selectedEnemy));
+
+            // Consume fatigue immediately
+            playerFatigue.UseFatigue(playerFatigue.punchFatigueCost);
+
+            // Disable highlights and reset state
+            PPShighlight.SetActive(false);
+            isPunching = false;
+            playerMove.CurrentAction = ActionType.None;
         }
         else
         {
-            Debug.Log("Selected enemy does not have a valid damage method.");
-            return;
+            Debug.Log("No enemy selected to punch.");
         }
-
-        // Ensure Goon punch telegraph updates
-        GoonMove goonMove = selectedEnemy.GetComponent<GoonMove>();
-        if (goonMove != null)
-        {
-            goonMove.OnPunchedByPlayer();
-        }
-
-        // If the enemy is a regular AI, have them chase the player
-        AIMove aiMoveScript = selectedEnemy.GetComponent<AIMove>();
-        if (aiMoveScript != null)
-        {
-            aiMoveScript.SetFollowPlayerForTurns(3);
-        }
-
-        playerFatigue.UseFatigue(playerFatigue.punchFatigueCost);
-        PPShighlight.SetActive(false);
-        isPunching = false;
-        selectedEnemy = null;
-        playerMove.CurrentAction = ActionType.None;
     }
-    else
+
+    IEnumerator DelayedPunchDamage(Transform enemy)
     {
-        Debug.Log("No enemy selected to punch.");
+        yield return new WaitForSeconds(0.6f); // Adjust delay to match animation timing
+
+        if (enemy != null)
+        {
+            // Check if the enemy has EnemyHealth (for general enemies)
+            EnemyHealth enemyScript = enemy.GetComponent<EnemyHealth>();
+            GoonHealth goonHealth = enemy.GetComponent<GoonHealth>();
+
+            if (enemyScript != null)
+            {
+                enemyScript.TakeDamage(punchDamage, true);
+                Debug.Log($"{enemy.name} has been punched and took {punchDamage} damage!");
+            }
+            else if (goonHealth != null)
+            {
+                goonHealth.TakeDamage(punchDamage);
+                Debug.Log($"{enemy.name} (Goon) has been punched and took {punchDamage} damage!");
+            }
+            else
+            {
+                Debug.Log("Selected enemy does not have a valid damage method.");
+            }
+
+            // Ensure Goon punch telegraph updates
+            GoonMove goonMove = enemy.GetComponent<GoonMove>();
+            if (goonMove != null)
+            {
+                goonMove.OnPunchedByPlayer();
+            }
+
+            // If the enemy is a regular AI, have them chase the player
+            AIMove aiMoveScript = enemy.GetComponent<AIMove>();
+            if (aiMoveScript != null)
+            {
+                aiMoveScript.SetFollowPlayerForTurns(3);
+            }
+        }
     }
-}
+
 
     bool IsWithinPunchRange(Vector3Int playerPosition, Vector3Int enemyPosition)
     {

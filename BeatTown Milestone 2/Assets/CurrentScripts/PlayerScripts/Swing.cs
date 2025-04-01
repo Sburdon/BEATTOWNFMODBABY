@@ -179,11 +179,15 @@ public class Swing : MonoBehaviour
 
         Vector3 startPos = target.transform.position;
         Vector3 endPos = tilemap.GetCellCenterWorld(targetTilePosition);
+
         stateMachine.ChangeState(WrestlerState.Swing);
         All_SFX.PlaySwing();
 
+        // Short delay to sync animation
+        yield return new WaitForSeconds(0.4f);
+
         float elapsedTime = 0f;
-        float duration = 1f / swingSpeed;
+        float duration = 2.5f / swingSpeed;
 
         EnemyHealth targetHealth = target.GetComponent<EnemyHealth>();
         bool targetDied = false;
@@ -198,7 +202,6 @@ public class Swing : MonoBehaviour
             targetHealth.OnDeath += OnTargetDeath;
         }
 
-        // Move the target smoothly
         while (elapsedTime < duration)
         {
             if (targetDied)
@@ -220,13 +223,12 @@ public class Swing : MonoBehaviour
 
         if (!targetDied)
         {
-            // Final position
             target.transform.position = endPos;
             Debug.Log($"{target.name} has been swung to {targetTilePosition}");
 
-            // If AIMove or BarraMove
             AIMove targetAIMove = target.GetComponent<AIMove>();
             BarraMove targetBarraMove = target.GetComponent<BarraMove>();
+
             if (targetAIMove != null)
             {
                 OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetAIMove.CurrentTilePosition);
@@ -240,25 +242,16 @@ public class Swing : MonoBehaviour
                 OccupiedTilesManager.Instance.AddOccupiedPosition(targetBarraMove.CurrentTilePosition);
             }
 
-            // If it's a Goon, we must do oldTile/newTile offset
             GoonMove goonMove = target.GetComponent<GoonMove>();
             if (goonMove != null)
             {
-                // 1) Store old tile
                 Vector3Int oldTile = goonMove.CurrentTilePosition;
-
-                // 2) Remove old tile from OccupiedTilesManager
                 OccupiedTilesManager.Instance.RemoveOccupiedPosition(oldTile);
-
-                // 3) Update to new tile
                 goonMove.CurrentTilePosition = targetTilePosition;
                 OccupiedTilesManager.Instance.AddOccupiedPosition(goonMove.CurrentTilePosition);
-
-                // 4) Recalculate punch telegraph
                 goonMove.OnSwungByPlayer(oldTile, targetTilePosition);
             }
 
-            // If there's a hook, handle hooking
             Vector3Int hookTilePos = hook != null ? hook.GetHookPosition() : new Vector3Int();
             if (hook != null && targetTilePosition == hookTilePos)
             {
@@ -272,6 +265,7 @@ public class Swing : MonoBehaviour
         moveMentHighlight.SetActive(false);
         SwingHighlight.SetActive(false);
     }
+
 
     public bool IsSwinging()
     {

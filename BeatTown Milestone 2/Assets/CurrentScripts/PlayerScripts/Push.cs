@@ -214,6 +214,7 @@ public class Push : MonoBehaviour
         Vector3 endPosition = tilemap.GetCellCenterWorld(targetTilePosition);
         float travelTime = 0.5f;
         float elapsedTime = 0f;
+        float animationDelay = 0.4f; // Delay before movement starts
 
         EnemyHealth targetHealth = target.GetComponent<EnemyHealth>();
         bool targetDied = false;
@@ -223,6 +224,9 @@ public class Push : MonoBehaviour
         {
             targetHealth.OnDeath += OnTargetDeath;
         }
+
+        // **Wait before pushing to sync with animation**
+        yield return new WaitForSeconds(animationDelay);
 
         while (elapsedTime < travelTime)
         {
@@ -250,9 +254,10 @@ public class Push : MonoBehaviour
         target.position = endPosition;
         Debug.Log($"{target.name} has been pushed to {targetTilePosition}");
 
-        // AIMove or BarraMove
+        // **Update AI movement positions**
         AIMove targetAIMove = target.GetComponent<AIMove>();
         BarraMove targetBarraMove = target.GetComponent<BarraMove>();
+
         if (targetAIMove != null)
         {
             OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetAIMove.CurrentTilePosition);
@@ -266,30 +271,25 @@ public class Push : MonoBehaviour
             OccupiedTilesManager.Instance.AddOccupiedPosition(targetBarraMove.CurrentTilePosition);
         }
 
-        // Goon
+        // **Goon Movement Updates**
         GoonMove goonMove = target.GetComponent<GoonMove>();
         if (goonMove != null)
         {
-            // 1) Store the old tile
             Vector3Int oldTile = goonMove.CurrentTilePosition;
-
-            // 2) Remove old tile
             OccupiedTilesManager.Instance.RemoveOccupiedPosition(oldTile);
-
-            // 3) Update
             goonMove.CurrentTilePosition = targetTilePosition;
             OccupiedTilesManager.Instance.AddOccupiedPosition(goonMove.CurrentTilePosition);
-
-            // 4) Adjust punch telegraph offset
             goonMove.OnPushedByPlayer(oldTile, targetTilePosition);
         }
 
+        // **Check if pushed into hook**
         Vector3Int hookTilePos = hook != null ? hook.GetHookPosition() : new Vector3Int();
         if (hook != null && targetTilePosition == hookTilePos)
         {
             hook.HandleSwingOrPushIntoHook(target.gameObject);
         }
     }
+
 
     private void FlipPlayerIfNeeded(Vector3Int direction)
     {
