@@ -10,6 +10,8 @@ public class Tutorial : MonoBehaviour
     private bool isPaused = false;
     private bool isTutorialActive = true;
     private bool isBarraTutorialActive = false;
+    private bool canReceiveInput = false;
+
 
     private void Start()
     {
@@ -20,14 +22,21 @@ public class Tutorial : MonoBehaviour
         {
             b.interactable = false;
         }
-
+       
         // Make unwanted sprites (i.e. hook) invisible
         HideSprites();
 
         // start coroutiune to delay setting Time.timescale to 0
         StartCoroutine(DelayPause());
+        StartCoroutine(AllowInputAfterSplash());
     }
 
+    private IEnumerator AllowInputAfterSplash()
+    {
+        // Wait at least a couple seconds after the scene starts, or match Unity splash duration
+        yield return new WaitForSecondsRealtime(2f); // Adjust time to match your splash screen duration
+        canReceiveInput = true;
+    }
 
 
     private IEnumerator DelayPause()
@@ -123,6 +132,22 @@ public class Tutorial : MonoBehaviour
         Debug.Log("Triggered Barracuda Tutorial.");
     }
 
+    void ChangeEnemyAnimation() // to cycle through enemy animations
+    {
+        animtut.SetInteger("ChangeEnemy", animtut.GetInteger("ChangeEnemy") + 1);
+    }
+
+    public void StartEnemyAnimation()
+    {
+        // only set integeer ChangeEnemy to 1 ONE TIME using for loop
+        for (int i = 0; i < 1; i++)
+        {
+            animtut.SetInteger("ChangeEnemy", 1);
+        }
+        Debug.Log("Triggered Enemy Tutorial.");
+    }
+    
+
     public void Etut() // end tutorial (called in Animator)
     {
         foreach (Button b in barray)
@@ -146,11 +171,9 @@ public class Tutorial : MonoBehaviour
 
     private void Update() // any key advances tutorial
     {
-       /* if (Input.GetKeyDown(KeyCode.Space))
-        {
-            ChangeBarraAnimation();
-        }*/ // remove once barra tutorial is implemented
-        
+        if (!canReceiveInput)
+            return; // Ignore input until allowed
+
         if (isTutorialActive)
         {
             // Check if any key is pressed to advance the tutorial (exclude ESC key to avoid conflict with pause)
