@@ -23,7 +23,7 @@ public class EnemyHealth : MonoBehaviour
     private RespawnManager respawnManager;
     private TempTurnBase tempTurnBase;
 
-    private Tutorial TutorialScript;
+    
 
     public int CurrentHealth
     {
@@ -42,7 +42,6 @@ public class EnemyHealth : MonoBehaviour
 
         respawnManager = RespawnManager.Instance;
         tempTurnBase = FindObjectOfType<TempTurnBase>();
-        TutorialScript = FindObjectOfType<Tutorial>();
 
         if (respawnManager == null) Debug.LogError("RespawnManager instance not found.");
         if (tempTurnBase == null) Debug.LogError("TempTurnBase instance not found.");
@@ -138,17 +137,6 @@ public class EnemyHealth : MonoBehaviour
         if (IsDead) return;
 
 
-        // use for loop to ensure tut only plays ONCE (similar to StartBarraAnimation)
-        if (TutorialScript != null)
-        {
-        for (int i = 0; i < 1; i++)
-            { 
-            if (this.gameObject.tag == "Enemy")
-                {
-                TutorialScript.StartEnemyAnimation();
-                }
-            }
-        }
 
         Debug.Log($"{gameObject.name} has died.");
         IsDead = true;

@@ -121,7 +121,7 @@ public class Tutorial : MonoBehaviour
         animtut.SetInteger("ChangeBarra", animtut.GetInteger("ChangeBarra") + 1);
     }
 
-    public void StartBarraAnimation()
+    public void StartBarraAnimation() // called in TempTurnBase
     {
         isBarraTutorialActive = true;
         // only set integeer ChangeBarra to 1 ONE TIME using for loop
@@ -138,7 +138,7 @@ public class Tutorial : MonoBehaviour
         animtut.SetInteger("ChangeEnemy", animtut.GetInteger("ChangeEnemy") + 1);
     }
 
-    public void StartEnemyAnimation()
+    public void StartEnemyAnimation() // called in RespawnManager
     {
         isEnemyTutorialActive = true;
         // only set integeer ChangeEnemy to 1 ONE TIME using for loop

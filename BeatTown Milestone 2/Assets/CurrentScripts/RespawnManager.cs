@@ -42,6 +42,11 @@ public class RespawnManager : MonoBehaviour
     private Text fishCountText;
     public All_SFX All_SFX;
 
+    private bool hasEnemyTutorialPlayed = false;
+    private Tutorial TutorialScript;
+    
+
+    
     void Awake()
     {
         if (Instance == null)
@@ -56,7 +61,8 @@ public class RespawnManager : MonoBehaviour
     }
 
     void Start()
-    {
+    {   
+        TutorialScript = FindObjectOfType<Tutorial>();
         enemyHealth = FindAnyObjectByType<EnemyHealth>();
         tempTurnBase = FindObjectOfType<TempTurnBase>();
         tilemap = FindObjectOfType<Tilemap>();
@@ -292,6 +298,20 @@ public class RespawnManager : MonoBehaviour
             // If killed by player or Barra, set a 1-turn respawn delay:
             if (fromPlayerOrBarra)
             {
+                // use for loop to ensure tut only plays ONCE (similar to StartBarraAnimation)
+                if (TutorialScript != null)
+                {
+                    Debug.Log("TutorialScript is not null");
+                    for (int i = 0; i < 1; i++)
+                    {
+                        if (enemy.gameObject.CompareTag("Enemy") && !hasEnemyTutorialPlayed)
+                        {
+                            TutorialScript.StartEnemyAnimation();
+                            hasEnemyTutorialPlayed = true;
+                        }
+                    }
+                }
+
                 aiMove.isDead = true;
                 aiMove.turnsUntilRespawn = 1;
                 Debug.Log($"{enemy.name} removed from tile {enemyTile}. (Killed by player/Barra)");
