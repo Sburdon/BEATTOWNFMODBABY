@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Interactable: 0
   m_TargetGraphic: {fileID: 7095357348775412418}
   m_FillRect: {fileID: 939121212624014143}
-  m_HandleRect: {fileID: 2613633637112052007}
+  m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 2
