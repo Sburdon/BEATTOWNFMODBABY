@@ -10,6 +10,7 @@ public class Tutorial : MonoBehaviour
     private bool isPaused = false;
     private bool isTutorialActive = true;
     private bool isBarraTutorialActive = false;
+    private bool isEnemyTutorialActive = false;
     private bool canReceiveInput = false;
 
 
@@ -132,13 +133,14 @@ public class Tutorial : MonoBehaviour
         Debug.Log("Triggered Barracuda Tutorial.");
     }
 
-    void ChangeEnemyAnimation() // to cycle through enemy animations
+    void ChangeEnemyAnimation() // to cycle through enemy animations 
     {
         animtut.SetInteger("ChangeEnemy", animtut.GetInteger("ChangeEnemy") + 1);
     }
 
     public void StartEnemyAnimation()
     {
+        isEnemyTutorialActive = true;
         // only set integeer ChangeEnemy to 1 ONE TIME using for loop
         for (int i = 0; i < 1; i++)
         {
@@ -189,6 +191,14 @@ public class Tutorial : MonoBehaviour
             {
                 Debug.LogWarning("Spacebar pressed");
                 ChangeBarraAnimation();
+            }
+        }
+        else if (isEnemyTutorialActive)
+        {
+            // Check if SpaceBar is pressed to advance the tutorial
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                ChangeEnemyAnimation();
             }
         }
         else
