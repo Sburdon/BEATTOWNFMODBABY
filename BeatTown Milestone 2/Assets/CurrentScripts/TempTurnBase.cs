@@ -93,7 +93,7 @@ public class TempTurnBase : MonoBehaviour
         turnUnits.Clear();
 
         // Check the active scene
-        if (SceneManager.GetActiveScene().buildIndex == 3) // Replace "Scene2" with your actual scene name
+        if (SceneManager.GetActiveScene().name == "ElecScenario") // Replace "Scene2" with your actual scene name
         {
             // Scene 2 order: Electrician, Goon, Player
             foreach (var electrician in electricianUnits)

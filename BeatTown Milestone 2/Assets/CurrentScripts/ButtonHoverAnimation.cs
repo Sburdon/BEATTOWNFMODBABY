@@ -13,6 +13,7 @@ public class ButtonHoverAnimation : MonoBehaviour, IPointerEnterHandler, IPointe
     private PlayerFatigue playerFatigue;
     private PlayerMove playerMove;
     private Swing swing;
+    //public All_SFX all_SFX;
 
 
     private void Start()
@@ -25,35 +26,40 @@ public class ButtonHoverAnimation : MonoBehaviour, IPointerEnterHandler, IPointe
 
     private void Update()
     {
-        if (tempTurnBase.isPlayerTurn == true && playerFatigue.currentFatigue > 0)
+        if (tempTurnBase.isPlayerTurn && playerFatigue.currentFatigue > 0)
         {
             EnableButton();
         }
-        if (swing.disableSwing == false)
+
+        if (!swing.disableSwing)
         {
             EnableSwingButton();
         }
-        if(playerFatigue.currentFatigue == 0)
+
+        if (playerFatigue.currentFatigue == 0)
         {
             DisableButton();
+
+            // Only disable move button when no fatigue AND no moves
+            if (playerMove.remainingMoves == 0)
+            {
+                disableMove();
+            }
         }
-        else
+
+        if (!tempTurnBase.isPlayerTurn)
         {
-            if(playerMove.remainingMoves == 0 && playerFatigue.currentFatigue == 0)
-            {
-                disableMove();//for some reason this does not work as intended
-            }
-            if (tempTurnBase.isPlayerTurn == false)
-            {
-                DisableButton();
-                disableSwing();
-            }
-            if(swing.disableSwing == true)
-            {
-                disableSwing();
-            }
+            DisableButton();
+            disableSwing();
+        }
+
+        if (swing.disableSwing)
+        {
+            disableSwing();
         }
     }
+
+
 
     public void OnPointerEnter(PointerEventData eventData)
     {

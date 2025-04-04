@@ -91,6 +91,11 @@ public class Punch : MonoBehaviour
         playerMove.CurrentAction = ActionType.None;
         Debug.Log("Punch action canceled.");
     }
+    IEnumerator DelayedFishSlap()
+    {
+        yield return new WaitForSeconds(0.6f);
+        All_SFX.PlayFishSlap();
+    }
 
     void TryPunchEnemy()
     {
@@ -98,7 +103,9 @@ public class Punch : MonoBehaviour
         {
             // Trigger animation first
             stateMachine.ChangeState(WrestlerState.Punch);
-            All_SFX.PlayFishSlap();
+
+            //All_SFX.PlayFishSlap();
+            StartCoroutine(DelayedFishSlap());
 
             // Start the coroutine to delay damage application
             StartCoroutine(DelayedPunchDamage(selectedEnemy));
@@ -110,6 +117,7 @@ public class Punch : MonoBehaviour
             PPShighlight.SetActive(false);
             isPunching = false;
             playerMove.CurrentAction = ActionType.None;
+            
         }
         else
         {

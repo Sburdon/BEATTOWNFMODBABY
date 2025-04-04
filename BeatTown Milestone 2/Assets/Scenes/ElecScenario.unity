@@ -3257,6 +3257,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Puddle
       objectReference: {fileID: 0}
+    - target: {fileID: 5030367537930765185, guid: 8741e08c0a557f44790436ad4b52169d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7877505047227021887, guid: 8741e08c0a557f44790436ad4b52169d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7449,6 +7454,7 @@ GameObject:
   - component: {fileID: 837347890}
   - component: {fileID: 837347889}
   - component: {fileID: 837347888}
+  - component: {fileID: 837347892}
   m_Layer: 5
   m_Name: Jump Button
   m_TagString: Untagged
@@ -7648,6 +7654,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 837347886}
   m_CullTransparentMesh: 1
+--- !u!114 &837347892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837347886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6d193934cfd5b742a266f58e6196b14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  childAnimator: {fileID: 0}
+  myButton: {fileID: 539697138}
+  swingButton: {fileID: 837347889}
+  moveButton: {fileID: 1620997631}
 --- !u!1 &861092644
 GameObject:
   m_ObjectHideFlags: 0
@@ -8673,7 +8695,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   childAnimator: {fileID: 1886956855}
-  myButton: {fileID: 539697138}
+  myButton: {fileID: 921817470}
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
 --- !u!1 &925308356
@@ -15063,6 +15085,7 @@ GameObject:
   - component: {fileID: 1724349337}
   - component: {fileID: 1724349336}
   - component: {fileID: 1724349335}
+  - component: {fileID: 1724349338}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -15165,6 +15188,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 4
   m_TargetDisplay: 0
+--- !u!114 &1724349338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724349333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aba2977480a1b524e858079fc5b39929, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1725525570
 GameObject:
   m_ObjectHideFlags: 0
