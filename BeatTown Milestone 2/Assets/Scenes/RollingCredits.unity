@@ -403,7 +403,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Special Thanks to:
+  m_text: '
+
+
+    Special Thanks to:
 
 
 

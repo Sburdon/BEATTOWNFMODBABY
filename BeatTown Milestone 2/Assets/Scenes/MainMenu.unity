@@ -1401,7 +1401,7 @@ GameObject:
   - component: {fileID: 1989722088}
   - component: {fileID: 1989722087}
   m_Layer: 5
-  m_Name: QuitButton (1)
+  m_Name: CreditsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1485,7 +1485,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1989722087}
         m_TargetAssemblyTypeName: UIButtons, Assembly-CSharp
-        m_MethodName: QuitGame
+        m_MethodName: LoadCreditsScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
