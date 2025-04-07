@@ -85,7 +85,7 @@ public class EnemyHealth : MonoBehaviour
         if (healthSlider != null && healthSlider.gameObject.activeSelf)
         {
             RectTransform sliderRect = healthSlider.GetComponent<RectTransform>();
-            sliderRect.anchoredPosition = new Vector2(879f, -120f);
+            sliderRect.anchoredPosition = new Vector2(920f, -160f);
         }
     }
 

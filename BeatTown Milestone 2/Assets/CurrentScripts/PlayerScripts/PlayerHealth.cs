@@ -29,6 +29,8 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Clamp to ensure it doesn't go below 0
         Debug.Log("Player took " + damage + " damage. Current Health: " + currentHealth);
+        if (CameraShake.Instance != null)
+            CameraShake.Instance.StartShake(0.2f, 0.3f);
         All_SFX.PlayPlayerHurt();
 
         UpdateHealthBar(); // Update the health bar UI after taking damage
