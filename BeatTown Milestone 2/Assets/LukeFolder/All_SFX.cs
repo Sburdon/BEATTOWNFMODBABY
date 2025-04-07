@@ -25,6 +25,9 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance Leaves;
     FMOD.Studio.EventInstance Trees;
     FMOD.Studio.EventInstance BEAVER;
+    FMOD.Studio.EventInstance One_Step;
+    FMOD.Studio.EventInstance Two_Step;
+    FMOD.Studio.EventInstance Health_Drain;
 
 
 
@@ -56,6 +59,9 @@ public class All_SFX : MonoBehaviour
         Leaves = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Lumber_UI/Leaves");
         Trees = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Lumber_UI/Tree_Fall");
         BEAVER = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Lumber_UI/Beaver");
+        One_Step = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/One_Step");
+        Two_Step = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Two_Step");
+        Health_Drain = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Health_Drain");
 
 
 
@@ -157,6 +163,25 @@ public class All_SFX : MonoBehaviour
 
     }
 
+    public void PlayOneStep()
+    {
+        One_Step.start();
+    }
+
+    public void PlayTwoStep()
+    {
+        Two_Step.start();
+    }
+
+    public void PlayHealthDrain()
+    {
+        Health_Drain.start();
+    }
+
+    public void StopHealthDrain()
+    {
+        Health_Drain.stop();
+    }
 
     public void PlayWoodStock()
     {
