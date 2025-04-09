@@ -11,6 +11,7 @@ public class Tutorial : MonoBehaviour
     private bool isTutorialActive = true;
     private bool isBarraTutorialActive = false;
     private bool isEnemyTutorialActive = false;
+    private bool isHookedTutorialActive = false; 
     private bool canReceiveInput = false;
 
 
@@ -158,6 +159,7 @@ public class Tutorial : MonoBehaviour
 
     public void StartHookedAnimation()
     {
+        isHookedTutorialActive = true;
         for (int i = 0; i < 1; i++)
         {
             animtut.SetInteger("ChangeHooked", 1);
@@ -214,6 +216,14 @@ public class Tutorial : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 ChangeEnemyAnimation();
+            }
+        }
+        else if (isHookedTutorialActive)
+        {
+            // Check if SpaceBar is pressed to advance the tutorial
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                ChangeHookedAnimation();
             }
         }
         else

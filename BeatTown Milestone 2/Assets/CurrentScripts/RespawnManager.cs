@@ -325,7 +325,7 @@ public class RespawnManager : MonoBehaviour
                     {
                         if (enemy.gameObject.CompareTag("Enemy") && !hasHookedTutorialPlayed)
                         {
-                            TutorialScript.StartEnemyAnimation();
+                            TutorialScript.StartHookedAnimation();
                             hasHookedTutorialPlayed = true;
                         }
                     }
