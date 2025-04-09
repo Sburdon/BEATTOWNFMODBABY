@@ -150,6 +150,21 @@ public class Tutorial : MonoBehaviour
     }
     
 
+    void ChangeHookedAnimation()
+    {
+        animtut.SetInteger("ChangeHooked", animtut.GetInteger("ChangeHooked") + 1);
+    }
+
+
+    public void StartHookedAnimation()
+    {
+        for (int i = 0; i < 1; i++)
+        {
+            animtut.SetInteger("ChangeHooked", 1);
+        }
+        Debug.Log("Triggered Hooked Tutorial.");
+    }
+
     public void Etut() // end tutorial (called in Animator)
     {
         foreach (Button b in barray)

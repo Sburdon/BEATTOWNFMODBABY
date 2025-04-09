@@ -43,6 +43,7 @@ public class RespawnManager : MonoBehaviour
     public All_SFX All_SFX;
 
     private bool hasEnemyTutorialPlayed = false;
+    private bool hasHookedTutorialPlayed = false;
     private Tutorial TutorialScript;
     
 
@@ -301,7 +302,6 @@ public class RespawnManager : MonoBehaviour
                 // use for loop to ensure tut only plays ONCE (similar to StartBarraAnimation)
                 if (TutorialScript != null)
                 {
-                    Debug.Log("TutorialScript is not null");
                     for (int i = 0; i < 1; i++)
                     {
                         if (enemy.gameObject.CompareTag("Enemy") && !hasEnemyTutorialPlayed)
@@ -318,6 +318,19 @@ public class RespawnManager : MonoBehaviour
             }
             else
             {
+                // use for loop to ensure tut only plays ONCE (similar to StartBarraAnimation)
+                if (TutorialScript != null)
+                {
+                    for (int i = 0; i < 1; i++)
+                    {
+                        if (enemy.gameObject.CompareTag("Enemy") && !hasHookedTutorialPlayed)
+                        {
+                            TutorialScript.StartEnemyAnimation();
+                            hasHookedTutorialPlayed = true;
+                        }
+                    }
+                }
+
                 // If it died from something else (e.g. hooking itself?), you can do no delay or remove it permanently.
                 // For example, spawn it immediately or skip respawn:
                 aiMove.isDead = true;
