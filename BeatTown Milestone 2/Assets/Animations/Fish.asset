@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 948fafe9bbb31b04d9300b2d0bb48659, type: 3}
   m_Name: Fish
   m_EditorClassIdentifier: 
-  idleTexture: {fileID: 2800000, guid: b4e05914c80c2ef4096cbd4fd175bad6, type: 3}
-  moveTexture: {fileID: 2800000, guid: 04052e5c729214b459fabdac6aa84f8f, type: 3}
-  punchTexture: {fileID: 2800000, guid: 3bb50f63894669c4cb338e5fde74ee13, type: 3}
-  swingTexture: {fileID: 2800000, guid: 54095d5751f9ddf44887cc221d4f4983, type: 3}
-  pushTexture: {fileID: 2800000, guid: 43cebd2503c82b142b04d07695e6553b, type: 3}
-  reactTexture: {fileID: 2800000, guid: be17ce78fdd645b45be12fdbfb950c88, type: 3}
-  sourceTexture: {fileID: 2800000, guid: 7f8bfb292a5da684e8dc978556943d02, type: 3}
-  baseMask: {fileID: 2800000, guid: e0b31b0f7e37ef74f80249e154d6cdcd, type: 3}
+  idleTexture: {fileID: 2800000, guid: 261126f2492192e428986a59f10927d6, type: 3}
+  moveTexture: {fileID: 2800000, guid: 2998b448a5c591442957d5734c6fbafd, type: 3}
+  punchTexture: {fileID: 2800000, guid: 724b369cb74a65448bbf665f9797c1de, type: 3}
+  swingTexture: {fileID: 2800000, guid: d19fb298a6358e7408ca639ca896c75c, type: 3}
+  pushTexture: {fileID: 2800000, guid: 6c69ed2d2f1486f439223738bbb26b2d, type: 3}
+  reactTexture: {fileID: 2800000, guid: 47f494b73fda67642b237c4d008bbecc, type: 3}
+  baseMask: {fileID: 2800000, guid: b23e00bba6b1a8b4eba37847f57dc1fa, type: 3}
+  sourceTexture1: {fileID: 2800000, guid: 1e68e7ef8917f4a84806633a0caf8f7c, type: 3}
+  sourceTexture2: {fileID: 2800000, guid: 426185b5ed03841dea4ff70258c9eaae, type: 3}
+  sourceTexture3: {fileID: 2800000, guid: 44161ddae40344579982bfbe6bc21b1a, type: 3}
+  sourceTexture4: {fileID: 2800000, guid: 7e7e2fa98418f46e4874cb3e29014fab, type: 3}
