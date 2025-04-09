@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using FMOD.Studio;
 
 public class All_SFX : MonoBehaviour
 {
@@ -179,7 +180,7 @@ public class All_SFX : MonoBehaviour
 
     public void StopHealthDrain()
     {
-        Health_Drain.stop();
+        Health_Drain.stop(STOP_MODE.IMMEDIATE);
     }
 
     public void PlayWoodStock()
