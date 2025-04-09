@@ -25,9 +25,11 @@ public class Swing : MonoBehaviour
     public GameObject jumpHighlight;
     private ButtonHoverAnimation buttonHoverAnimation;
     public bool disableSwing;
+    private Score scores;
 
     void Awake()
     {
+        scores = FindObjectOfType<Score>();
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
         tempTurnBase = FindObjectOfType<TempTurnBase>();
@@ -154,6 +156,7 @@ public class Swing : MonoBehaviour
 
             if (AIUtils.IsAdjacent(playerPosition, targetPosition))
             {
+                scores.score = scores.score + 4;
                 targetToSwing = hit.collider.gameObject;
                 Debug.Log($"Selected enemy for swing: {targetToSwing.name}");
                 PPShighlight.SetActive(false);

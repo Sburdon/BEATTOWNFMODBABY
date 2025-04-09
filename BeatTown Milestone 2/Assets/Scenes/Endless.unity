@@ -836,6 +836,7 @@ GameObject:
   - component: {fileID: 167513602}
   - component: {fileID: 167513603}
   - component: {fileID: 167513604}
+  - component: {fileID: 167513605}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -955,6 +956,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10733d4ec612df648aab525d18ffff9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &167513605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167513596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb7e1b85d78f97b46bc3236a2b61b233, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  score: 0
 --- !u!1 &194200902
 GameObject:
   m_ObjectHideFlags: 0
@@ -2427,7 +2441,7 @@ Transform:
   m_GameObject: {fileID: 447782426}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -871, y: 575, z: -14840.95}
+  m_LocalPosition: {x: -871, y: 575, z: 0}
   m_LocalScale: {x: 64.78259, y: 75.04518, z: 64.14118}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2473,7 +2487,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: b55fce86f4ce8ae439b5ed29e448e8f9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -14143,8 +14157,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -330.28003, y: 593.22}
-  m_SizeDelta: {x: 232.02, y: 128.17}
+  m_AnchoredPosition: {x: -329.61, y: 595.38}
+  m_SizeDelta: {x: 233.36, y: 133.81}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1655975750
 MonoBehaviour:

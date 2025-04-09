@@ -51,6 +51,9 @@ public class TempTurnBase : MonoBehaviour
     public GameObject RealMoveHighlight;
     private bool spawnBarra = true;
     private bool spawnBarra1 = true;
+    private bool spawnBarra2 = true;
+    private bool spawnBarra3 = true;
+    private bool spawnBarra4 = true;
     private List<object> turnUnits = new List<object>();
     private int currentTurnIndex = 0;//was 0
     private bool hasPlayerTurnBeenSkipped = false;
@@ -226,7 +229,7 @@ public class TempTurnBase : MonoBehaviour
     /// Called to start the turn for whichever unit is at currentTurnIndex.
     /// </summary>
     /// 
-
+    public int holderOfHookkills = 0;
     public void StartTurn()
     {
         if (turnUnits.Count == 0) return;
@@ -254,7 +257,7 @@ public class TempTurnBase : MonoBehaviour
             }
 
             // Hook and Barra spawning logic
-            if (hook != null)
+            if (hook != null && SceneManager.GetActiveScene().name == "Brady")
             {
                 if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra)
                 {
@@ -268,6 +271,65 @@ public class TempTurnBase : MonoBehaviour
                     spawnBarra1 = false;
                 }
             }
+
+
+            if (hook != null && SceneManager.GetActiveScene().name == "Endless")
+            {
+                if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra)
+                {
+                    RespawnManager.Instance.SpawnBarra();
+                    spawnBarra = false;
+                    TutorialScript.StartBarraAnimation();
+                    holderOfHookkills = hook.hookKillCount;
+                    StartPlayerTurn();
+                    return;
+                }
+                if ((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1)
+                {
+                    RespawnManager.Instance.SpawnBarra();
+                    spawnBarra1 = false;
+                    holderOfHookkills = hook.hookKillCount;
+                    StartPlayerTurn();
+                    return;
+                }
+                if ((hook.hookKillCount == 6 || hook.hookKillCount == 7) && spawnBarra2)
+                {
+                    RespawnManager.Instance.SpawnBarra();
+                    spawnBarra2 = false;
+                    holderOfHookkills = hook.hookKillCount;
+                    StartPlayerTurn();
+                    return;
+                }
+                if ((hook.hookKillCount == 8 || hook.hookKillCount == 9) && spawnBarra3)
+                {
+                    RespawnManager.Instance.SpawnBarra();
+                    spawnBarra3 = false;
+                    holderOfHookkills = hook.hookKillCount;
+                    StartPlayerTurn();
+                    return;
+                }
+                if ((hook.hookKillCount == 10 || hook.hookKillCount == 11) && spawnBarra4)
+                {
+                    RespawnManager.Instance.SpawnBarra();
+                    spawnBarra4 = false;
+                    holderOfHookkills = hook.hookKillCount;
+                    StartPlayerTurn();
+                    return;
+                }
+
+                // Only process looped spawns if no scripted ones applied
+                if (hook.hookKillCount < holderOfHookkills)
+                {
+                    int killsToProcess = hook.hookKillCount - holderOfHookkills;
+
+                    for (int j = 0; j < killsToProcess; j++)
+                    {
+                        RespawnManager.Instance.SpawnBarra();
+                        holderOfHookkills++;
+                    }
+                }
+            }
+
             StartPlayerTurn();
         }
         else if (currentUnit is AIMove aiUnit)

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI; // For UI Slider
 
 public class EnemyHealth : MonoBehaviour
@@ -22,8 +23,9 @@ public class EnemyHealth : MonoBehaviour
 
     private RespawnManager respawnManager;
     private TempTurnBase tempTurnBase;
+    private Score score;
 
-    
+
 
     public int CurrentHealth
     {
@@ -37,6 +39,7 @@ public class EnemyHealth : MonoBehaviour
 
     void Start()
     {
+        score = FindObjectOfType<Score>();
         health = maxHealth;
         CurrentHealth = health;
 
@@ -107,6 +110,10 @@ public class EnemyHealth : MonoBehaviour
 
         if (CurrentHealth <= 0)
         {
+            if(gameObject.tag == "Barra")
+            {
+                score.score = score.score + 40;
+            }
             Die(fromPlayerOrBarra);  // Pass it along here
         }
     }

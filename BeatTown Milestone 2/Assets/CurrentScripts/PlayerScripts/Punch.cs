@@ -19,9 +19,11 @@ public class Punch : MonoBehaviour
     public All_SFX All_SFX;
     public GameObject RealMoveHighlight;
     public GameObject jumpHighlight;
+    private Score scores;
 
     private void Awake()
     {
+        scores = FindObjectOfType<Score>();
         playerMove = GetComponent<PlayerMove>();
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
@@ -101,6 +103,8 @@ public class Punch : MonoBehaviour
     {
         if (selectedEnemy != null)
         {
+            scores.score = scores.score + 1;
+
             // Trigger animation first
             stateMachine.ChangeState(WrestlerState.Punch);
 

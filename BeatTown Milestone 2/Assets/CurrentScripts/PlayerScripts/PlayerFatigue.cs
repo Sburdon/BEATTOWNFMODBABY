@@ -1,4 +1,5 @@
- using UnityEngine;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerFatigue : MonoBehaviour
@@ -95,14 +96,51 @@ public class PlayerFatigue : MonoBehaviour
         UpdateFatigueBar(); // Update the fatigue bar UI
 
     }
+    private IEnumerator FadeOutFatigue(Image fatigueImage)
+    {
+        float fadeSpeed = 5f;
+
+        yield return StartCoroutine(FadeToAlpha(fatigueImage, 0.4f, fadeSpeed)); // Fade to 40%
+        yield return StartCoroutine(FadeToAlpha(fatigueImage, 1f, fadeSpeed));   // Fade back in
+        yield return StartCoroutine(FadeToAlpha(fatigueImage, 0f, fadeSpeed));   // Fade out
+
+        fatigueImage.enabled = false;
+    }
+    private IEnumerator FadeToAlpha(Image image, float targetAlpha, float speed)
+    {
+        Color color = image.color;
+        float startAlpha = color.a;
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * speed;
+            float newAlpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+            image.color = new Color(color.r, color.g, color.b, newAlpha);
+            yield return null;
+        }
+
+        image.color = new Color(color.r, color.g, color.b, targetAlpha);
+    }
+    private void SetAlpha(Image image, float alpha)
+    {
+        Color c = image.color;
+        image.color = new Color(c.r, c.g, c.b, alpha);
+    }
 
     private void UpdateFatigueBar()
     {
-        // Loop through the images and update them based on current fatigue
         for (int i = 0; i < fatigueImages.Length; i++)
         {
-            // Enable the correct image based on current fatigue level
-            fatigueImages[i].enabled = (i == currentFatigue);
+            if (i < currentFatigue)
+            {
+                fatigueImages[i].enabled = true;
+                SetAlpha(fatigueImages[i], 1f); // fully visible
+            }
+            else if (fatigueImages[i].enabled)
+            {
+                StartCoroutine(FadeOutFatigue(fatigueImages[i]));
+            }
         }
     }
 }

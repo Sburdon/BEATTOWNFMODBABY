@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class Hook : MonoBehaviour
 {
     public static Hook Instance { get; private set; }
+    private Score scores;
 
     public delegate void HookSpawnedEvent(Hook hook);
     public static event HookSpawnedEvent OnHookSpawned;
@@ -41,6 +42,7 @@ public class Hook : MonoBehaviour
 
     void Start()
     {
+        scores = FindObjectOfType<Score>();
         hookPosition = tilemap.WorldToCell(transform.position);
         OccupiedTilesManager.Instance.AddOccupiedPosition(hookPosition);
         UpdateFishCountText();
@@ -143,6 +145,14 @@ public class Hook : MonoBehaviour
             Debug.LogError("HandleEnemyHit called with a null enemy.");
             return;
         }
+        if(enemy.tag == "Enemy")
+        {
+            scores.score = scores.score + 10;
+        }
+        if(enemy.tag == "Barra")
+        {
+            scores.score = scores.score +20;
+        }
 
         hookKillCount++;
         UpdateFishCountText();
@@ -179,7 +189,7 @@ public class Hook : MonoBehaviour
         Destroy(enemy);
         RespawnHook();
 
-        if (hookKillCount >= 6)
+        if (hookKillCount >= 6 && SceneManager.GetActiveScene().name == "Brady")
         {
             EndGame();
         }

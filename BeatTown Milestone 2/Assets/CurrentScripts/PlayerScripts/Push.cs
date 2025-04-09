@@ -20,9 +20,11 @@ public class Push : MonoBehaviour
     public All_SFX All_SFX;
     public GameObject RealMoveHighlight;
     public GameObject jumpHighlight;
+    private Score scores;
 
     void Awake()
     {
+        scores = FindObjectOfType<Score>();
         playerMove = GetComponent<PlayerMove>();
         playerFatigue = GetComponent<PlayerFatigue>();
         stateMachine = GetComponent<StateMachine>();
@@ -44,6 +46,8 @@ public class Push : MonoBehaviour
                 SelectTarget();
                 if (selectedTarget != null)
                 {
+                    scores.score = scores.score + 2;
+
                     Vector3Int playerPosition = playerMove.CurrentTilePosition;
                     Vector3Int targetPosition = tilemap.WorldToCell(selectedTarget.position);
 
@@ -145,6 +149,7 @@ public class Push : MonoBehaviour
             {
                 selectedTarget = target;
                 Debug.Log($"Selected target: {selectedTarget.name}");
+                
             }
             else
             {
