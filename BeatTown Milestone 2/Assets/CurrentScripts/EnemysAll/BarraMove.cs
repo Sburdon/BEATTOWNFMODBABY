@@ -14,8 +14,9 @@ public class BarraMove : MonoBehaviour
     private StateMachine stateMachine;
     private bool facingRight = true;
 
-
     public Vector3Int CurrentTilePosition { get; set; }
+
+    public bool isTaunted = false;
 
     void Start()
     {
@@ -35,64 +36,70 @@ public class BarraMove : MonoBehaviour
 
     public IEnumerator PerformMove()
     {
-        GameObject target = FindClosestTarget();
+        GameObject target = FindClosestTargetWithPriority();
         if (target == null) yield break;
 
         Vector3Int targetTilePosition = tilemap.WorldToCell(target.transform.position);
         List<Vector3Int> path = CalculatePath(CurrentTilePosition, targetTilePosition);
 
-
-        for (int i = 0; i < moveDistance && i < path.Count; i++)
+        int tilesToMove = Mathf.Min(moveDistance, path.Count);
+        for (int i = 0; i < tilesToMove; i++)
         {
             Vector3Int nextTile = path[i];
 
-            // Ensure that the next tile is not occupied before moving
             if (!OccupiedTilesManager.Instance.IsTileOccupied(nextTile))
             {
                 OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
-
                 yield return StartCoroutine(MoveToTile(nextTile));
                 CurrentTilePosition = nextTile;
-
                 OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
             }
             else
             {
-                Debug.Log($"Tile {nextTile} is occupied. Skipping move.");
+                Debug.Log($"Tile {nextTile} is occupied. Stopping move.");
                 break;
             }
         }
     }
 
-    private GameObject FindClosestTarget()
+    private GameObject FindClosestTargetWithPriority()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
-        GameObject closestTarget = null;
-        float closestDistance = Mathf.Infinity;
+        GameObject closestPlayer = null;
+        GameObject closestEnemy = null;
+        float closestPlayerDist = Mathf.Infinity;
+        float closestEnemyDist = Mathf.Infinity;
 
         foreach (GameObject target in players)
         {
-            float distance = Vector3.Distance(transform.position, target.transform.position);
-            if (distance < closestDistance)
+            float dist = Vector3.Distance(transform.position, target.transform.position);
+            if (dist < closestPlayerDist)
             {
-                closestDistance = distance;
-                closestTarget = target;
+                closestPlayerDist = dist;
+                closestPlayer = target;
             }
         }
 
         foreach (GameObject target in enemies)
         {
-            float distance = Vector3.Distance(transform.position, target.transform.position);
-            if (distance < closestDistance)
+            if (target == this.gameObject) continue; // Skip self
+            float dist = Vector3.Distance(transform.position, target.transform.position);
+            if (dist < closestEnemyDist)
             {
-                closestDistance = distance;
-                closestTarget = target;
+                closestEnemyDist = dist;
+                closestEnemy = target;
             }
         }
 
-        return closestTarget;
+        // If distances are equal, prefer enemy unless taunted
+        if (Mathf.Approximately(closestEnemyDist, closestPlayerDist))
+        {
+            return isTaunted ? closestPlayer : closestEnemy;
+        }
+
+        return closestEnemyDist < closestPlayerDist ? closestEnemy : closestPlayer;
     }
 
     private IEnumerator MoveToTile(Vector3Int targetTile)
@@ -121,6 +128,7 @@ public class BarraMove : MonoBehaviour
 
         transform.position = targetWorldPosition;
     }
+
     private void Flip()
     {
         facingRight = !facingRight;
@@ -136,26 +144,27 @@ public class BarraMove : MonoBehaviour
         int dx = target.x - start.x;
         int dy = target.y - start.y;
 
-        for (int i = 0; i < Mathf.Abs(dx); i++)
+        Vector3Int current = start;
+
+        while (current != target)
         {
-            Vector3Int nextTile = new Vector3Int(start.x + (dx > 0 ? 1 : -1), start.y, start.z);
-            if (!OccupiedTilesManager.Instance.IsTileOccupied(nextTile))
+            Vector3Int nextStep;
+
+            if (Mathf.Abs(dx) > Mathf.Abs(dy))
             {
-                path.Add(nextTile);
-                start = nextTile;
+                nextStep = new Vector3Int(current.x + (dx > 0 ? 1 : -1), current.y, current.z);
+                dx += (dx > 0 ? -1 : 1);
             }
             else
             {
-                break;
+                nextStep = new Vector3Int(current.x, current.y + (dy > 0 ? 1 : -1), current.z);
+                dy += (dy > 0 ? -1 : 1);
             }
-        }
-        for (int i = 0; i < Mathf.Abs(dy); i++)
-        {
-            Vector3Int nextTile = new Vector3Int(start.x, start.y + (dy > 0 ? 1 : -1), start.z);
-            if (!OccupiedTilesManager.Instance.IsTileOccupied(nextTile))
+
+            if (!OccupiedTilesManager.Instance.IsTileOccupied(nextStep))
             {
-                path.Add(nextTile);
-                start = nextTile;
+                path.Add(nextStep);
+                current = nextStep;
             }
             else
             {

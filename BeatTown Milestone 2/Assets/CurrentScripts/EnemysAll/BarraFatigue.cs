@@ -34,7 +34,7 @@ public class BarraFatigue : MonoBehaviour
         {
             bool actionTaken = false;
 
-            // Attempt to attack if possible
+            // Check if we can attack from current position
             if (barraAttack != null && barraAttack.CanAttack())
             {
                 yield return StartCoroutine(barraAttack.PerformAttack());
@@ -43,18 +43,25 @@ public class BarraFatigue : MonoBehaviour
 
                 yield return new WaitForSeconds(1f); // Brief delay after each action
             }
-
-            // If no attack was possible, attempt to move
-            if (!actionTaken && barraMove != null)
+            // If not in range, try moving toward closest target
+            else if (barraMove != null)
             {
                 yield return StartCoroutine(barraMove.PerformMove());
                 currentFatigue--;
                 actionTaken = true;
 
                 yield return new WaitForSeconds(1f); // Brief delay after each action
+
+                // After moving, try attacking again
+                if (currentFatigue > 0 && barraAttack.CanAttack())
+                {
+                    yield return StartCoroutine(barraAttack.PerformAttack());
+                    currentFatigue--;
+                    yield return new WaitForSeconds(1f);
+                }
             }
 
-            // If no actions were taken (e.g., blocked), break the loop to end the turn
+            // If no actions were taken (e.g., blocked), break to end turn early
             if (!actionTaken) break;
         }
 
