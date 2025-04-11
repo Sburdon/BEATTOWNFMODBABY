@@ -1192,6 +1192,7 @@ GameObject:
   - component: {fileID: 167513598}
   - component: {fileID: 167513600}
   - component: {fileID: 167513601}
+  - component: {fileID: 167513602}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1255,6 +1256,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b25e7569ca7e6d34992cc3b5aaf13d01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &167513602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167513596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb7e1b85d78f97b46bc3236a2b61b233, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  score: 0
 --- !u!1 &168649948
 GameObject:
   m_ObjectHideFlags: 0
@@ -14013,6 +14027,7 @@ MonoBehaviour:
   RealMoveHighlight: {fileID: 1253888467}
   All_SFX: {fileID: 0}
   TutorialScript: {fileID: 0}
+  holderOfHookkills: 0
 --- !u!4 &1562467053
 Transform:
   m_ObjectHideFlags: 0
