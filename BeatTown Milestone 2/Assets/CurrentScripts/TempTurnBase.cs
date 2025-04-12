@@ -547,6 +547,18 @@ public class TempTurnBase : MonoBehaviour
         RotateTurnOrder();
         StartTurn();
         isProcessingTurn = false;
+
+        if (barra.tauntTurnsRemaining > 0)
+        {
+            barra.tauntTurnsRemaining--;
+
+            if (barra.tauntTurnsRemaining == 0)
+            {
+                barra.isTaunted = false;
+                Debug.Log($"{barra.name}'s taunt has worn off.");
+            }
+        }
+
     }
 
     private IEnumerator ProcessGoonTurn(GoonMove goon)
