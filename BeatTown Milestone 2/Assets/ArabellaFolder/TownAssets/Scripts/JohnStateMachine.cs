@@ -17,8 +17,8 @@ public class JohnStateMachine : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        // animator.SetFloat("moveX", 0);
-        // animator.SetFloat("moveY", -1);
+        animator.SetFloat("moveX", 0);
+        animator.SetFloat("moveY", -1);
     }
 
     // Update is called once per frame
@@ -34,13 +34,13 @@ public class JohnStateMachine : MonoBehaviour
     void UpdateAnimationAndMove(){
         if(change != Vector3.zero){
             MoveCharacter();
-            // animator.SetFloat("moveX", change.x);
-            // animator.SetFloat("moveY", change.y);
-            // animator.SetBool("moving", true);
+            animator.SetFloat("moveX", change.x);
+            animator.SetFloat("moveY", change.y);
+            animator.SetBool("moving", true);
         }
-        // else{
-        //     animator.SetBool("moving", false);
-        // }
+        else{
+            animator.SetBool("moving", false);
+        }
     }
 
     void MoveCharacter(){
