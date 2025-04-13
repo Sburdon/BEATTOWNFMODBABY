@@ -492,6 +492,14 @@ public class TempTurnBase : MonoBehaviour
         {
             goon.ResolvePunch();
         }
+        if (playerMove.pendingMovePurchase)
+        {
+            playerMove.ResetPendingMove();
+        }
+
+        // Reset moves and anything else for next turn
+        playerMove.remainingMoves = 0;
+        playerMove.UpdateMoveImages();
 
         PPShighlight.SetActive(false);
         moveMentHighlight.SetActive(false);
