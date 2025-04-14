@@ -14363,17 +14363,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1655975748}
-  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1435945462}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -330.28003, y: 593.22}
-  m_SizeDelta: {x: 232.02, y: 128.17}
+  m_AnchoredPosition: {x: -330.28003, y: 593.72}
+  m_SizeDelta: {x: 232.02, y: 127.17}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1655975750
 MonoBehaviour:
@@ -18489,6 +18489,7 @@ MonoBehaviour:
   moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 36c53ef0f8fd3a44b90117861879bbd6, type: 2}
+  isFishOrGoon: 0
 --- !u!114 &1977992000
 MonoBehaviour:
   m_ObjectHideFlags: 0
