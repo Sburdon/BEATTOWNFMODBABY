@@ -1,6 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static TMPro.Examples.ObjectSpin;
 
 public class ButtonHoverAnimation : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -13,6 +15,9 @@ public class ButtonHoverAnimation : MonoBehaviour, IPointerEnterHandler, IPointe
     private PlayerFatigue playerFatigue;
     private PlayerMove playerMove;
     private Swing swing;
+    private bool isHoveredOrSelected = false;
+    private Coroutine blinkingCoroutine;
+    public ActionType actionType;
     //public All_SFX all_SFX;
 
 
@@ -60,23 +65,39 @@ public class ButtonHoverAnimation : MonoBehaviour, IPointerEnterHandler, IPointe
         }
     }
 
-
-
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (childAnimator != null)
+            childAnimator.SetTrigger("StartAnim");
+
+        // Check if the hovered button is interactable
+        if (eventData.pointerEnter.TryGetComponent(out Button hoveredButton) && !hoveredButton.interactable)
+            return;
+
+        // Now handle blinking only for interactable buttons
+        if (eventData.pointerEnter == moveButton.gameObject)
         {
-            childAnimator.SetTrigger("StartAnim"); // Start animation
+            playerFatigue.BlinkFatigueSlots(playerFatigue.moveFatigueCost);
+        }
+        else if (eventData.pointerEnter == swingButton.gameObject)
+        {
+            playerFatigue.BlinkFatigueSlots(playerFatigue.swingFatigueCost);
+        }
+        else if (eventData.pointerEnter == myButton.gameObject)
+        {
+            playerFatigue.BlinkFatigueSlots(playerFatigue.punchFatigueCost);
         }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (childAnimator != null)
-        {
-            childAnimator.SetTrigger("StopAnim"); // Stop animation
-        }
+            childAnimator.SetTrigger("StopAnim");
+
+        playerFatigue.StopBlinking();
     }
+
+
     public void DisableButton()
     {
         myButton.interactable = false; // Disable the button and show the disabled sprite
