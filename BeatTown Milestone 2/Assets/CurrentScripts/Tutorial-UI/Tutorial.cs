@@ -228,40 +228,9 @@ public class Tutorial : MonoBehaviour
         }
         else
         {
-            // Check for ESC key to toggle pause state
-            PauseGameOnESC();
+            
         }
     }
 
-    public void PauseGameOnESC()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (!isTutorialActive) // only allow pausing/resuming if tutorial is completed
-            {
-                if (!isPaused)
-                {
-                    // Disable button interactions before freezing
-                    foreach (Button b in barray)
-                    {
-                        b.interactable = false;
-                    }
-                    // pause the game
-                    Time.timeScale = 0f;
-                    isPaused = true;
-                }
-                else
-                {
-                    // enable button interactions 
-                    foreach (Button b in barray)
-                    {
-                        b.interactable = true;
-                    }
-                    // resume the game
-                    Time.timeScale = 1f;
-                    isPaused = false;
-                }
-            }
-        }
-    }
+   
 }
