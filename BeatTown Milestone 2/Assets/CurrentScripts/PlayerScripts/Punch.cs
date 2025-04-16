@@ -158,7 +158,7 @@ public class Punch : MonoBehaviour
             AIMove aiMoveScript = enemy.GetComponent<AIMove>();
             if (aiMoveScript != null)
             {
-                aiMoveScript.SetFollowPlayerForTurns(2);
+                aiMoveScript.SetFollowPlayerForTurns(1);
             }
 
             // ✅ New: Barra taunt logic
