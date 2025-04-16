@@ -44,6 +44,8 @@ public class StateMachine : MonoBehaviour
 
     private float frameTimer = 0f;    // timer to track time between frames
 
+    public TempTurnBase turnBase; 
+
     // Start is called before the first frame update
     void Start()
     {
