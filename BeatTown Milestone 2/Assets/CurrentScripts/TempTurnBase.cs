@@ -529,6 +529,13 @@ public class TempTurnBase : MonoBehaviour
         {
             Debug.Log($"AI {ai.gameObject.name} is taking its turn.");
             yield return StartCoroutine(aiFatigue.HandleTurn());
+
+            // ⭐ Added: Handle taunt countdown for fish enemies
+            ai.DecrementFollowTurns();
+            if (!ai.IsFollowingPlayer())
+            {
+                Debug.Log($"{ai.gameObject.name} is no longer taunted.");
+            }
         }
         else
         {
@@ -541,6 +548,7 @@ public class TempTurnBase : MonoBehaviour
         StartTurn();
         isProcessingTurn = false;
     }
+
 
     private IEnumerator ProcessBarraTurn(BarraMove barra)
     {
