@@ -128,6 +128,7 @@ public class PlayerFatigue : MonoBehaviour
         image.color = new Color(c.r, c.g, c.b, alpha);
     }
 
+
     private void UpdateFatigueBar()
     {
         for (int i = 0; i < fatigueImages.Length; i++)
@@ -141,6 +142,57 @@ public class PlayerFatigue : MonoBehaviour
             {
                 StartCoroutine(FadeOutFatigue(fatigueImages[i]));
             }
+        }
+    }
+
+
+    private Coroutine blinkCoroutine;
+
+    public void BlinkFatigueSlots(int fatigueCost)
+    {
+        if (blinkCoroutine != null)
+            StopCoroutine(blinkCoroutine);
+
+        blinkCoroutine = StartCoroutine(BlinkFatigue(fatigueCost));
+    }
+
+    public void StopBlinking()
+    {
+        if (blinkCoroutine != null)
+        {
+            StopCoroutine(blinkCoroutine);
+            blinkCoroutine = null;
+            UpdateFatigueBar(); // Reset visual
+        }
+    }
+
+    private IEnumerator BlinkFatigue(int fatigueCost)
+    {
+        float blinkSpeed = 0.4f;
+
+        while (true)
+        {
+            // Determine which slots to blink based on current fatigue and cost
+            int start = Mathf.Max(currentFatigue - fatigueCost, 0);
+            int end = Mathf.Min(currentFatigue, fatigueImages.Length);
+
+            // Blink OFF
+            for (int i = start; i < end; i++)
+            {
+                if (fatigueImages[i] != null)
+                    SetAlpha(fatigueImages[i], 0.5f);
+            }
+
+            yield return new WaitForSeconds(blinkSpeed);
+
+            // Blink ON
+            for (int i = start; i < end; i++)
+            {
+                if (fatigueImages[i] != null)
+                    SetAlpha(fatigueImages[i], 1f);
+            }
+
+            yield return new WaitForSeconds(blinkSpeed);
         }
     }
 }
