@@ -15,6 +15,7 @@ public class ButtonHoverAnimation : MonoBehaviour, IPointerEnterHandler, IPointe
     private Swing swing;
     //public All_SFX all_SFX;
     private static PauseMenu pauseMenu;
+    private static Tutorial tutorialScript;
 
 
     private void Start()
@@ -24,16 +25,17 @@ public class ButtonHoverAnimation : MonoBehaviour, IPointerEnterHandler, IPointe
         swing = FindObjectOfType<Swing>();
         playerMove = FindObjectOfType<PlayerMove>();
         pauseMenu = FindObjectOfType<PauseMenu>();
+        tutorialScript = FindObjectOfType<Tutorial>();
     }
 
     private void Update()
     {
-        if (tempTurnBase.isPlayerTurn && playerFatigue.currentFatigue > 0 && !pauseMenu.isPaused)
+        if (tempTurnBase.isPlayerTurn && playerFatigue.currentFatigue > 0 && !pauseMenu.isPaused && !tutorialScript.isTutorialActive)
         {
             EnableButton();
         }
 
-        if (!swing.disableSwing && !pauseMenu.isPaused)
+        if (!swing.disableSwing && !pauseMenu.isPaused && !tutorialScript.isTutorialActive)
         {
             EnableSwingButton();
         }

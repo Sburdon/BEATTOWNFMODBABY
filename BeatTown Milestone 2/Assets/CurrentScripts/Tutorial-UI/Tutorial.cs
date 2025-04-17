@@ -8,7 +8,7 @@ public class Tutorial : MonoBehaviour
     Animator animtut;
     public Button[] barray;
     private bool isPaused = false;
-    private bool isTutorialActive = true;
+    public bool isTutorialActive = true;
     private bool isBarraTutorialActive = false;
     private bool isEnemyTutorialActive = false;
     private bool isHookedTutorialActive = false; 
@@ -24,6 +24,19 @@ public class Tutorial : MonoBehaviour
         {
             b.interactable = false;
         }
+
+        // for each hover over, disable the script
+
+        // Disable hover over script (i.e. enemy hover)
+        // Find all objects with the HoverOver script and disable them
+        HoverOver[] hoverOvers = FindObjectsOfType<HoverOver>();
+        foreach (HoverOver hoverOver in hoverOvers)
+        {
+            hoverOver.enabled = false; // Disable the script
+        }
+       
+        // disable mouse HOVER input (i.e. button hover animation)
+        
        
         // Make unwanted sprites (i.e. hook) invisible
         HideSprites();
@@ -32,6 +45,7 @@ public class Tutorial : MonoBehaviour
         StartCoroutine(DelayPause());
         StartCoroutine(AllowInputAfterSplash());
     }
+
 
     private IEnumerator AllowInputAfterSplash()
     {
@@ -177,6 +191,7 @@ public class Tutorial : MonoBehaviour
         isPaused = false;
         isTutorialActive = false; // mark tutorial as finished
 
+
         // re enable sprites after tutorial
         ShowSprites();
         animtut.SetBool("MainTutOver" , true); // declare end of main tutorial
@@ -196,7 +211,7 @@ public class Tutorial : MonoBehaviour
         if (isTutorialActive)
         {
             // Check if any key is pressed to advance the tutorial (exclude ESC key to avoid conflict with pause)
-            if (Input.anyKeyDown)
+            if (Input.anyKeyDown && !Input.GetKeyDown(KeyCode.Escape) && !Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1))
             {
                 ChangeAnimation();
             }

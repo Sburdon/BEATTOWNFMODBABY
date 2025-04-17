@@ -26,7 +26,6 @@ public class PauseMenu : MonoBehaviour
             foreach (Button b in barray)
             {
                 b.interactable = false;
-                Debug.Log("Button " + b.name + " is now unclickable");
             }
 
             // show the pause menu
