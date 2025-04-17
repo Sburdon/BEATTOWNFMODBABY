@@ -11,6 +11,13 @@ public class PauseMenu : MonoBehaviour
 
     public Button[] barray;
     public bool isPaused = false;
+    private Tutorial tutorialScript;
+
+
+    private void Start()
+    {
+        tutorialScript = FindObjectOfType<Tutorial>();
+    }
 
     private void Update()
     {
@@ -38,9 +45,12 @@ public class PauseMenu : MonoBehaviour
 
         else if (Input.GetKeyDown(KeyCode.Escape) && isPaused)
         {
-            foreach (Button b in barray)
+            if (!tutorialScript.isTutorialActive)
             {
-                b.interactable = true;
+                foreach (Button b in barray)
+                {
+                    b.interactable = true;
+                }
             }
             // hide the pause menu
             pauseMenuUI.SetActive(false);
@@ -95,4 +105,13 @@ public class PauseMenu : MonoBehaviour
 
     }
 
+    // back button for options (back to regular pause menu)
+    public void Back()
+    {
+        // hide the options menu
+        pauseOptionsUI.SetActive(false);
+
+        // show the pause menu
+        pauseMenuUI.SetActive(true);
+    }
 }
