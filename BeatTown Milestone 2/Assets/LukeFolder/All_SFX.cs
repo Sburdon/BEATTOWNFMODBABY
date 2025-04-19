@@ -28,6 +28,12 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance One_Step;
     FMOD.Studio.EventInstance Two_Step;
     FMOD.Studio.EventInstance Health_Drain;
+    FMOD.Studio.EventInstance Endless;
+    FMOD.Studio.EventInstance TITLE;
+    FMOD.Studio.EventInstance Dirt;
+    FMOD.Studio.EventInstance Grass;
+    FMOD.Studio.EventInstance Door;
+    
 
 
 
@@ -62,6 +68,11 @@ public class All_SFX : MonoBehaviour
         One_Step = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/One_Step");
         Two_Step = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Two_Step");
         Health_Drain = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Health_Drain");
+        Endless = FMODUnity.RuntimeManager.CreateInstance("event:/Endless");
+        TITLE = FMODUnity.RuntimeManager.CreateInstance("event:/TITLE");
+        Dirt = FMODUnity.RuntimeManager.CreateInstance("event:/OVERWORLD/Dirt");
+        Grass = FMODUnity.RuntimeManager.CreateInstance("event:/OVERWORLD/Grass");
+        Door = FMODUnity.RuntimeManager.CreateInstance("event:/OVERWORLD/Door");
 
 
 
@@ -203,6 +214,41 @@ public class All_SFX : MonoBehaviour
     {
         BEAVER.start();
     }
+
+    public void PlayEndless()
+    {
+        Endless.start();
+    }
+
+    public void PlayTitle()
+    {
+        TITLE.start()
+    }
+
+    public void PlayDirt()
+    {
+        Dirt.start();
+    }
+
+    public void PlayGrass()
+    {
+        Grass.start();
+    }
+
+    public void PlayDoor()
+    {
+        Door.start();
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 

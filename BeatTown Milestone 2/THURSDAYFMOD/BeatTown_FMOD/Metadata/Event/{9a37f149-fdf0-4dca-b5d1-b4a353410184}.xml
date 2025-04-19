@@ -2,10 +2,10 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{9a37f149-fdf0-4dca-b5d1-b4a353410184}">
 		<property name="name">
-			<value>New Event 3</value>
+			<value>Door</value>
 		</property>
 		<property name="outputFormat">
-			<value>0</value>
+			<value>1</value>
 		</property>
 		<relationship name="folder">
 			<destination>{cafb2ff6-bcc7-471b-84ba-259400e1ed26}</destination>
@@ -59,11 +59,18 @@
 	<object class="EventAutomatableProperties" id="{9816d522-dda2-44c9-979d-c1072c797dea}" />
 	<object class="MarkerTrack" id="{a9b3c270-ab8c-478c-b701-8e3f696ff2de}" />
 	<object class="GroupTrack" id="{3d19f608-86b7-4554-b6f6-abc146522857}">
+		<relationship name="modules">
+			<destination>{ac4dac93-497d-4258-845c-19664b1b616d}</destination>
+		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{fa777531-1555-43c7-99f8-c7b26aebe38d}</destination>
 		</relationship>
 	</object>
-	<object class="Timeline" id="{d6bef655-1e5b-4f87-b6b6-b9178faa0425}" />
+	<object class="Timeline" id="{d6bef655-1e5b-4f87-b6b6-b9178faa0425}">
+		<relationship name="modules">
+			<destination>{ac4dac93-497d-4258-845c-19664b1b616d}</destination>
+		</relationship>
+	</object>
 	<object class="EventMixerMaster" id="{c3d6730c-b40f-4a9f-b874-cc1726374d79}">
 		<relationship name="effectChain">
 			<destination>{46c40939-f042-4b10-a231-5438fd04b36b}</destination>
@@ -81,6 +88,14 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{87e5788a-1355-428e-9f46-eaedf8de47a4}" />
+	<object class="SingleSound" id="{ac4dac93-497d-4258-845c-19664b1b616d}">
+		<property name="length">
+			<value>0.48577083333333332</value>
+		</property>
+		<relationship name="audioFile">
+			<destination>{ddf4529d-0179-4105-a5ed-1367ac728fe4}</destination>
+		</relationship>
+	</object>
 	<object class="EventMixerGroup" id="{fa777531-1555-43c7-99f8-c7b26aebe38d}">
 		<property name="name">
 			<value>Audio 1</value>
