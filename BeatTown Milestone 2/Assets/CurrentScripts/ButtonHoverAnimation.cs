@@ -51,6 +51,7 @@ public class ButtonHoverAnimation : MonoBehaviour, IPointerEnterHandler, IPointe
         {
             DisableButton();
             disableSwing();
+            disableMove();
         }
 
         if (swing.disableSwing)

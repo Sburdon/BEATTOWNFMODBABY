@@ -17,19 +17,16 @@ public class BarraMove : MonoBehaviour
     public Vector3Int CurrentTilePosition { get; set; }
 
     public bool isTaunted = false;
+    public int tauntTurnsRemaining = 0;
 
     void Start()
     {
         stateMachine = GetComponent<StateMachine>();
 
         if (tilemap == null)
-        {
             tilemap = FindObjectOfType<Tilemap>();
-        }
         if (playerMove == null)
-        {
             playerMove = FindObjectOfType<PlayerMove>();
-        }
 
         CurrentTilePosition = tilemap.WorldToCell(transform.position);
     }
@@ -39,13 +36,30 @@ public class BarraMove : MonoBehaviour
         GameObject target = FindClosestTargetWithPriority();
         if (target == null) yield break;
 
-        Vector3Int targetTilePosition = tilemap.WorldToCell(target.transform.position);
-        List<Vector3Int> path = CalculatePath(CurrentTilePosition, targetTilePosition);
+        Vector3Int targetTile = tilemap.WorldToCell(target.transform.position);
+        List<Vector3Int> adjacentTiles = GetWalkableAdjacentTiles(targetTile);
 
-        int tilesToMove = Mathf.Min(moveDistance, path.Count);
+        List<Vector3Int> shortestPath = null;
+
+        foreach (var adjTile in adjacentTiles)
+        {
+            List<Vector3Int> path = CalculatePath(CurrentTilePosition, adjTile);
+            if (path.Count > 0 && (shortestPath == null || path.Count < shortestPath.Count))
+            {
+                shortestPath = path;
+            }
+        }
+
+        if (shortestPath == null)
+        {
+            Debug.Log($"{gameObject.name}: No valid path to target.");
+            yield break;
+        }
+
+        int tilesToMove = Mathf.Min(moveDistance, shortestPath.Count);
         for (int i = 0; i < tilesToMove; i++)
         {
-            Vector3Int nextTile = path[i];
+            Vector3Int nextTile = shortestPath[i];
 
             if (!OccupiedTilesManager.Instance.IsTileOccupied(nextTile))
             {
@@ -84,7 +98,7 @@ public class BarraMove : MonoBehaviour
 
         foreach (GameObject target in enemies)
         {
-            if (target == this.gameObject) continue; // Skip self
+            if (target == this.gameObject) continue;
             float dist = Vector3.Distance(transform.position, target.transform.position);
             if (dist < closestEnemyDist)
             {
@@ -93,11 +107,11 @@ public class BarraMove : MonoBehaviour
             }
         }
 
-        // If distances are equal, prefer enemy unless taunted
+        if (isTaunted && closestPlayer != null)
+            return closestPlayer;
+
         if (Mathf.Approximately(closestEnemyDist, closestPlayerDist))
-        {
-            return isTaunted ? closestPlayer : closestEnemy;
-        }
+            return closestEnemy;
 
         return closestEnemyDist < closestPlayerDist ? closestEnemy : closestPlayer;
     }
@@ -108,6 +122,7 @@ public class BarraMove : MonoBehaviour
         float elapsedTime = 0f;
         float travelTime = 1f / moveSpeed;
         Vector3 startPosition = transform.position;
+
         stateMachine.ChangeState(WrestlerState.Move);
 
         if (targetWorldPosition.x < startPosition.x && facingRight)
@@ -137,41 +152,71 @@ public class BarraMove : MonoBehaviour
         transform.localScale = scale;
     }
 
-    private List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int target)
+    private List<Vector3Int> CalculatePath(Vector3Int start, Vector3Int goal)
     {
-        List<Vector3Int> path = new List<Vector3Int>();
+        Queue<Vector3Int> frontier = new Queue<Vector3Int>();
+        Dictionary<Vector3Int, Vector3Int> cameFrom = new Dictionary<Vector3Int, Vector3Int>();
+        frontier.Enqueue(start);
+        cameFrom[start] = start;
 
-        int dx = target.x - start.x;
-        int dy = target.y - start.y;
-
-        Vector3Int current = start;
-
-        while (current != target)
+        Vector3Int[] directions = new Vector3Int[]
         {
-            Vector3Int nextStep;
+            Vector3Int.up, Vector3Int.down, Vector3Int.left, Vector3Int.right
+        };
 
-            if (Mathf.Abs(dx) > Mathf.Abs(dy))
-            {
-                nextStep = new Vector3Int(current.x + (dx > 0 ? 1 : -1), current.y, current.z);
-                dx += (dx > 0 ? -1 : 1);
-            }
-            else
-            {
-                nextStep = new Vector3Int(current.x, current.y + (dy > 0 ? 1 : -1), current.z);
-                dy += (dy > 0 ? -1 : 1);
-            }
+        while (frontier.Count > 0)
+        {
+            Vector3Int current = frontier.Dequeue();
 
-            if (!OccupiedTilesManager.Instance.IsTileOccupied(nextStep))
-            {
-                path.Add(nextStep);
-                current = nextStep;
-            }
-            else
-            {
+            if (current == goal)
                 break;
+
+            foreach (Vector3Int dir in directions)
+            {
+                Vector3Int next = current + dir;
+
+                if (!cameFrom.ContainsKey(next) && tilemap.HasTile(next) && !OccupiedTilesManager.Instance.IsTileOccupied(next))
+                {
+                    frontier.Enqueue(next);
+                    cameFrom[next] = current;
+                }
             }
         }
 
+        List<Vector3Int> path = new List<Vector3Int>();
+        if (!cameFrom.ContainsKey(goal))
+        {
+            Debug.Log("No path found to target.");
+            return path;
+        }
+
+        Vector3Int step = goal;
+        while (step != start)
+        {
+            path.Insert(0, step);
+            step = cameFrom[step];
+        }
+
         return path;
+    }
+
+    private List<Vector3Int> GetWalkableAdjacentTiles(Vector3Int center)
+    {
+        List<Vector3Int> result = new List<Vector3Int>();
+        Vector3Int[] directions = new Vector3Int[]
+        {
+            Vector3Int.up, Vector3Int.down, Vector3Int.left, Vector3Int.right
+        };
+
+        foreach (var dir in directions)
+        {
+            Vector3Int check = center + dir;
+            if (tilemap.HasTile(check) && !OccupiedTilesManager.Instance.IsTileOccupied(check))
+            {
+                result.Add(check);
+            }
+        }
+
+        return result;
     }
 }

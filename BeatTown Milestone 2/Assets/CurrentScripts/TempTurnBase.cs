@@ -275,58 +275,64 @@ public class TempTurnBase : MonoBehaviour
 
             if (hook != null && SceneManager.GetActiveScene().name == "Endless")
             {
-                if ((hook.hookKillCount == 2 || hook.hookKillCount == 3) && spawnBarra)
+                int currentKills = hook.hookKillCount;
+
+                // Handle fixed spawn milestones
+                if ((currentKills == 2 || currentKills == 3) && spawnBarra)
                 {
                     RespawnManager.Instance.SpawnBarra();
                     spawnBarra = false;
                     TutorialScript.StartBarraAnimation();
-                    holderOfHookkills = hook.hookKillCount;
+                    holderOfHookkills = currentKills;
                     StartPlayerTurn();
                     return;
                 }
-                if ((hook.hookKillCount == 4 || hook.hookKillCount == 5) && spawnBarra1)
+                if ((currentKills == 4 || currentKills == 5) && spawnBarra1)
                 {
                     RespawnManager.Instance.SpawnBarra();
                     spawnBarra1 = false;
-                    holderOfHookkills = hook.hookKillCount;
+                    holderOfHookkills = currentKills;
                     StartPlayerTurn();
                     return;
                 }
-                if ((hook.hookKillCount == 6 || hook.hookKillCount == 7) && spawnBarra2)
+                if ((currentKills == 6 || currentKills == 7) && spawnBarra2)
                 {
                     RespawnManager.Instance.SpawnBarra();
                     spawnBarra2 = false;
-                    holderOfHookkills = hook.hookKillCount;
+                    holderOfHookkills = currentKills;
                     StartPlayerTurn();
                     return;
                 }
-                if ((hook.hookKillCount == 8 || hook.hookKillCount == 9) && spawnBarra3)
+                if ((currentKills == 8 || currentKills == 9) && spawnBarra3)
                 {
                     RespawnManager.Instance.SpawnBarra();
                     spawnBarra3 = false;
-                    holderOfHookkills = hook.hookKillCount;
+                    holderOfHookkills = currentKills;
                     StartPlayerTurn();
                     return;
                 }
-                if ((hook.hookKillCount == 10 || hook.hookKillCount == 11) && spawnBarra4)
+                if ((currentKills == 10 || currentKills == 11) && spawnBarra4)
                 {
                     RespawnManager.Instance.SpawnBarra();
                     spawnBarra4 = false;
-                    holderOfHookkills = hook.hookKillCount;
+                    holderOfHookkills = currentKills;
                     StartPlayerTurn();
                     return;
                 }
 
-                // Only process looped spawns if no scripted ones applied
-                if (hook.hookKillCount < holderOfHookkills)
+                // After 11 kills, spawn a barra per kill
+                if (currentKills > 11)
                 {
-                    int killsToProcess = hook.hookKillCount - holderOfHookkills;
+                    int killsToProcess = currentKills - holderOfHookkills;
 
-                    for (int j = 0; j < killsToProcess; j++)
+                    for (int i = 0; i < killsToProcess; i++)
                     {
                         RespawnManager.Instance.SpawnBarra();
                         holderOfHookkills++;
                     }
+
+                    StartPlayerTurn();
+                    return;
                 }
             }
 
@@ -492,6 +498,14 @@ public class TempTurnBase : MonoBehaviour
         {
             goon.ResolvePunch();
         }
+        if (playerMove.pendingMovePurchase)
+        {
+            playerMove.ResetPendingMove();
+        }
+
+        // Reset moves and anything else for next turn
+        playerMove.remainingMoves = 0;
+        playerMove.UpdateMoveImages();
 
         PPShighlight.SetActive(false);
         moveMentHighlight.SetActive(false);
@@ -547,6 +561,18 @@ public class TempTurnBase : MonoBehaviour
         RotateTurnOrder();
         StartTurn();
         isProcessingTurn = false;
+
+        if (barra.tauntTurnsRemaining > 0)
+        {
+            barra.tauntTurnsRemaining--;
+
+            if (barra.tauntTurnsRemaining == 0)
+            {
+                barra.isTaunted = false;
+                Debug.Log($"{barra.name}'s taunt has worn off.");
+            }
+        }
+
     }
 
     private IEnumerator ProcessGoonTurn(GoonMove goon)

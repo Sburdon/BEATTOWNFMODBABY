@@ -41,7 +41,7 @@ public class Punch : MonoBehaviour
 
                 if (hit.collider != null)
                 {
-                    if (hit.collider != null && (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Goon") || hit.collider.CompareTag("Electrician") || hit.collider.CompareTag("Barra")))
+                    if (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("Goon") || hit.collider.CompareTag("Electrician") || hit.collider.CompareTag("Barra"))
                     {
                         Vector3Int enemyPosition = tilemap.WorldToCell(hit.collider.transform.position);
                         Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
@@ -93,6 +93,7 @@ public class Punch : MonoBehaviour
         playerMove.CurrentAction = ActionType.None;
         Debug.Log("Punch action canceled.");
     }
+
     IEnumerator DelayedFishSlap()
     {
         yield return new WaitForSeconds(0.6f);
@@ -105,23 +106,15 @@ public class Punch : MonoBehaviour
         {
             scores.score = scores.score + 1;
 
-            // Trigger animation first
             stateMachine.ChangeState(WrestlerState.Punch);
-
-            //All_SFX.PlayFishSlap();
             StartCoroutine(DelayedFishSlap());
 
-            // Start the coroutine to delay damage application
             StartCoroutine(DelayedPunchDamage(selectedEnemy));
 
-            // Consume fatigue immediately
             playerFatigue.UseFatigue(playerFatigue.punchFatigueCost);
-
-            // Disable highlights and reset state
             PPShighlight.SetActive(false);
             isPunching = false;
             playerMove.CurrentAction = ActionType.None;
-            
         }
         else
         {
@@ -131,11 +124,10 @@ public class Punch : MonoBehaviour
 
     IEnumerator DelayedPunchDamage(Transform enemy)
     {
-        yield return new WaitForSeconds(0.6f); // Adjust delay to match animation timing
+        yield return new WaitForSeconds(0.6f);
 
         if (enemy != null)
         {
-            // Check if the enemy has EnemyHealth (for general enemies)
             EnemyHealth enemyScript = enemy.GetComponent<EnemyHealth>();
             GoonHealth goonHealth = enemy.GetComponent<GoonHealth>();
 
@@ -154,22 +146,28 @@ public class Punch : MonoBehaviour
                 Debug.Log("Selected enemy does not have a valid damage method.");
             }
 
-            // Ensure Goon punch telegraph updates
             GoonMove goonMove = enemy.GetComponent<GoonMove>();
             if (goonMove != null)
             {
                 goonMove.OnPunchedByPlayer();
             }
 
-            // If the enemy is a regular AI, have them chase the player
             AIMove aiMoveScript = enemy.GetComponent<AIMove>();
             if (aiMoveScript != null)
             {
                 aiMoveScript.SetFollowPlayerForTurns(3);
             }
+
+            // ✅ New: Barra taunt logic
+            BarraMove barraMove = enemy.GetComponent<BarraMove>();
+            if (barraMove != null)
+            {
+                barraMove.isTaunted = true;
+                barraMove.tauntTurnsRemaining = 1;
+                Debug.Log($"{enemy.name} is now taunted and will target the player for 1 turn.");
+            }
         }
     }
-
 
     bool IsWithinPunchRange(Vector3Int playerPosition, Vector3Int enemyPosition)
     {
@@ -195,11 +193,11 @@ public class Punch : MonoBehaviour
     {
         Vector3Int playerPosition = tilemap.WorldToCell(transform.position);
 
-        if (enemyPosition.x < playerPosition.x && transform.localScale.x > 0) // Enemy is to the left
+        if (enemyPosition.x < playerPosition.x && transform.localScale.x > 0)
         {
             FlipPlayer();
         }
-        else if (enemyPosition.x > playerPosition.x && transform.localScale.x < 0) // Enemy is to the right
+        else if (enemyPosition.x > playerPosition.x && transform.localScale.x < 0)
         {
             FlipPlayer();
         }
@@ -208,7 +206,7 @@ public class Punch : MonoBehaviour
     private void FlipPlayer()
     {
         Vector3 localScale = transform.localScale;
-        localScale.x *= -1; // Flip the player horizontally
+        localScale.x *= -1;
         transform.localScale = localScale;
     }
 }
