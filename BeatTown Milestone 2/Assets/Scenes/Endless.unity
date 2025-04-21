@@ -969,6 +969,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   score: 0
+  scoreText: {fileID: 1753184675}
 --- !u!1 &194200902
 GameObject:
   m_ObjectHideFlags: 0
@@ -3577,6 +3578,7 @@ MonoBehaviour:
   myButton: {fileID: 539697138}
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
+  actionType: 0
 --- !u!1 &559996908
 GameObject:
   m_ObjectHideFlags: 0
@@ -5213,85 +5215,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   checkRadius: 0.1
---- !u!1 &687946947
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 687946948}
-  - component: {fileID: 687946950}
-  - component: {fileID: 687946951}
-  m_Layer: 5
-  m_Name: QuestText
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &687946948
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 687946947}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1534741308}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1016, y: 603}
-  m_SizeDelta: {x: 285.95, y: 55.07}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &687946950
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 687946947}
-  m_CullTransparentMesh: 1
---- !u!114 &687946951
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 687946947}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 12800000, guid: 5fa9a7ead7c6fbc44a598b7c13b44ce0, type: 3}
-    m_FontSize: 67
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 6
-    m_MaxSize: 67
-    m_Alignment: 0
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: QUEST
 --- !u!1 &706210706
 GameObject:
   m_ObjectHideFlags: 0
@@ -7335,6 +7258,7 @@ MonoBehaviour:
   myButton: {fileID: 921817470}
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
+  actionType: 0
 --- !u!1 &958094320
 GameObject:
   m_ObjectHideFlags: 0
@@ -10656,8 +10580,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 959.23, y: 490.99994}
-  m_SizeDelta: {x: 367.83, y: 92.96}
+  m_AnchoredPosition: {x: 938, y: 494.66}
+  m_SizeDelta: {x: 381.77, y: 244.22}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1373682870
 MonoBehaviour:
@@ -10686,13 +10610,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 0
     m_MaxSize: 80
-    m_Alignment: 0
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Catch 6 Fish
+  m_Text: Catch as many fish as you can
 --- !u!222 &1373682871
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11921,7 +11845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.1527234, g: 0.8301887, b: 0.7208645, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -11941,7 +11865,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Fish Caught: 0'
+  m_Text: 
 --- !u!222 &1453310171
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11966,7 +11890,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 945, y: 415.11}
+  m_AnchoredPosition: {x: 2159, y: 335.8199}
   m_SizeDelta: {x: 257.93, y: 58.81}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1463083342
@@ -13134,9 +13058,9 @@ RectTransform:
   m_Children:
   - {fileID: 1922781882}
   - {fileID: 1453310172}
-  - {fileID: 687946948}
   - {fileID: 1923928273}
   - {fileID: 1373682869}
+  - {fileID: 1753184674}
   m_Father: {fileID: 1724349334}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -14079,6 +14003,7 @@ MonoBehaviour:
   myButton: {fileID: 539697138}
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
+  actionType: 0
 --- !u!1 &1635339906
 GameObject:
   m_ObjectHideFlags: 0
@@ -15413,6 +15338,85 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1766197736}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1753184673
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1753184674}
+  - component: {fileID: 1753184676}
+  - component: {fileID: 1753184675}
+  m_Layer: 5
+  m_Name: SCORE
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1753184674
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753184673}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1534741308}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 944.45, y: 335.21}
+  m_SizeDelta: {x: 382.88, y: 57.588}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1753184675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753184673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 3e6d4e59a6ee09f42b811513e4e810a5, type: 3}
+    m_FontSize: 45
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 0
+    m_MaxSize: 55
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'HIGHSCORE: '
+--- !u!222 &1753184676
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753184673}
+  m_CullTransparentMesh: 1
 --- !u!1 &1760449029
 GameObject:
   m_ObjectHideFlags: 0
@@ -15960,6 +15964,7 @@ MonoBehaviour:
   myButton: {fileID: 539697138}
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
+  actionType: 0
 --- !u!1 &1784561172
 GameObject:
   m_ObjectHideFlags: 0
@@ -17638,8 +17643,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 951, y: 491}
-  m_SizeDelta: {x: 340.39, y: 86.02}
+  m_AnchoredPosition: {x: 945, y: 490.9999}
+  m_SizeDelta: {x: 381.77, y: 251.55}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1923928275
 CanvasRenderer:
@@ -17676,13 +17681,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 0
     m_MaxSize: 80
-    m_Alignment: 0
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Catch 6 Fish
+  m_Text: Catch as many fish as you can
 --- !u!1 &1952754830
 GameObject:
   m_ObjectHideFlags: 0

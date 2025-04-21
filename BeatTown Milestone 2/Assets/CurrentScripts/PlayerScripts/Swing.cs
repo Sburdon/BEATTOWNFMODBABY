@@ -156,7 +156,7 @@ public class Swing : MonoBehaviour
 
             if (AIUtils.IsAdjacent(playerPosition, targetPosition))
             {
-                scores.score = scores.score + 4;
+                
                 targetToSwing = hit.collider.gameObject;
                 Debug.Log($"Selected enemy for swing: {targetToSwing.name}");
                 PPShighlight.SetActive(false);
@@ -261,7 +261,7 @@ public class Swing : MonoBehaviour
                 hook.HandleSwingOrPushIntoHook(target);
             }
         }
-
+        scores.score = scores.score + 4;
         isSwinging = false;
         Debug.Log("Swing action completed.");
         PPShighlight.SetActive(false);
