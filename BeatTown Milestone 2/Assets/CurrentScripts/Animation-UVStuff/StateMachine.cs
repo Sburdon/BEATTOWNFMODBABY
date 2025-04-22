@@ -40,7 +40,6 @@ public class StateMachine : MonoBehaviour
 
     public WrestlerAnimationSet animationSet;
     public Texture2D chosenSourceTexture; //handles multiple source textures
-    private string fish1;
     public bool isFishOrGoon = false; //multiple source textures
 
     private float frameTimer = 0f;    // timer to track time between frames

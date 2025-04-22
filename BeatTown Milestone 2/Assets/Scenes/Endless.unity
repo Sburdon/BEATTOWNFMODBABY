@@ -878,7 +878,7 @@ MonoBehaviour:
   hookPrefab: {fileID: 146274211700111789, guid: b77ac0510f587904990eefe19e10b817,
     type: 3}
   goonPrefab: {fileID: 0}
-  goonSpawnTile: {x: 0, y: 0, z: 0}
+  goonSpawnTiles: []
   electricianPrefab: {fileID: 0}
   electricianSpawnTile: {x: 0, y: 0, z: 0}
   initialEnemiesToSpawn: 2
@@ -13273,14 +13273,20 @@ MonoBehaviour:
   turnOrderPanel: {fileID: 2085965856}
   playerBlueSprite: {fileID: 21300000, guid: 7c935034f0dacaa4e894b2fc1d774a38, type: 3}
   playerRedSprite: {fileID: 21300000, guid: 7ff35a6abd326c2408c2fc32b924afdf, type: 3}
-  enemyBlueSprite: {fileID: 21300000, guid: 1813d240af6536341b6c3628c46cb659, type: 3}
-  enemyRedSprite: {fileID: 21300000, guid: c69fa4295e9088843adf54d62761d9f2, type: 3}
+  enemyBlueSprite1: {fileID: 21300000, guid: 1be1059d00665aa49a2a3026f0acaf4f, type: 3}
+  enemyRedSprite1: {fileID: 21300000, guid: 4367b4ab9ce71384ab323352be6875cc, type: 3}
+  enemyBlueSprite2: {fileID: 21300000, guid: 0293a05d714ca23409a5074ac4f9f726, type: 3}
+  enemyRedSprite2: {fileID: 21300000, guid: 46f77b8ce08dda94e84fec60fdbef3da, type: 3}
+  enemyBlueSprite3: {fileID: 21300000, guid: 7c4074ea6a60732478cb9183615a1970, type: 3}
+  enemyRedSprite3: {fileID: 21300000, guid: b4293cab2c35421418aa693eb1026e61, type: 3}
+  enemyBlueSprite4: {fileID: 21300000, guid: 89a5472f890df384caa57e3ef1ae52a7, type: 3}
+  enemyRedSprite4: {fileID: 21300000, guid: c0f56a09264eed84d80d357eb2be3e38, type: 3}
   barraBlueSprite: {fileID: 21300000, guid: 5022d49213b23f34c9e73a4bece25cac, type: 3}
   barraRedSprite: {fileID: 21300000, guid: 76b673cb7f91b9344b29d86d3d3e67a2, type: 3}
-  goonRedSprite: {fileID: 0}
-  goonBlueSprite: {fileID: 0}
-  electBlueSprite: {fileID: 0}
-  electRedSprite: {fileID: 0}
+  goonRedSprite: {fileID: 21300000, guid: 884c5767696f2594085a9a73bbb3a285, type: 3}
+  goonBlueSprite: {fileID: 21300000, guid: 0c11579742c58c7469b786966560f230, type: 3}
+  electBlueSprite: {fileID: 21300000, guid: a8a44a2fd7e21ad4fb9802201f69ba15, type: 3}
+  electRedSprite: {fileID: 21300000, guid: a5eb7a5fffa70a741aa8c11ce64251c9, type: 3}
   enemySpritesScene2: []
   turnOrderPrefab: {fileID: 122606133422700438, guid: 0076737d9bf349743abeeba6f6d31d02,
     type: 3}
@@ -13292,6 +13298,7 @@ MonoBehaviour:
   electricianUnits: []
   playerMove: {fileID: 1977991994}
   playerFatigue: {fileID: 1977991997}
+  stateMachine: {fileID: 0}
   isPlayerTurn: 1
   RealMoveHighlight: {fileID: 1253888467}
   All_SFX: {fileID: 0}
@@ -18279,6 +18286,7 @@ MonoBehaviour:
   moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 36c53ef0f8fd3a44b90117861879bbd6, type: 2}
+  chosenSourceTexture: {fileID: 0}
   isFishOrGoon: 0
 --- !u!114 &1977992000
 MonoBehaviour:

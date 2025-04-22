@@ -740,6 +740,8 @@ public class TempTurnBase : MonoBehaviour
         {
             GameObject icon = turnOrderList[i];
             Image unitImage = icon.GetComponent<Image>();
+            TurnOrderIcons iconData = icon.GetComponent<TurnOrderIcons>();
+            Texture2D chosenTexture = iconData.chosenTexture;
 
             if (icon.CompareTag("Player"))
             {
@@ -747,27 +749,14 @@ public class TempTurnBase : MonoBehaviour
             }
             else if (icon.CompareTag("Enemy"))
             {
-                if(stateMachine.chosenSourceTexture == this.stateMachine.animationSet.sourceTexture1)
-                {
-                    Debug.Log("CRY CRY CRY NO IMG BUT HERE");
+                if (chosenTexture == stateMachine.animationSet.sourceTexture1)
                     unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite1 : enemyRedSprite1;
-                }
-                if (stateMachine.chosenSourceTexture == this.stateMachine.animationSet.sourceTexture2)
-                {
-                    Debug.Log("CRY CRY CRY NO IMG BUT HERE");
+                else if (chosenTexture == stateMachine.animationSet.sourceTexture2)
                     unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite2 : enemyRedSprite2;
-                }
-                if (stateMachine.chosenSourceTexture == this.stateMachine.animationSet.sourceTexture3)
-                {
-                    Debug.Log("CRY CRY CRY NO IMG BUT HERE");
+                else if (chosenTexture == stateMachine.animationSet.sourceTexture3)
                     unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite3 : enemyRedSprite3;
-                }
-                if (stateMachine.chosenSourceTexture == this.stateMachine.animationSet.sourceTexture4)
-                {
-                    Debug.Log("CRY CRY CRY NO IMG BUT HERE");
+                else if (chosenTexture == stateMachine.animationSet.sourceTexture4)
                     unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite4 : enemyRedSprite4;
-                }
-                //unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite : enemyRedSprite;
             }
             else if (icon.CompareTag("Barra"))
             {
@@ -794,6 +783,9 @@ public class TempTurnBase : MonoBehaviour
 
         TurnOrderIcons turnOrderIcons = icon.AddComponent<TurnOrderIcons>();
 
+        // Make sure chosenTexture is set here
+        turnOrderIcons.chosenTexture = ((MonoBehaviour)unit).GetComponent<StateMachine>().chosenSourceTexture;
+
         // Link the enemy if it's not a player
         if (unit is AIMove || unit is BarraMove || unit is GoonMove || unit is ElectricianMove)
         {
@@ -807,4 +799,5 @@ public class TempTurnBase : MonoBehaviour
 
         return icon;
     }
+
 }
