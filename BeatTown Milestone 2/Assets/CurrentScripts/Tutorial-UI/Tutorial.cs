@@ -13,10 +13,15 @@ public class Tutorial : MonoBehaviour
     private bool isEnemyTutorialActive = false;
     private bool isHookedTutorialActive = false; 
     private bool canReceiveInput = false;
-
+    [SerializeField]
+    public GameObject[] PauseMenuItems;
 
     private void Start()
     {
+        foreach (GameObject item in PauseMenuItems)
+        {
+            item.SetActive(false);
+        }
         animtut = GetComponent<Animator>();
 
         // Disable button interactions
@@ -232,7 +237,9 @@ public class Tutorial : MonoBehaviour
             PauseGameOnESC();
         }
     }
+   
 
+    
     public void PauseGameOnESC()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -249,6 +256,11 @@ public class Tutorial : MonoBehaviour
                     // pause the game
                     Time.timeScale = 0f;
                     isPaused = true;
+                    foreach (GameObject item in PauseMenuItems)
+                    {
+                        item.SetActive(true);
+                    }
+
                 }
                 else
                 {
@@ -260,6 +272,10 @@ public class Tutorial : MonoBehaviour
                     // resume the game
                     Time.timeScale = 1f;
                     isPaused = false;
+                    foreach (GameObject item in PauseMenuItems)
+                    {
+                        item.SetActive(false);
+                    }
                 }
             }
         }

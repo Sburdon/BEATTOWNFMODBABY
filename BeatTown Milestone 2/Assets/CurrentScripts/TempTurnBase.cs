@@ -11,21 +11,8 @@ public class TempTurnBase : MonoBehaviour
 
     public Sprite playerBlueSprite;
     public Sprite playerRedSprite;
-    //_______________________
-    //This is for the enemy portraits all 4 varients
-    public Sprite enemyBlueSprite1;
-    public Sprite enemyRedSprite1;
-
-    public Sprite enemyBlueSprite2;
-    public Sprite enemyRedSprite2;
-
-    public Sprite enemyBlueSprite3;
-    public Sprite enemyRedSprite3;
-
-    public Sprite enemyBlueSprite4;
-    public Sprite enemyRedSprite4;
-
-    //__________________________
+    public Sprite enemyBlueSprite;
+    public Sprite enemyRedSprite;
     public Sprite barraBlueSprite;
     public Sprite barraRedSprite; // Blue picture for the active turn
 
@@ -58,7 +45,6 @@ public class TempTurnBase : MonoBehaviour
     public PlayerFatigue playerFatigue;
     private RespawnManager respawnManager;
     private Hook hook;
-    public StateMachine stateMachine;
 
     public bool isPlayerTurn = true;
     private bool isProcessingTurn = false;
@@ -82,7 +68,7 @@ public class TempTurnBase : MonoBehaviour
     {
         hook = Hook.Instance;
         respawnManager = RespawnManager.Instance;
-        //stateMachine = GetComponent<StateMachine>();
+
 
         if (playerMove == null)
             playerMove = FindObjectOfType<PlayerMove>();
@@ -619,21 +605,21 @@ public class TempTurnBase : MonoBehaviour
     }
 
     private IEnumerator ProcessElectricianTurn(ElectricianMove electrician)
-{
-    isProcessingTurn = true;
-    Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
+    {
+        isProcessingTurn = true;
+        Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
 
-    // Reset fatigue at the start of the turn
-    electrician.ResetFatigue();
+        // Reset fatigue at the start of the turn
+        electrician.ResetFatigue();
 
-    // Execute movement and panel fixing
-    yield return StartCoroutine(electrician.MoveAction());
+        // Execute movement and panel fixing
+        yield return StartCoroutine(electrician.MoveAction());
 
-    // Rotate turn order and proceed to next turn
-    RotateTurnOrder();
-    StartTurn();
-    isProcessingTurn = false;
-}
+        // Rotate turn order and proceed to next turn
+        RotateTurnOrder();
+        StartTurn();
+        isProcessingTurn = false;
+    }
 
     // ─────────────────────────────────────
     // Start Player Turn
@@ -740,8 +726,6 @@ public class TempTurnBase : MonoBehaviour
         {
             GameObject icon = turnOrderList[i];
             Image unitImage = icon.GetComponent<Image>();
-            TurnOrderIcons iconData = icon.GetComponent<TurnOrderIcons>();
-            Texture2D chosenTexture = iconData.chosenTexture;
 
             if (icon.CompareTag("Player"))
             {
@@ -749,14 +733,7 @@ public class TempTurnBase : MonoBehaviour
             }
             else if (icon.CompareTag("Enemy"))
             {
-                if (chosenTexture == stateMachine.animationSet.sourceTexture1)
-                    unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite1 : enemyRedSprite1;
-                else if (chosenTexture == stateMachine.animationSet.sourceTexture2)
-                    unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite2 : enemyRedSprite2;
-                else if (chosenTexture == stateMachine.animationSet.sourceTexture3)
-                    unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite3 : enemyRedSprite3;
-                else if (chosenTexture == stateMachine.animationSet.sourceTexture4)
-                    unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite4 : enemyRedSprite4;
+                unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite : enemyRedSprite;
             }
             else if (icon.CompareTag("Barra"))
             {
@@ -783,9 +760,6 @@ public class TempTurnBase : MonoBehaviour
 
         TurnOrderIcons turnOrderIcons = icon.AddComponent<TurnOrderIcons>();
 
-        // Make sure chosenTexture is set here
-        turnOrderIcons.chosenTexture = ((MonoBehaviour)unit).GetComponent<StateMachine>().chosenSourceTexture;
-
         // Link the enemy if it's not a player
         if (unit is AIMove || unit is BarraMove || unit is GoonMove || unit is ElectricianMove)
         {
@@ -799,5 +773,4 @@ public class TempTurnBase : MonoBehaviour
 
         return icon;
     }
-
 }
