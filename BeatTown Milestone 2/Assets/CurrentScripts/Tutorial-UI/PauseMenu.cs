@@ -51,7 +51,7 @@ public class PauseMenu : MonoBehaviour
                 {
                     b.interactable = true;
                 }
-            }
+            }   
             // hide the pause menu
             pauseMenuUI.SetActive(false);
             // resume the game

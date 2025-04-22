@@ -221,7 +221,7 @@ public class Tutorial : MonoBehaviour
             // Check if SpaceBar is pressed to advance the tutorial
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.LogWarning("Spacebar pressed");
+                Debug.LogWarning("barra tutorial advanced");
                 ChangeBarraAnimation();
             }
         }
@@ -238,6 +238,7 @@ public class Tutorial : MonoBehaviour
             // Check if SpaceBar is pressed to advance the tutorial
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                Debug.LogWarning("Hooked tutorial advanced");
                 ChangeHookedAnimation();
             }
         }
