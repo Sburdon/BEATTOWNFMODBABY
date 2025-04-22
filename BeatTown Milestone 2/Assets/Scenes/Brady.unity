@@ -3382,8 +3382,6 @@ GameObject:
   - component: {fileID: 539697138}
   - component: {fileID: 539697141}
   - component: {fileID: 539697142}
-  - component: {fileID: 539697144}
-  - component: {fileID: 539697143}
   m_Layer: 5
   m_Name: Punch Button
   m_TagString: Untagged
@@ -3601,30 +3599,6 @@ MonoBehaviour:
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
   actionType: 0
---- !u!114 &539697143
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 539697136}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a9319dabfdbdfe40920d0a48f84263f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &539697144
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 539697136}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40b41ed98fec84541a8167232eeb1014, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &543961702
 GameObject:
   m_ObjectHideFlags: 0
@@ -7393,8 +7367,6 @@ GameObject:
   - component: {fileID: 921817470}
   - component: {fileID: 921817473}
   - component: {fileID: 921817474}
-  - component: {fileID: 921817476}
-  - component: {fileID: 921817475}
   m_Layer: 5
   m_Name: Push Button
   m_TagString: Untagged
@@ -7599,30 +7571,6 @@ MonoBehaviour:
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
   actionType: 0
---- !u!114 &921817475
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921817468}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a9319dabfdbdfe40920d0a48f84263f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &921817476
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921817468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40b41ed98fec84541a8167232eeb1014, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &952498301
 GameObject:
   m_ObjectHideFlags: 0
@@ -9623,15 +9571,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85fa3427f3f34b14fa27fb69910b59af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PauseMenuItems:
+  - {fileID: 561471242}
+  - {fileID: 614400736}
   barray:
   - {fileID: 1620997631}
   - {fileID: 539697138}
   - {fileID: 1766274695}
   - {fileID: 921817470}
   - {fileID: 1838578848}
-  PauseMenuItems:
-  - {fileID: 561471242}
-  - {fileID: 614400736}
+  isPaused: 0
+  isTutorialActive: 1
 --- !u!1 &1145586135
 GameObject:
   m_ObjectHideFlags: 0
@@ -14249,8 +14199,6 @@ GameObject:
   - component: {fileID: 1620997631}
   - component: {fileID: 1620997635}
   - component: {fileID: 1620997636}
-  - component: {fileID: 1620997638}
-  - component: {fileID: 1620997637}
   m_Layer: 5
   m_Name: Move Button
   m_TagString: Untagged
@@ -14456,30 +14404,6 @@ MonoBehaviour:
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
   actionType: 0
---- !u!114 &1620997637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620997630}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a9319dabfdbdfe40920d0a48f84263f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1620997638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620997630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40b41ed98fec84541a8167232eeb1014, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1635339906
 GameObject:
   m_ObjectHideFlags: 0
@@ -14489,7 +14413,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1635339908}
-  - component: {fileID: 1635339907}
   m_Layer: 0
   m_Name: PauseManger
   m_TagString: Untagged
@@ -14497,18 +14420,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1635339907
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1635339906}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 991355a93011a954196d183ddcfae7fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1635339908
 Transform:
   m_ObjectHideFlags: 0
@@ -16153,8 +16064,6 @@ GameObject:
   - component: {fileID: 1766274695}
   - component: {fileID: 1766274698}
   - component: {fileID: 1766274699}
-  - component: {fileID: 1766274701}
-  - component: {fileID: 1766274700}
   m_Layer: 5
   m_Name: Swing Button
   m_TagString: Untagged
@@ -16364,30 +16273,6 @@ MonoBehaviour:
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
   actionType: 0
---- !u!114 &1766274700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1766274693}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a9319dabfdbdfe40920d0a48f84263f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1766274701
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1766274693}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40b41ed98fec84541a8167232eeb1014, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1784561172
 GameObject:
   m_ObjectHideFlags: 0

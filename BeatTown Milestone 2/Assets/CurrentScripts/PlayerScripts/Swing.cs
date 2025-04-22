@@ -27,6 +27,7 @@ public class Swing : MonoBehaviour
     public bool disableSwing;
     private Score scores;
 
+
     void Awake()
     {
         scores = FindObjectOfType<Score>();
