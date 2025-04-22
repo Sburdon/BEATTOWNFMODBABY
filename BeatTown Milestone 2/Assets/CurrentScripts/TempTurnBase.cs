@@ -11,8 +11,21 @@ public class TempTurnBase : MonoBehaviour
 
     public Sprite playerBlueSprite;
     public Sprite playerRedSprite;
-    public Sprite enemyBlueSprite;
-    public Sprite enemyRedSprite;
+    //_______________________
+    //This is for the enemy portraits all 4 varients
+    public Sprite enemyBlueSprite1;
+    public Sprite enemyRedSprite1;
+
+    public Sprite enemyBlueSprite2;
+    public Sprite enemyRedSprite2;
+
+    public Sprite enemyBlueSprite3;
+    public Sprite enemyRedSprite3;
+
+    public Sprite enemyBlueSprite4;
+    public Sprite enemyRedSprite4;
+
+    //__________________________
     public Sprite barraBlueSprite;
     public Sprite barraRedSprite; // Blue picture for the active turn
 
@@ -45,6 +58,7 @@ public class TempTurnBase : MonoBehaviour
     public PlayerFatigue playerFatigue;
     private RespawnManager respawnManager;
     private Hook hook;
+    public StateMachine stateMachine;
 
     public bool isPlayerTurn = true;
     private bool isProcessingTurn = false;
@@ -68,7 +82,7 @@ public class TempTurnBase : MonoBehaviour
     {
         hook = Hook.Instance;
         respawnManager = RespawnManager.Instance;
-
+        //stateMachine = GetComponent<StateMachine>();
 
         if (playerMove == null)
             playerMove = FindObjectOfType<PlayerMove>();
@@ -733,7 +747,27 @@ public class TempTurnBase : MonoBehaviour
             }
             else if (icon.CompareTag("Enemy"))
             {
-                unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite : enemyRedSprite;
+                if(stateMachine.chosenSourceTexture == this.stateMachine.animationSet.sourceTexture1)
+                {
+                    Debug.Log("CRY CRY CRY NO IMG BUT HERE");
+                    unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite1 : enemyRedSprite1;
+                }
+                if (stateMachine.chosenSourceTexture == this.stateMachine.animationSet.sourceTexture2)
+                {
+                    Debug.Log("CRY CRY CRY NO IMG BUT HERE");
+                    unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite2 : enemyRedSprite2;
+                }
+                if (stateMachine.chosenSourceTexture == this.stateMachine.animationSet.sourceTexture3)
+                {
+                    Debug.Log("CRY CRY CRY NO IMG BUT HERE");
+                    unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite3 : enemyRedSprite3;
+                }
+                if (stateMachine.chosenSourceTexture == this.stateMachine.animationSet.sourceTexture4)
+                {
+                    Debug.Log("CRY CRY CRY NO IMG BUT HERE");
+                    unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite4 : enemyRedSprite4;
+                }
+                //unitImage.sprite = (i == currentTurnIndex) ? enemyBlueSprite : enemyRedSprite;
             }
             else if (icon.CompareTag("Barra"))
             {

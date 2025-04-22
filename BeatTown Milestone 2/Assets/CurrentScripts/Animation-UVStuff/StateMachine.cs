@@ -36,10 +36,11 @@ public class StateMachine : MonoBehaviour
     private int curFrame = 0;
     private float frameDuration = 0.1f; // time per frame
     private SpriteRenderer spriteRenderer;
+    private AIMove aiMove;
 
     public WrestlerAnimationSet animationSet;
-    private Texture2D chosenSourceTexture; //handles multiple source textures
-
+    public Texture2D chosenSourceTexture; //handles multiple source textures
+    private string fish1;
     public bool isFishOrGoon = false; //multiple source textures
 
     private float frameTimer = 0f;    // timer to track time between frames
@@ -69,7 +70,7 @@ public class StateMachine : MonoBehaviour
         }
 
         spriteRenderer = GetComponent<SpriteRenderer>();
-
+        aiMove = FindObjectOfType<AIMove>();
         // randomize source texture if this is a fish/goon
         if (isFishOrGoon)
         {
