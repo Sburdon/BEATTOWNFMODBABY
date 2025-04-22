@@ -5,6 +5,12 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
+[System.Serializable]
+public class GoonSpawnData
+{
+    public Vector3Int spawnTile;
+}
+
 public class RespawnManager : MonoBehaviour
 {
     public static RespawnManager Instance { get; private set; }
@@ -19,8 +25,9 @@ public class RespawnManager : MonoBehaviour
     [Tooltip("Prefab for your Goon (with GoonMove & GoonFatigue scripts).")]
     public GameObject goonPrefab;
 
-    [Tooltip("Tile where the Goon will spawn. E.g., (5, 5, 0).")]
-    public Vector3Int goonSpawnTile;
+    [Tooltip("List of tiles where Goons will spawn.")]
+    public List<GoonSpawnData> goonSpawnTiles = new List<GoonSpawnData>();
+
 
     [Header("Electrician Prefab & Spawn Settings")]
     public GameObject electricianPrefab;
@@ -112,33 +119,33 @@ public class RespawnManager : MonoBehaviour
     // Goon Spawning
     // ------------------------------------------------------------------
     public void SpawnGoon()
+{
+    if (goonPrefab == null)
     {
-        if (goonPrefab == null)
+        Debug.LogWarning("RespawnManager: No Goon prefab assigned.");
+        return;
+    }
+
+    foreach (GoonSpawnData spawnData in goonSpawnTiles)
+    {
+        Vector3Int tile = spawnData.spawnTile;
+
+        if (OccupiedTilesManager.Instance.IsTileOccupied(tile))
         {
-            Debug.LogWarning("RespawnManager: No Goon prefab assigned.");
-            return;
-        }
-        if (OccupiedTilesManager.Instance.IsTileOccupied(goonSpawnTile))
-        {
-            Debug.LogWarning($"RespawnManager: Goon spawn tile {goonSpawnTile} is occupied!");
-            return;
+            Debug.LogWarning($"RespawnManager: Goon spawn tile {tile} is occupied. Skipping.");
+            continue;
         }
 
-        Vector3 spawnWorldPos = tilemap.GetCellCenterWorld(goonSpawnTile);
-        GameObject goonGO = Instantiate(goonPrefab, spawnWorldPos, Quaternion.identity);
+        Vector3 worldPos = tilemap.GetCellCenterWorld(tile);
+        GameObject goonGO = Instantiate(goonPrefab, worldPos, Quaternion.identity);
 
         GoonMove goonMove = goonGO.GetComponent<GoonMove>();
         if (goonMove != null)
         {
-            // Assign references the Goon might need:
-            // goonMove.playerMove = playerMove; // REMOVED since new GoonMove doesn't need it
             goonMove.tilemap = tilemap;
-            goonMove.CurrentTilePosition = goonSpawnTile;
+            goonMove.CurrentTilePosition = tile;
 
-            // Occupy the tile
-            OccupiedTilesManager.Instance.AddOccupiedPosition(goonSpawnTile);
-
-            // Add to turn system
+            OccupiedTilesManager.Instance.AddOccupiedPosition(tile);
             tempTurnBase.AddGoonUnit(goonMove);
         }
         else
@@ -146,6 +153,8 @@ public class RespawnManager : MonoBehaviour
             Debug.LogError("RespawnManager: Goon prefab is missing GoonMove component.");
         }
     }
+}
+
 
     // ------------------------------------------------------------------
     // Electrician Spawning

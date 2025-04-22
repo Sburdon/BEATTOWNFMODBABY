@@ -43,11 +43,26 @@ public class Hole : MonoBehaviour
     {
         
         // Set the proper reference and flag depending on what type of object hit the hole
-        if (collision.gameObject.CompareTag("Electrician"))
+            if (collision.gameObject.CompareTag("Electrician"))
         {
-            electricianMove = collision.gameObject.GetComponent<ElectricianMove>();
-            thingInHole = collision.gameObject;
-            //   electricianMove.Prone = true; // bool for Electrician script (not used for anything yet)
+        Debug.LogWarning("Electrician has fallen into a hole!");
+
+        electricianMove = collision.gameObject.GetComponent<ElectricianMove>();
+        thingInHole = collision.gameObject;
+
+        // Snap Electrician to the center of the hole
+        thingInHole.transform.position = tilemap.GetCellCenterWorld(holePosition);
+
+        // Prevent movement (if needed)
+        // electricianMove.remainingMoves = 0; // Add this if you use movement locking via variable
+
+        // Apply fatigue effect
+        ElectricianFatigue electricianFatigue = collision.GetComponent<ElectricianFatigue>();
+        if (electricianFatigue != null)
+        {
+            electricianFatigue.prone = true;
+            electricianFatigue.UseGetUpFatigue(); // Spend 1 fatigue to get out
+        }
         }
         else if (collision.gameObject.CompareTag("Goon"))
         {

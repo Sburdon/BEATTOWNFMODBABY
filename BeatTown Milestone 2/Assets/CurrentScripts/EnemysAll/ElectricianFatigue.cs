@@ -45,4 +45,20 @@ public class ElectricianFatigue : MonoBehaviour
     {
         return currentFatigue >= amount;
     }
+
+    [HideInInspector]
+public bool prone = false;
+
+/// <summary>
+/// Spend 1 fatigue to get up if prone.
+/// </summary>
+public void UseGetUpFatigue()
+{
+    if (prone && UseFatigue(1))
+    {
+        prone = false;
+        Debug.Log("Electrician used 1 fatigue to get up from hole.");
+    }
+}
+
 }
