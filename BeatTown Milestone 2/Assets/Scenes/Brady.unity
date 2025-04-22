@@ -3667,11 +3667,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9319dabfdbdfe40920d0a48f84263f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myButton: {fileID: 539697138}
-  playerFatigue: {fileID: 0}
-  fc: {fileID: 0}
-  isCoroutineRunning: 0
-  buttonUsed: 0
 --- !u!114 &539697144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3684,7 +3679,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40b41ed98fec84541a8167232eeb1014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cost: 1
 --- !u!1 &543961702
 GameObject:
   m_ObjectHideFlags: 0
@@ -7517,11 +7511,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9319dabfdbdfe40920d0a48f84263f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myButton: {fileID: 921817470}
-  playerFatigue: {fileID: 0}
-  fc: {fileID: 0}
-  isCoroutineRunning: 0
-  buttonUsed: 0
 --- !u!114 &921817476
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7534,7 +7523,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40b41ed98fec84541a8167232eeb1014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cost: 1
 --- !u!1 &952498301
 GameObject:
   m_ObjectHideFlags: 0
@@ -13630,8 +13618,14 @@ MonoBehaviour:
   turnOrderPanel: {fileID: 2085965856}
   playerBlueSprite: {fileID: 21300000, guid: 7c935034f0dacaa4e894b2fc1d774a38, type: 3}
   playerRedSprite: {fileID: 21300000, guid: 7ff35a6abd326c2408c2fc32b924afdf, type: 3}
-  enemyBlueSprite: {fileID: 21300000, guid: 1813d240af6536341b6c3628c46cb659, type: 3}
-  enemyRedSprite: {fileID: 21300000, guid: c69fa4295e9088843adf54d62761d9f2, type: 3}
+  enemyBlueSprite1: {fileID: 21300000, guid: 1813d240af6536341b6c3628c46cb659, type: 3}
+  enemyRedSprite1: {fileID: 21300000, guid: 76b673cb7f91b9344b29d86d3d3e67a2, type: 3}
+  enemyBlueSprite2: {fileID: 0}
+  enemyRedSprite2: {fileID: 21300000, guid: 1813d240af6536341b6c3628c46cb659, type: 3}
+  enemyBlueSprite3: {fileID: 0}
+  enemyRedSprite3: {fileID: 21300000, guid: a8a44a2fd7e21ad4fb9802201f69ba15, type: 3}
+  enemyBlueSprite4: {fileID: 0}
+  enemyRedSprite4: {fileID: 21300000, guid: 0c11579742c58c7469b786966560f230, type: 3}
   barraBlueSprite: {fileID: 21300000, guid: 5022d49213b23f34c9e73a4bece25cac, type: 3}
   barraRedSprite: {fileID: 21300000, guid: 76b673cb7f91b9344b29d86d3d3e67a2, type: 3}
   goonRedSprite: {fileID: 0}
@@ -13649,6 +13643,7 @@ MonoBehaviour:
   electricianUnits: []
   playerMove: {fileID: 1977991994}
   playerFatigue: {fileID: 1977991997}
+  stateMachine: {fileID: 1977991999}
   isPlayerTurn: 1
   RealMoveHighlight: {fileID: 1253888467}
   All_SFX: {fileID: 0}
@@ -14375,11 +14370,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9319dabfdbdfe40920d0a48f84263f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myButton: {fileID: 1620997631}
-  playerFatigue: {fileID: 0}
-  fc: {fileID: 0}
-  isCoroutineRunning: 0
-  buttonUsed: 0
 --- !u!114 &1620997638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14392,7 +14382,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40b41ed98fec84541a8167232eeb1014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cost: 1
 --- !u!1 &1635339906
 GameObject:
   m_ObjectHideFlags: 0
@@ -16289,11 +16278,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9319dabfdbdfe40920d0a48f84263f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myButton: {fileID: 1766274695}
-  playerFatigue: {fileID: 0}
-  fc: {fileID: 0}
-  isCoroutineRunning: 0
-  buttonUsed: 0
 --- !u!114 &1766274701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16306,7 +16290,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40b41ed98fec84541a8167232eeb1014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cost: 2
 --- !u!1 &1784561172
 GameObject:
   m_ObjectHideFlags: 0
@@ -18621,6 +18604,7 @@ MonoBehaviour:
   moveSpeed: 3
   actionPlaying: 0
   animationSet: {fileID: 11400000, guid: 36c53ef0f8fd3a44b90117861879bbd6, type: 2}
+  chosenSourceTexture: {fileID: 0}
   isFishOrGoon: 0
 --- !u!114 &1977992000
 MonoBehaviour:
