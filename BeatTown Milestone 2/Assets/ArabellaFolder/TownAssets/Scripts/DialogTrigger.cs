@@ -16,6 +16,8 @@ public class DialogueTrigger : MonoBehaviour
     public GameObject cutsceneObject; 
     public ScreenFader screenFader; 
 
+    public Animator fishAnimator; 
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!triggered && other.CompareTag("Player"))
@@ -47,15 +49,11 @@ public class DialogueTrigger : MonoBehaviour
         // Trigger cutscene
         if (cutsceneObject != null)
         {
-            // Option A: Timeline
+            fishAnimator.SetTrigger("cutsceneStarted");
             var director = cutsceneObject.GetComponent<UnityEngine.Playables.PlayableDirector>();
             if (director != null)
                 director.Play();
 
-            // Option B: Animator
-            // var animator = cutsceneObject.GetComponent<Animator>();
-            // if (animator != null)
-            //     animator.SetTrigger("StartCutscene");
         }
 
         // Optionally Fade In afterward
