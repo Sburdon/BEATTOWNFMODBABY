@@ -54,7 +54,7 @@ public class PlayerHealth : MonoBehaviour
     // Method to end the game
     private void EndGame()
     {
-        SceneManager.LoadScene(0); // Restart current scene for now
+        SceneManager.LoadScene("LoseScreen");
     }
     private IEnumerator FadeOutHeart(Image heartImage)
     {

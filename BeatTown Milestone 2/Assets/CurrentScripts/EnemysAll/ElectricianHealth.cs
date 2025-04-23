@@ -39,11 +39,9 @@ public class ElectricianHealth : MonoBehaviour
     {
         Debug.Log("Electrician has died! Game Over!");
 
-        // Disable the Electrician game object so it can't do anything else
         gameObject.SetActive(false);
 
-        // Now load your "GameOver" scene (or do any other end-of-game logic)
-        // Replace "GameOver" with whatever your actual scene name is:
-        SceneManager.LoadScene("GameOver");
+        // 🔥 Load your Lose Scene — placeholder
+        UnityEngine.SceneManagement.SceneManager.LoadScene("LoseScreen");
     }
 }

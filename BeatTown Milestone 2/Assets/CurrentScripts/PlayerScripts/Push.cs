@@ -160,140 +160,175 @@ public class Push : MonoBehaviour
 
     void TryPushTarget()
     {
-        if (selectedTarget != null)
-        {
-            Vector3Int playerPosition = playerMove.CurrentTilePosition;
-            Vector3Int targetPosition = tilemap.WorldToCell(selectedTarget.position);
-
-            Vector3Int direction = Vector3Int.zero;
-
-            if (playerPosition.x < targetPosition.x)
-                direction = Vector3Int.right;
-            else if (playerPosition.x > targetPosition.x)
-                direction = Vector3Int.left;
-            else if (playerPosition.y < targetPosition.y)
-                direction = Vector3Int.up;
-            else if (playerPosition.y > targetPosition.y)
-                direction = Vector3Int.down;
-
-            FlipPlayerIfNeeded(direction);
-
-            Vector3Int furthestTile = FindFurthestTile(targetPosition, direction);
-
-            if (furthestTile != targetPosition)
+            if (selectedTarget != null)
             {
-                OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetPosition);
-                StartCoroutine(PushTargetToTile(selectedTarget, furthestTile));
-                playerFatigue.UseFatigue(playerFatigue.pushFatigueCost);
-                selectedTarget = null;
-                isPushing = false;
+                Vector3Int playerPosition = playerMove.CurrentTilePosition;
+                Vector3Int targetPosition = tilemap.WorldToCell(selectedTarget.position);
+
+                Vector3Int direction = Vector3Int.zero;
+
+                if (playerPosition.x < targetPosition.x)
+                    direction = Vector3Int.right;
+                else if (playerPosition.x > targetPosition.x)
+                    direction = Vector3Int.left;
+                else if (playerPosition.y < targetPosition.y)
+                    direction = Vector3Int.up;
+                else if (playerPosition.y > targetPosition.y)
+                    direction = Vector3Int.down;
+
+                FlipPlayerIfNeeded(direction);
+
+                Vector3Int furthestTile = FindFurthestTile(targetPosition, direction);
+
+                if (furthestTile != targetPosition)
+                {
+                    OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetPosition);
+                    StartCoroutine(PushTargetToTile(selectedTarget, furthestTile));
+                    playerFatigue.UseFatigue(playerFatigue.pushFatigueCost);
+                    selectedTarget = null;
+                    isPushing = false;
+                }
+                else
+                {
+                    Debug.Log("No valid tile to push to.");
+                }
             }
             else
             {
-                Debug.Log("No valid tile to push to.");
+                Debug.Log("No target selected for push.");
             }
-        }
-        else
-        {
-            Debug.Log("No target selected for push.");
-        }
-        All_SFX.PlayPush();
-    }
-
-    Vector3Int FindFurthestTile(Vector3Int startTile, Vector3Int direction)
-    {
-        Vector3Int currentTile = startTile;
-        while (AIUtils.IsTileValid(tilemap, OccupiedTilesManager.Instance, currentTile + direction, hook))
-        {
-            currentTile += direction;
-        }
-        return currentTile;
-    }
-
-    private IEnumerator PushTargetToTile(Transform target, Vector3Int targetTilePosition)
-    {
-        PPShighlight.SetActive(false);
-        stateMachine.ChangeState(WrestlerState.Push);
-
-        Vector3 startPosition = target.position;
-        Vector3 endPosition = tilemap.GetCellCenterWorld(targetTilePosition);
-        float travelTime = 0.5f;
-        float elapsedTime = 0f;
-        float animationDelay = 0.4f; // Delay before movement starts
-
-        EnemyHealth targetHealth = target.GetComponent<EnemyHealth>();
-        bool targetDied = false;
-        void OnTargetDeath() { targetDied = true; }
-
-        if (targetHealth != null)
-        {
-            targetHealth.OnDeath += OnTargetDeath;
+            All_SFX.PlayPush();
         }
 
-        // **Wait before pushing to sync with animation**
-        yield return new WaitForSeconds(animationDelay);
-
-        while (elapsedTime < travelTime)
+        Vector3Int FindFurthestTile(Vector3Int startTile, Vector3Int direction)
         {
-            if (targetDied)
+            Vector3Int currentTile = startTile;
+            while (AIUtils.IsTileValid(tilemap, OccupiedTilesManager.Instance, currentTile + direction, hook))
             {
-                Debug.Log("Target died during push. Stopping movement.");
-                break;
+                currentTile += direction;
             }
-
-            target.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / travelTime);
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            return currentTile;
         }
 
-        if (targetHealth != null)
-        {
-            targetHealth.OnDeath -= OnTargetDeath;
-        }
+        private IEnumerator PushTargetToTile(Transform target, Vector3Int targetTilePosition)
+{
+    PPShighlight.SetActive(false);
+    stateMachine.ChangeState(WrestlerState.Push);
 
+    Vector3 startPosition = target.position;
+    Vector3 endPosition = tilemap.GetCellCenterWorld(targetTilePosition);
+    float travelTime = 0.5f;
+    float elapsedTime = 0f;
+    float animationDelay = 0.4f;
+
+    EnemyHealth targetHealth = target.GetComponent<EnemyHealth>();
+    bool targetDied = false;
+    void OnTargetDeath() { targetDied = true; }
+
+    if (targetHealth != null)
+    {
+        targetHealth.OnDeath += OnTargetDeath;
+    }
+
+    yield return new WaitForSeconds(animationDelay);
+
+    // Movement with real-time hole detection
+    Vector3 currentPos = startPosition;
+    Vector3Int lastCheckedTile = tilemap.WorldToCell(currentPos);
+    bool fellInHole = false;
+
+    while (elapsedTime < travelTime)
+    {
         if (targetDied)
         {
-            yield break;
+            Debug.Log("Target died during push. Stopping movement.");
+            break;
         }
 
-        target.position = endPosition;
-        Debug.Log($"{target.name} has been pushed to {targetTilePosition}");
+        currentPos = Vector3.Lerp(startPosition, endPosition, elapsedTime / travelTime);
+        target.position = currentPos;
 
-        // **Update AI movement positions**
-        AIMove targetAIMove = target.GetComponent<AIMove>();
-        BarraMove targetBarraMove = target.GetComponent<BarraMove>();
-
-        if (targetAIMove != null)
+        Vector3Int currentTile = tilemap.WorldToCell(currentPos);
+        if (currentTile != lastCheckedTile)
         {
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetAIMove.CurrentTilePosition);
-            targetAIMove.CurrentTilePosition = targetTilePosition;
-            OccupiedTilesManager.Instance.AddOccupiedPosition(targetAIMove.CurrentTilePosition);
-        }
-        else if (targetBarraMove != null)
-        {
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetBarraMove.CurrentTilePosition);
-            targetBarraMove.CurrentTilePosition = targetTilePosition;
-            OccupiedTilesManager.Instance.AddOccupiedPosition(targetBarraMove.CurrentTilePosition);
+            lastCheckedTile = currentTile;
+
+            HoleUtils.TryFallInHole(target.gameObject, currentTile, tilemap);
+
+            GoonFatigue goonFatigue = target.GetComponent<GoonFatigue>();
+            if (goonFatigue != null && goonFatigue.prone)
+            {
+                Debug.Log("Goon fell into a hole mid-push. Stopping movement and locking into tile.");
+
+                GoonMove gm = target.GetComponent<GoonMove>();
+                if (gm != null)
+                {
+                    gm.CurrentTilePosition = currentTile;
+                    OccupiedTilesManager.Instance.AddOccupiedPosition(currentTile);
+                }
+
+                fellInHole = true;
+                break;
+            }
         }
 
-        // **Goon Movement Updates**
-        GoonMove goonMove = target.GetComponent<GoonMove>();
-        if (goonMove != null)
-        {
-            Vector3Int oldTile = goonMove.CurrentTilePosition;
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(oldTile);
-            goonMove.CurrentTilePosition = targetTilePosition;
-            OccupiedTilesManager.Instance.AddOccupiedPosition(goonMove.CurrentTilePosition);
-            goonMove.OnPushedByPlayer(oldTile, targetTilePosition);
-        }
-
-        // **Check if pushed into hook**
-        Vector3Int hookTilePos = hook != null ? hook.GetHookPosition() : new Vector3Int();
-        if (hook != null && targetTilePosition == hookTilePos)
-        {
-            hook.HandleSwingOrPushIntoHook(target.gameObject);
-        }
+        elapsedTime += Time.deltaTime;
+        yield return null;
     }
+
+    if (targetHealth != null)
+    {
+        targetHealth.OnDeath -= OnTargetDeath;
+    }
+
+    if (targetDied || fellInHole)
+    {
+        yield break;
+    }
+
+    // Snap to end
+    target.position = endPosition;
+    Debug.Log($"{target.name} has been pushed to {targetTilePosition}");
+
+    // Update AI movement
+    AIMove targetAIMove = target.GetComponent<AIMove>();
+    BarraMove targetBarraMove = target.GetComponent<BarraMove>();
+
+    if (targetAIMove != null)
+    {
+        OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetAIMove.CurrentTilePosition);
+        targetAIMove.CurrentTilePosition = targetTilePosition;
+        OccupiedTilesManager.Instance.AddOccupiedPosition(targetAIMove.CurrentTilePosition);
+    }
+    else if (targetBarraMove != null)
+    {
+        OccupiedTilesManager.Instance.RemoveOccupiedPosition(targetBarraMove.CurrentTilePosition);
+        targetBarraMove.CurrentTilePosition = targetTilePosition;
+        OccupiedTilesManager.Instance.AddOccupiedPosition(targetBarraMove.CurrentTilePosition);
+    }
+
+    // Goon-specific update
+    GoonMove finalGoonMove = target.GetComponent<GoonMove>();
+    if (finalGoonMove != null)
+    {
+        Vector3Int oldTile = finalGoonMove.CurrentTilePosition;
+        OccupiedTilesManager.Instance.RemoveOccupiedPosition(oldTile);
+        finalGoonMove.CurrentTilePosition = targetTilePosition;
+        OccupiedTilesManager.Instance.AddOccupiedPosition(finalGoonMove.CurrentTilePosition);
+        finalGoonMove.OnPushedByPlayer(oldTile, targetTilePosition);
+    }
+
+    // Final hole check (just in case they land on one)
+    HoleUtils.TryFallInHole(target.gameObject, targetTilePosition, tilemap);
+
+    // Check for hook collision
+    Vector3Int hookTilePos = hook != null ? hook.GetHookPosition() : new Vector3Int();
+    if (hook != null && targetTilePosition == hookTilePos)
+    {
+        hook.HandleSwingOrPushIntoHook(target.gameObject);
+    }
+}
+
 
 
     private void FlipPlayerIfNeeded(Vector3Int direction)

@@ -529,6 +529,13 @@ public class TempTurnBase : MonoBehaviour
         {
             Debug.Log($"AI {ai.gameObject.name} is taking its turn.");
             yield return StartCoroutine(aiFatigue.HandleTurn());
+
+            // ⭐ Added: Handle taunt countdown for fish enemies
+            ai.DecrementFollowTurns();
+            if (!ai.IsFollowingPlayer())
+            {
+                Debug.Log($"{ai.gameObject.name} is no longer taunted.");
+            }
         }
         else
         {
@@ -541,6 +548,7 @@ public class TempTurnBase : MonoBehaviour
         StartTurn();
         isProcessingTurn = false;
     }
+
 
     private IEnumerator ProcessBarraTurn(BarraMove barra)
     {
@@ -597,21 +605,21 @@ public class TempTurnBase : MonoBehaviour
     }
 
     private IEnumerator ProcessElectricianTurn(ElectricianMove electrician)
-{
-    isProcessingTurn = true;
-    Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
+    {
+        isProcessingTurn = true;
+        Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
 
-    // Reset fatigue at the start of the turn
-    electrician.ResetFatigue();
+        // Reset fatigue at the start of the turn
+        electrician.ResetFatigue();
 
-    // Execute movement and panel fixing
-    yield return StartCoroutine(electrician.MoveAction());
+        // Execute movement and panel fixing
+        yield return StartCoroutine(electrician.MoveAction());
 
-    // Rotate turn order and proceed to next turn
-    RotateTurnOrder();
-    StartTurn();
-    isProcessingTurn = false;
-}
+        // Rotate turn order and proceed to next turn
+        RotateTurnOrder();
+        StartTurn();
+        isProcessingTurn = false;
+    }
 
     // ─────────────────────────────────────
     // Start Player Turn

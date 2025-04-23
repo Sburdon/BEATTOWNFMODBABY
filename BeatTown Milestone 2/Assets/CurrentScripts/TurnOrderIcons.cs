@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class TurnOrderIcons : MonoBehaviour
 {
     public GameObject linkedEnemy;  // Reference to the corresponding enemy
+    public Texture2D chosenTexture;
 
     public void OnPointerEnter(PointerEventData eventData)
     {

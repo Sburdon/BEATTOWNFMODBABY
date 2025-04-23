@@ -6,17 +6,22 @@ using UnityEngine.UI;
 public class Tutorial : MonoBehaviour
 {
     Animator animtut;
+    [SerializeField] GameObject[] PauseMenuItems;
     public Button[] barray;
-    private bool isPaused = false;
-    private bool isTutorialActive = true;
+    public bool isPaused = false;
+    public bool isTutorialActive = true;
     private bool isBarraTutorialActive = false;
     private bool isEnemyTutorialActive = false;
-    private bool isHookedTutorialActive = false; 
+    private bool isHookedTutorialActive = false;
     private bool canReceiveInput = false;
 
 
     private void Start()
     {
+        foreach (GameObject item in PauseMenuItems)
+        {
+            item.SetActive(false);
+        }
         animtut = GetComponent<Animator>();
 
         // Disable button interactions
@@ -24,7 +29,7 @@ public class Tutorial : MonoBehaviour
         {
             b.interactable = false;
         }
-       
+
         // Make unwanted sprites (i.e. hook) invisible
         HideSprites();
 
@@ -130,7 +135,7 @@ public class Tutorial : MonoBehaviour
         {
             animtut.SetInteger("ChangeBarra", 1);
         }
-        
+
         Debug.Log("Triggered Barracuda Tutorial.");
     }
 
@@ -149,7 +154,7 @@ public class Tutorial : MonoBehaviour
         }
         Debug.Log("Triggered Enemy Tutorial.");
     }
-    
+
 
     void ChangeHookedAnimation()
     {
@@ -173,16 +178,16 @@ public class Tutorial : MonoBehaviour
         {
             b.interactable = true;
         }
-        Time.timeScale =1f ;
+        Time.timeScale = 1f;
         isPaused = false;
         isTutorialActive = false; // mark tutorial as finished
 
         // re enable sprites after tutorial
         ShowSprites();
-        animtut.SetBool("MainTutOver" , true); // declare end of main tutorial
+        animtut.SetBool("MainTutOver", true); // declare end of main tutorial
 
     }
-    
+
     public void EBarraTut() // end barra tutorial (called in Animator event)
     {
         isBarraTutorialActive = false; // mark barra tutorial as finished
@@ -249,6 +254,10 @@ public class Tutorial : MonoBehaviour
                     // pause the game
                     Time.timeScale = 0f;
                     isPaused = true;
+                    foreach (GameObject item in PauseMenuItems)
+                    {
+                        item.SetActive(true);
+                    }
                 }
                 else
                 {
@@ -260,8 +269,13 @@ public class Tutorial : MonoBehaviour
                     // resume the game
                     Time.timeScale = 1f;
                     isPaused = false;
+                    foreach (GameObject item in PauseMenuItems)
+                    {
+                        item.SetActive(false);
+                    }
                 }
             }
         }
     }
 }
+

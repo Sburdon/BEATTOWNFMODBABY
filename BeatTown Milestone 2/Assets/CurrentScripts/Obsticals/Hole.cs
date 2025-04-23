@@ -43,18 +43,58 @@ public class Hole : MonoBehaviour
     {
         
         // Set the proper reference and flag depending on what type of object hit the hole
-        if (collision.gameObject.CompareTag("Electrician"))
+            if (collision.gameObject.CompareTag("Electrician"))
         {
-            electricianMove = collision.gameObject.GetComponent<ElectricianMove>();
-            thingInHole = collision.gameObject;
-            //   electricianMove.Prone = true; // bool for Electrician script (not used for anything yet)
+        Debug.LogWarning("Electrician has fallen into a hole!");
+
+        electricianMove = collision.gameObject.GetComponent<ElectricianMove>();
+        thingInHole = collision.gameObject;
+
+        // Snap Electrician to the center of the hole
+        thingInHole.transform.position = tilemap.GetCellCenterWorld(holePosition);
+
+        // Prevent movement (if needed)
+        // electricianMove.remainingMoves = 0; // Add this if you use movement locking via variable
+
+        // Apply fatigue effect
+        ElectricianFatigue electricianFatigue = collision.GetComponent<ElectricianFatigue>();
+        if (electricianFatigue != null)
+        {
+            electricianFatigue.prone = true;
+            electricianFatigue.UseGetUpFatigue(); // Spend 1 fatigue to get out
+        }
         }
         else if (collision.gameObject.CompareTag("Goon"))
+{
+    Debug.LogWarning("Goon has fallen into a hole!");
+
+    goonMove = collision.gameObject.GetComponent<GoonMove>();
+    thingInHole = collision.gameObject;
+
+    // Snap to center of tile
+    thingInHole.transform.position = tilemap.GetCellCenterWorld(holePosition);
+
+    // Cancel power punch if charging
+    if (goonMove != null && goonMove.IsPunchCharging)
+    {
+        if (goonMove.punchIndicatorInstance != null)
         {
-            goonMove = collision.gameObject.GetComponent<GoonMove>();
-            thingInHole = collision.gameObject;
-            //  goonMove.Prone = true; // bool for Goon script (not used for anything yet)
+            Destroy(goonMove.punchIndicatorInstance);
+            goonMove.punchIndicatorInstance = null;
         }
+        goonMove.CancelPunch(); // Optional — see below if you want to make this method
+        Debug.Log("Goon's punch was canceled due to falling in the hole.");
+    }
+
+    // Apply fatigue penalty
+    GoonFatigue goonFatigue = collision.GetComponent<GoonFatigue>();
+    if (goonFatigue != null)
+    {
+        goonFatigue.prone = true;
+        goonFatigue.UseGetUpFatigue(); // Spend 1 fatigue to get up
+    }
+}
+
         else if (collision.gameObject.CompareTag("Player")) // where Russell is currently working (Player) (see PlayerFatigue UseGetUpFatigue())
         {
             Debug.LogWarning("Player has fallen into a hole!");

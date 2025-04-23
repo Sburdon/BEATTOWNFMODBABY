@@ -20,6 +20,8 @@ public class Punch : MonoBehaviour
     public GameObject RealMoveHighlight;
     public GameObject jumpHighlight;
     private Score scores;
+    private bool blink = false;
+    private bool wasPunching = false;
 
     private void Awake()
     {
@@ -32,6 +34,7 @@ public class Punch : MonoBehaviour
 
     void Update()
     {
+        
         if (Input.GetMouseButtonDown(0))
         {
             if (isPunching)
@@ -155,7 +158,7 @@ public class Punch : MonoBehaviour
             AIMove aiMoveScript = enemy.GetComponent<AIMove>();
             if (aiMoveScript != null)
             {
-                aiMoveScript.SetFollowPlayerForTurns(3);
+                aiMoveScript.SetFollowPlayerForTurns(1);
             }
 
             // ✅ New: Barra taunt logic

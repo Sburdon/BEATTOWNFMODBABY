@@ -35,7 +35,7 @@ public class GoonMove : MonoBehaviour
     // Punch-charging state
     private bool isPunchCharging = false;
     private Vector3Int punchTargetTile;
-    private GameObject punchIndicatorInstance;
+    public GameObject punchIndicatorInstance;
     public bool IsPunchCharging => isPunchCharging;
 
     public bool InPuddle;
@@ -56,6 +56,20 @@ public class GoonMove : MonoBehaviour
         if (enemyHealth == null)
             enemyHealth = GetComponent<EnemyHealth>();
     }
+
+        public void CancelPunch()
+    {
+        isPunchCharging = false;
+
+        if (punchIndicatorInstance != null)
+        {
+            Destroy(punchIndicatorInstance);
+            punchIndicatorInstance = null;
+        }
+
+        Debug.Log($"{name}: Punch canceled.");
+    }
+
 
     private void Start()
     {
@@ -87,15 +101,16 @@ public class GoonMove : MonoBehaviour
     // -----------------------------------------------------------------------------------
     // Movement with BFS
     // -----------------------------------------------------------------------------------
-    public IEnumerator MoveUsingFatigue(int fatigue)
+    public IEnumerator MoveUsingFatigue(int fatigue, bool limitToOneTile = false)
     {
+        int stepsAllowed = limitToOneTile ? 1 : fatigue * 2;
+
         if (electricianMove == null)
         {
             Debug.LogWarning($"{name}: No ElectricianMove found, cannot chase.");
             yield break;
         }
 
-        int stepsAllowed = fatigue * 2;
         Vector3Int startPos = CurrentTilePosition;
         Vector3Int electricianTile = electricianMove.CurrentTilePosition;
 
@@ -126,71 +141,132 @@ public class GoonMove : MonoBehaviour
             if (OccupiedTilesManager.Instance != null)
                 OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
 
+            // ✅ NEW: Check if Goon fell into a hole mid-move and is now prone
+            GoonFatigue fatigueComp = GetComponent<GoonFatigue>();
+            if (fatigueComp != null && fatigueComp.prone)
+            {
+                Debug.Log($"{name} became prone after stepping into a hole. Ending movement early.");
+                yield break;
+            }
+
             if (IsAdjacentToElectrician())
             {
                 Debug.Log($"{name}: Reached adjacency early, stopping BFS.");
                 break;
             }
         }
+
         yield return null;
-    }
+}
+
 
     private List<Vector3Int> BFSPathToTile(Vector3Int start, Vector3Int goal, int maxSteps)
+{
+    var path = new List<Vector3Int>();
+    if (tilemap == null || start == goal)
+        return path;
+
+    var queue = new Queue<Vector3Int>();
+    var cameFrom = new Dictionary<Vector3Int, Vector3Int>();
+    var costSoFar = new Dictionary<Vector3Int, int>();
+
+    queue.Enqueue(start);
+    cameFrom[start] = start;
+    costSoFar[start] = 0;
+
+    while (queue.Count > 0)
     {
-        var path = new List<Vector3Int>();
-        if (tilemap == null) return path;
-        if (start == goal) return path;
+        var current = queue.Dequeue();
 
-        var queue = new Queue<Vector3Int>();
-        var cameFrom = new Dictionary<Vector3Int, Vector3Int>();
-
-        queue.Enqueue(start);
-        cameFrom[start] = start; // visited
-
-        while (queue.Count > 0)
+        foreach (var neighbor in GetNeighboringTiles(current))
         {
-            var current = queue.Dequeue();
-            if (current == goal)
-                break;
+            if (!tilemap.HasTile(neighbor))
+                continue;
 
-            foreach (var neighbor in GetNeighboringTiles(current))
+            // Skip occupied tiles
+            if (OccupiedTilesManager.Instance != null &&
+                OccupiedTilesManager.Instance.IsTileOccupied(neighbor))
+                continue;
+
+            // Hole penalty
+            int moveCost = IsHoleTile(neighbor) ? 2 : 1;
+            int newCost = costSoFar[current] + moveCost;
+
+            if (!costSoFar.ContainsKey(neighbor) || newCost < costSoFar[neighbor])
             {
-                if (!cameFrom.ContainsKey(neighbor) && IsMoveValid(neighbor))
-                {
-                    cameFrom[neighbor] = current;
-                    queue.Enqueue(neighbor);
-                }
+                costSoFar[neighbor] = newCost;
+                cameFrom[neighbor] = current;
+                queue.Enqueue(neighbor);
+            }
+        }
+    }
+
+    // If no path to goal was found, fallback to closest reachable tile
+    if (!cameFrom.ContainsKey(goal))
+    {
+        Debug.LogWarning($"{name}: No valid path to goal {goal}. Trying nearest reachable tile...");
+
+        // Try any tile adjacent to the electrician
+        Vector3Int best = start;
+        int bestCost = int.MaxValue;
+
+        foreach (var alt in GetNeighboringTiles(goal))
+        {
+            if (cameFrom.ContainsKey(alt) && costSoFar[alt] < bestCost)
+            {
+                best = alt;
+                bestCost = costSoFar[alt];
             }
         }
 
-        if (!cameFrom.ContainsKey(goal))
-            return path;
-
-        var temp = goal;
-        while (temp != start)
+        if (best == start)
         {
-            path.Add(temp);
-            temp = cameFrom[temp];
+            Debug.Log($"{name}: Couldn't find any adjacent tile either. Skipping move.");
+            return path;
         }
-        path.Reverse();
 
-        if (path.Count > maxSteps)
-            path = path.GetRange(0, maxSteps);
-
-        return path;
+        goal = best;
     }
+
+    // Reconstruct path from goal
+    var temp = goal;
+    while (temp != start)
+    {
+        path.Add(temp);
+        temp = cameFrom[temp];
+    }
+    path.Reverse();
+
+    // Limit to maxSteps allowed
+    if (path.Count > maxSteps)
+        path = path.GetRange(0, maxSteps);
+
+    return path;
+}
+
 
     private Vector3Int FindAdjacentGoalTile(Vector3Int electricianTile)
-    {
-        if (IsAdjacentToElectrician())
-            return CurrentTilePosition;
+{
+    Vector3Int bestTile = CurrentTilePosition;
+    int bestCost = int.MaxValue;
 
-        foreach (var n in GetNeighboringTiles(electricianTile))
+    foreach (var n in GetNeighboringTiles(electricianTile))
+    {
+        if (!tilemap.HasTile(n) || !IsMoveValid(n))
+            continue;
+
+        // Use a very short BFS just to calculate path cost
+        List<Vector3Int> testPath = BFSPathToTile(CurrentTilePosition, n, 999);
+        if (testPath.Count > 0 && testPath.Count < bestCost)
         {
-            if (IsMoveValid(n)) return n;
+            bestCost = testPath.Count;
+            bestTile = n;
         }
-        return CurrentTilePosition;
     }
+
+    return bestTile;
+}
+
 
     private IEnumerator MoveToTile(Vector3Int tilePos)
     {
@@ -234,8 +310,11 @@ public class GoonMove : MonoBehaviour
         {
             return false;
         }
+
+        // Hole tiles are allowed, but should be deprioritized — still return true
         return true;
     }
+
 
     public bool IsAdjacentToElectrician()
     {
@@ -436,5 +515,20 @@ public void OnPunchedByPlayer()
         Debug.LogWarning($"{name}: Punch indicator prefab is NULL! Make sure it's assigned.");
     }
     }
+
+    private bool IsHoleTile(Vector3Int tilePos)
+    {
+        Vector3 worldPos = tilemap.GetCellCenterWorld(tilePos);
+        Collider2D[] hits = Physics2D.OverlapPointAll(worldPos);
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Hole"))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }

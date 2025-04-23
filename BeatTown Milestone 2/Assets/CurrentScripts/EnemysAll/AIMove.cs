@@ -26,6 +26,7 @@ public class AIMove : MonoBehaviour
     private TempTurnBase turnBase;
     private StateMachine stateMachine;
     private SpriteRenderer spriteRenderer;
+    public Texture2D currentTexture;
 
     // Number of turns the AI will follow the player after being punched
     private int followPlayerTurns = 0;

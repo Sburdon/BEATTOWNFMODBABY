@@ -27,6 +27,7 @@ public class Swing : MonoBehaviour
     public bool disableSwing;
     private Score scores;
 
+
     void Awake()
     {
         scores = FindObjectOfType<Score>();
@@ -156,7 +157,7 @@ public class Swing : MonoBehaviour
 
             if (AIUtils.IsAdjacent(playerPosition, targetPosition))
             {
-                scores.score = scores.score + 4;
+                
                 targetToSwing = hit.collider.gameObject;
                 Debug.Log($"Selected enemy for swing: {targetToSwing.name}");
                 PPShighlight.SetActive(false);
@@ -255,13 +256,23 @@ public class Swing : MonoBehaviour
                 goonMove.OnSwungByPlayer(oldTile, targetTilePosition);
             }
 
+            // Let HoleUtils know this unit should get up immediately if it's in a hole
+            if (goonMove != null)
+            {
+                goonMove.InPuddle = true;
+            }
+
+            // Try falling into a hole after being swung
+            HoleUtils.TryFallInHole(target, targetTilePosition, tilemap);
+
+
             Vector3Int hookTilePos = hook != null ? hook.GetHookPosition() : new Vector3Int();
             if (hook != null && targetTilePosition == hookTilePos)
             {
                 hook.HandleSwingOrPushIntoHook(target);
             }
         }
-
+        scores.score = scores.score + 4;
         isSwinging = false;
         Debug.Log("Swing action completed.");
         PPShighlight.SetActive(false);
