@@ -65,11 +65,36 @@ public class Hole : MonoBehaviour
         }
         }
         else if (collision.gameObject.CompareTag("Goon"))
+{
+    Debug.LogWarning("Goon has fallen into a hole!");
+
+    goonMove = collision.gameObject.GetComponent<GoonMove>();
+    thingInHole = collision.gameObject;
+
+    // Snap to center of tile
+    thingInHole.transform.position = tilemap.GetCellCenterWorld(holePosition);
+
+    // Cancel power punch if charging
+    if (goonMove != null && goonMove.IsPunchCharging)
+    {
+        if (goonMove.punchIndicatorInstance != null)
         {
-            goonMove = collision.gameObject.GetComponent<GoonMove>();
-            thingInHole = collision.gameObject;
-            //  goonMove.Prone = true; // bool for Goon script (not used for anything yet)
+            Destroy(goonMove.punchIndicatorInstance);
+            goonMove.punchIndicatorInstance = null;
         }
+        goonMove.CancelPunch(); // Optional — see below if you want to make this method
+        Debug.Log("Goon's punch was canceled due to falling in the hole.");
+    }
+
+    // Apply fatigue penalty
+    GoonFatigue goonFatigue = collision.GetComponent<GoonFatigue>();
+    if (goonFatigue != null)
+    {
+        goonFatigue.prone = true;
+        goonFatigue.UseGetUpFatigue(); // Spend 1 fatigue to get up
+    }
+}
+
         else if (collision.gameObject.CompareTag("Player")) // where Russell is currently working (Player) (see PlayerFatigue UseGetUpFatigue())
         {
             Debug.LogWarning("Player has fallen into a hole!");

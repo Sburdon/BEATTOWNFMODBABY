@@ -141,8 +141,7 @@ MonoBehaviour:
   moveDistance: 2
   moveSpeed: 1.5
   routePositions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: -2, z: 0}
+  - {x: 0, y: -3, z: 0}
   currentRouteIndex: 0
   brokenPanelPrefab: {fileID: 5413405559751626241, guid: b6c135019efb972499ed5c8c9027c95a,
     type: 3}
@@ -204,3 +203,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxFatigue: 2
+  prone: 0

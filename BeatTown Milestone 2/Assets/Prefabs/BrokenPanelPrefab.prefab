@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1932753250031513418}
   m_Layer: 0
   m_Name: BrokenPanelPrefab
-  m_TagString: Untagged
+  m_TagString: BrokenPanel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

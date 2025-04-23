@@ -1,10 +1,11 @@
 using System.Collections;
 using UnityEngine;
 
+
+[RequireComponent(typeof(ElectricianMove))]
 public class ElectricianFatigue : MonoBehaviour
 {
-    [Tooltip("Maximum fatigue per turn")]
-    public int maxFatigue = 2; // Each fatigue allows either 2 tiles of movement or 1 panel fix
+    public int maxFatigue = 2;
     private int currentFatigue;
 
     private ElectricianMove electricianMove;
@@ -14,18 +15,62 @@ public class ElectricianFatigue : MonoBehaviour
         electricianMove = GetComponent<ElectricianMove>();
     }
 
-    /// <summary>
-    /// Resets the Electrician's fatigue at the start of each turn.
-    /// </summary>
     public void ResetFatigue()
     {
         currentFatigue = maxFatigue;
-        Debug.Log($"Electrician: Fatigue reset to {currentFatigue}");
     }
 
-    /// <summary>
-    /// Tries to spend fatigue. Returns true if successful, false otherwise.
-    /// </summary>
+    public IEnumerator HandleTurn()
+{
+    ResetFatigue(); 
+    Debug.Log($"Electrician Turn Start — Fatigue: {currentFatigue}");
+
+    while (currentFatigue > 0)
+    {
+        // ◀ If we're in a hole, spend 1 fatigue to climb out (one tile)
+        if (prone)
+        {
+            if (currentFatigue > 0)
+            {
+                Debug.Log("Electrician is prone: spending 1 fatigue to climb out.");
+                yield return StartCoroutine(UseGetUpFatigue());
+                continue;  // re-enter loop
+            }
+            else
+            {
+                Debug.Log("No fatigue to climb out. Turn ends.");
+                yield break;
+            }
+        }
+
+        // ◀ If standing on a broken panel, fix it
+        if (electricianMove.IsOnBrokenPanel())
+        {
+            yield return StartCoroutine(electricianMove.FixPanel());
+            UseFatigue(1);
+            continue;
+        }
+
+        // ◀ Normal move: spend 1 fatigue for exactly 1 tile
+        Debug.Log("Electrician attempting one‐tile move...");
+        yield return StartCoroutine(electricianMove.MoveUsingFatigue(1));
+        UseFatigue(1);
+
+        // ◀ Check if we fell into a hole mid‐move
+        if (prone)
+        {
+            Debug.Log("Fell into hole during move. Handling climb‐out next iteration.");
+            continue;  // next loop will catch prone and spend get-up fatigue
+        }
+    }
+
+    Debug.Log("Electrician turn ends: no fatigue left");
+    yield break;
+}
+
+
+
+
     public bool UseFatigue(int amount)
     {
         if (currentFatigue >= amount)
@@ -38,27 +83,22 @@ public class ElectricianFatigue : MonoBehaviour
         return false;
     }
 
-    /// <summary>
-    /// Checks if the Electrician has enough fatigue left to perform an action.
-    /// </summary>
-    public bool HasFatigue(int amount)
-    {
-        return currentFatigue >= amount;
-    }
-
     [HideInInspector]
 public bool prone = false;
 
-/// <summary>
-/// Spend 1 fatigue to get up if prone.
-/// </summary>
-public void UseGetUpFatigue()
+public IEnumerator UseGetUpFatigue()
 {
-    if (prone && UseFatigue(1))
-    {
-        prone = false;
-        Debug.Log("Electrician used 1 fatigue to get up from hole.");
-    }
+    if (!prone || currentFatigue < 1)
+        yield break;
+
+    currentFatigue--;
+    prone = false;
+    Debug.Log($"{name}: Used 1 fatigue to stand up from hole. Remaining: {currentFatigue}");
+
+    yield return electricianMove.MoveUsingFatigue(1, limitToOneTile: true);
 }
 
+
+    public int GetCurrentFatigue() => currentFatigue;
+    public bool HasFatigue() => currentFatigue > 0;
 }

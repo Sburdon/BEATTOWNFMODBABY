@@ -40,6 +40,16 @@ public class GoonFatigue : MonoBehaviour
 
         // 1) Refresh fatigue to maximum
         ResetFatigue();
+        // If prone, try to get up and end turn
+          if (prone)
+            {
+                Debug.Log("GoonFatigue: Goon is prone and trying to get up.");
+                yield return StartCoroutine(UseGetUpFatigue());
+                // Continue the turn with remaining fatigue
+            }
+
+
+
         Debug.Log($"GoonFatigue: Starting turn with {currentFatigue} fatigue.");
 
         // 2) While we still have fatigue, perform actions
@@ -74,4 +84,37 @@ public class GoonFatigue : MonoBehaviour
         Debug.Log("GoonFatigue: Turn complete. No more fatigue left.");
         yield return null;
     }
+
+        [HideInInspector]
+    public bool prone = false;
+
+    public IEnumerator UseGetUpFatigue()
+    {
+        if (!prone || currentFatigue < 1)
+            yield break;
+
+        currentFatigue--; // Spend 1 fatigue to get up
+        prone = false;
+        Debug.Log($"{name}: Used 1 fatigue to stand up from hole. Remaining: {currentFatigue}");
+
+        // Attempt to move 1 tile immediately after getting up
+        yield return goonMove.MoveUsingFatigue(1, limitToOneTile: true);
+    }
+
+
+
+
+    // Reuse this from ElectricianFatigue if needed
+    public bool UseFatigue(int amount)
+    {
+        if (currentFatigue >= amount)
+        {
+            currentFatigue -= amount;
+            Debug.Log($"Goon used {amount} fatigue. Remaining: {currentFatigue}");
+            return true;
+        }
+        Debug.Log("Goon: Not enough fatigue!");
+        return false;
+    }
+
 }
