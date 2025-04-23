@@ -10,6 +10,9 @@ TagManager:
   - Wall
   - Electrician
   - Goon
+  - Hole
+  - BrokenPanel
+  - FixedPanel
   layers:
   - Default
   - TransparentFX
