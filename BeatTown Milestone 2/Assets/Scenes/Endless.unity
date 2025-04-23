@@ -9123,14 +9123,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85fa3427f3f34b14fa27fb69910b59af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PauseMenuItems:
+  - {fileID: 1933203421}
+  - {fileID: 1574690618}
   barray:
   - {fileID: 1620997631}
   - {fileID: 539697138}
   - {fileID: 1766274695}
   - {fileID: 921817470}
-  PauseMenuItems:
-  - {fileID: 1933203421}
-  - {fileID: 0}
+  isPaused: 0
+  isTutorialActive: 1
 --- !u!1 &1145586135
 GameObject:
   m_ObjectHideFlags: 0
@@ -14190,7 +14192,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1635339907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18397,6 +18399,7 @@ MonoBehaviour:
   animationSet: {fileID: 11400000, guid: 36c53ef0f8fd3a44b90117861879bbd6, type: 2}
   chosenSourceTexture: {fileID: 0}
   isFishOrGoon: 0
+  turnBase: {fileID: 0}
 --- !u!114 &1977992000
 MonoBehaviour:
   m_ObjectHideFlags: 0
