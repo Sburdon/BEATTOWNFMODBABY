@@ -1,0 +1,20 @@
+
+Squirrel (19x19)
+FR:
+	Walk: 100[...]
+	Spot: 300 [...]
+	Eat: 200 [...]
+
+Rat (18x18)
+FR:
+	Walk: 100 [...]
+	Spot: 300 [...]
+	Eat: 200 [...]
+
+Bird (16x16)
+(row 5 and 6 is take off)
+FR:
+	Peck: 200;100;200
+	Spot: 300 [...]
+	Fly: 100 [...]
+	

@@ -1,0 +1,21 @@
+
+Jukebox:		Love/Pop FR: 200
+		Sad FR: 400
+		Jazz FR: 300
+		Rock FR: 150
+		Battle/Raggae FR: 200
+
+Games:		Duck auto scroller FR:150 [...]
+		Fruit memory FR: 500;500;500;500;500;500;500;500;500;500;500;1000 [...]
+		Racing game FR: 150 [...]
+		Space shooter FR: 150 [...]
+		Rythm FR: 150 [...]
+
+Water fountain FR: 	150
+Presentation FR: 	2000
+
+Fireplace FR:	100
+Aquarium FR:	300
+Treadmill FR:	200
+
+Forge FR:		500;100;250;500;500;100

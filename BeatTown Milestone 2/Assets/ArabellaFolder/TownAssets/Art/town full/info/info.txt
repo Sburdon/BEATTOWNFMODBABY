@@ -1,0 +1,214 @@
+
+
+Fountain 	FR: 100
+Water 	FR: 700
+Gates	FR: 300
+Doors	FR: 300
+
+THE PUB (96x80) 
+
+	Drinks: 	Martini, hurricane, margarita, cosmopolitan, zombie, sherry, brandy, 
+		old fashioned, wine, prosecco, beer, irish coffee
+	Food: 	Cheese burger, veggie burger, french fries, ketchup, mayo, mustard, 
+		onion rings,nachos, wings
+	Posters: 	Jimi Hendrix, David Bowie, Michael Jackson, Bob Dylan, Prince, 
+		John Lennon
+	Jukebox:	off, pop, love, rock, sad, raggae, jazz
+		
+
+ARCADE (96x96)	
+(blue boxes are consolation prizes)			
+
+	Games:	Duck auto scroller, space shooter, fruit memory, rhythm, racing
+	Claw:	Love, cat, toy
+	Prizes: 	Love: heart pillow, engagement ring
+		Cat: cat pillow, cat plush
+		Toy: bunny plush, star pillow 
+	
+
+SCHOOL (192x112)
+(clock shows times in a 30 minute variation starting at 12; topics are separated by blackboards)
+
+	Graffiti: 
+	red (lip), six 6!, ace, ban, fox, die!, pay up!, no!,  two 2!, air, ice, boy, sad, key, god, rap,
+	eye, man, emu, owl, hen, paw, hat, cow, cat, dog, bee, sun, fun, egg, dis, ink, hate u!, hi!,
+	bat, ant, bad, boo!, ash, rip, gum, you, i <3 u, s+k, t+c, aha, big, school sucks, elf, odd?, 
+	lol!,yes!, scary smiley, yeah, fan, bet
+	Lockers:	open lockers: plush, books, towel + boots, moldy burger
+
+General items:
+	Water fountain, empty blackboard, projector + screen, trophy case
+	Posters: Vote school president, no smoking, school logo
+	Trashcans, notebooks, backpacks
+	
+
+Geograpgy class:
+	Board: 	World Map/ Population
+	Screen: 	Italy (location/ pisa/volcanos/colloseum/conclusion)
+	Poster: 	Italy, France, USA, Spain, Switzerland, Somalia
+	Deco:	Globe
+
+Biology room:
+	Board: 	Cell structures
+	Screen: 	Photosynthesis
+	Deco: 	Anatomy model, skeleton 
+	Poster: 	DNA, 6x bacteria, lungs, kidney, liver, stomach, brain, heart
+
+Chemistry room:
+	Board: 	Molecular Structures
+	Screen: 	Covalent bonds
+	Poster: 	Periodic tabe, water molecule, ammonia molecule, carbon dioxide molecule, 
+		hydrogen peroxide molecule,hydrochloric acid molecule, Alfred Nobel
+	Deco: 	Test tubes in holder (w/o liquid), microscope, chemistry glassware, googles,
+		bunsen burner
+
+Language room:
+	Board: 	Latin (world/cat/sun/flower)
+	Screen: 	Latin: 1.air 2. cow 3. dog 4. tooth 5. lion
+	Poster: 	Russian alphabet, French conjugation
+
+Art room:
+	Board: 	Color theory/ lighting
+	Easels:	House, dog, skull, rainbow, flowers
+	Deco: 	Watercolor set, brushes, paints w/o brushes, pen holders
+	Art:	Heart, bird, lion, alien, stick figures, horse, cartoon, clown
+	Sculpted:	Man head, messed up man head, woman head, messed up woman head
+		house, cat, dog, bear, bird, horse
+
+Math class:
+	Board: 	Fractions/ geometry
+	Screen: 	Geometry
+	Deco: 	Ruler, calculator, triangle tools for blackboard
+
+History class:
+	Board: 	Ancient Egypt
+	Screen: 	Ancient Egypt: Pyramids, mummies, cats, kohl, hieroglyphs
+
+
+Gym:
+	Board: 	Empty, strategies
+	Deco: 	Basketball, hoop
+
+Locker room:
+	Locker (tile able), bench
+
+Bathroom:
+	Door boy/girl
+	Sink, stalls, mirror w/o soap dispenser
+
+Teachers lounge:
+	Deco: 	Old coffee machine, calendar
+
+BAKERY (96x96)
+
+	Shelf: 	Bread, dark bread, white bred, confection, muffins, choco chip cookies, 
+		donut
+	Case:	Confection, cakes (confetti, choco, strawberry), bread, pretzel, muffin, 
+		choco chip, donut
+	Drinks: 	Cappuccino, latte macchiato, coffee, espresso, romano
+
+COMMUNITY CENTER (160x128)
+
+Community room:	
+	Sun sign: 	For finished collection
+	Collection display -> blue transparent box can be put on top
+	
+	
+Art room:
+	Painting:	Fruit basket, woman, apple, dolphin, wolf, palette
+	Knitting: 	Needles, yarn basket, table with knitted scarf, yarn shelves
+	Sculpting:	Clay wheel, 5x clay crafts 
+	
+
+Exercise Room:
+	Machines:	Treadmill, leg press, pulldown, exercise bike
+	Deco:	Weights, bell weights, exercise ball, yoga mat, mirror
+
+Video game room:
+	Furniture: 	Bean bags, TV (wall mounted) , shelf with console and games
+	Deco:	Controller
+
+Sunroom:
+	Stand for bonsais and decorations
+	Planter has 16x16 planting space (not autotile able)
+
+Basement:
+	Furniture:	Wine Barrel
+
+
+FOODTRUCK (80x64)
+
+Signs/items:
+	Eggs:	  Pink, colorful striped, blue pattern, pink/yellow, diagonal striped blue 
+	Ice cream:  Strawberry, vanilla, chocolate, choco-mint, blueberry
+	Halloween: Eyeball red/purple/blue, pumpkin, licorice skull, jelly beans
+	Winter:	  Gingerbread, candy cane, roll-up cake, holiday pudding, lussekatter
+
+LIBRARY (160x112)
+	Furniture:	Bookshelf is supposed to go directly on wall -> middle part tile able
+		Next to ladder -> standalone bookshelf
+	Deco: 	Books, notebooks, old computer, info desk sign, wall lights
+
+BLACKSMITH (96x96)
+(metal/wood options)
+	Furniture: 	Water source, anvil, counter, counter with display (axe, sword, hammer, sythe)
+		display with lucky cats/watering cans, forge, metal bed/chairs/table, 
+		kitchen
+	Deco:	tools (tongs, hammer, gloves), metal art (darker version for metal wallpaper)
+
+
+CINEMA (96x96)
+(left side: current snacks, top: current move right side: upcoming movie)
+
+	Poster: 	Popcorn/slush drink, nacho/slush, hotdog/slush
+	Menu: 	Popcorn/slush, popcorn/drink, nacho/slush, nacho/drink, double slush, 
+		chips/slush
+	Deco: 	Popcorn machine, nacho machine, hotdog machine, slush machine, 
+		drink fridges
+-> preassembled counter on far right side
+
+SUPAM Super Market (176x128)
+
+Sign (64x32)   	FR: 300, 50, 300, 50, 300, 50, 700, 100
+Adds(48x32): 	Sportsdrink, choco chip, chips, pizza, canned food, ice pop
+Adds: 		FR: 900, 50, 700, 50, 250, 50, 300, 50
+
+Items:
+	Ice pop: 	Mouse, cat, bunny, bear, bird, fox
+	Pizza: 	Pepperoni, margharita, mozzarella, pineapple, tuna, olives
+	Drink: 	Blueberry, lime, raspberry, lemon, orange, watermelon
+	Canned: 	Tomato soup, tuna, chili, mushroom soup, chicken soup, kidney beans
+	Chips: 	Classic, light, veggie, cheddar, chili, sour cream onion
+	Cookies: 	Choco chip, white choco, raspberry, rainsins, sprinkles, double choc
+
+Shelves:
+	Drink:	Energy drinks
+	Dairy: 	Smoothies, yoghurt, milk
+	Meat:	Pork, beef, chicken
+	Fish: 	Canned, wrapped, soup
+	Juice:	Smoothies, juice, juice boxes
+	Frozen:	Ice creams
+	Electro:	Light bulbs, batteries, remote control, controller, speakers, TV
+	Veggies: 	Carrot, tomato, onion, leek, peas, eggplant, spring onion, kale, bell pepper,
+		sweet potato, radish, potato, zuccini, lettuce, cauliflower
+	Spices:	random
+	Candy:	Heart candy, Cookies: choco, white choco, raisin, raspberry, sprinkles, 
+		double choco
+	Snack:	Chips (see items then random)
+	Canned: 	See cans then random
+
+
+HIPPIE HOME (96x80)
+	Easels:	Peace sign, sun, moon
+	Posters:	Sun/ moon
+	Paintings:	Peace sign, mushroom, eye, yin and yang
+
+TRAILER (96x64)
+	Posters: Guitar, cigarettes, Kurt Kobain
+
+
+
+
+
+
+

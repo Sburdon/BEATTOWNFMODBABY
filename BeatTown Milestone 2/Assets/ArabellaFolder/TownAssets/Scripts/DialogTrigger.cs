@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement; 
 
 public class DialogueTrigger : MonoBehaviour
 {
@@ -49,10 +50,11 @@ public class DialogueTrigger : MonoBehaviour
         // Trigger cutscene
         if (cutsceneObject != null)
         {
-            fishAnimator.SetTrigger("cutsceneStarted");
-            var director = cutsceneObject.GetComponent<UnityEngine.Playables.PlayableDirector>();
-            if (director != null)
-                director.Play();
+            // fishAnimator.SetTrigger("cutsceneStarted");
+            // var director = cutsceneObject.GetComponent<UnityEngine.Playables.PlayableDirector>();
+            // if (director != null)
+            //     director.Play();
+            SceneManager.LoadScene("Scenes/Brady");
 
         }
 
