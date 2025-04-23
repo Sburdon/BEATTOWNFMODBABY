@@ -13,6 +13,7 @@ TagManager:
   - Hole
   - BrokenPanel
   - FixedPanel
+  - FishTrigger
   layers:
   - Default
   - TransparentFX
@@ -58,4 +59,16 @@ TagManager:
     locked: 0
   - name: Layer 3
     uniqueID: 4189426099
+    locked: 0
+  - name: Background
+    uniqueID: 1160232735
+    locked: 0
+  - name: Player + Sorted
+    uniqueID: 2676954537
+    locked: 0
+  - name: npc + enemies
+    uniqueID: 3742205601
+    locked: 0
+  - name: Foreground
+    uniqueID: 2372311285
     locked: 0
