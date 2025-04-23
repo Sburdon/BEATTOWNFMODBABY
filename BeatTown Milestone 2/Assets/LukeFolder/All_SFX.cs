@@ -33,7 +33,13 @@ public class All_SFX : MonoBehaviour
     FMOD.Studio.EventInstance Dirt;
     FMOD.Studio.EventInstance Grass;
     FMOD.Studio.EventInstance Door;
-    
+    FMOD.Studio.EventInstance OverworldFOREST;
+    FMOD.Studio.EventInstance OverworldTOWN;
+    FMOD.Studio.EventInstance WIN;
+    FMOD.Studio.EventInstance LOSE;
+    FMOD.Studio.EventInstance Phone;
+    FMOD.Studio.EventInstance Plush;
+
 
 
 
@@ -73,6 +79,12 @@ public class All_SFX : MonoBehaviour
         Dirt = FMODUnity.RuntimeManager.CreateInstance("event:/OVERWORLD/Dirt");
         Grass = FMODUnity.RuntimeManager.CreateInstance("event:/OVERWORLD/Grass");
         Door = FMODUnity.RuntimeManager.CreateInstance("event:/OVERWORLD/Door");
+        OverworldFOREST = FMODUnity.RuntimeManager.CreateInstance("event:/Overworld_MUSIC");
+        overworldTOWN = FMODUnity.RuntimeManager.CreateInstance("event:/TOWN");
+        WIN = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Win");
+        LOSE = FMODUnity.RuntimeManager.CreateInstance("event:/Ring Sounds/UI/Lose");
+        Phone = FMODUnity.RuntimeManager.CreateInstance("event:/OVERWORLD/Smartphone");
+        Plush = FMODUnity.RuntimeManager.CreateInstance("event:/OVERWORLD/Plushie");
 
 
 
@@ -240,29 +252,40 @@ public class All_SFX : MonoBehaviour
         Door.start();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Update is called once per frame
-    void Update()
+    public void PlayOverworldFOREST()
     {
+        OverworldFOREST.start();
+    }
 
-       
+    public void PlayOverworldTOWN()
+    {
+        OverworldTOWN.start();
+    }
 
+    public void PlayWIN()
+    {
+        WIN.start();
+    }
+
+    public void PlayLOSE()
+    {
+        LOSE.start();
 
 
     }
+
+    
+    public void PlayPhone()
+    {
+        Phone.start();
+    }
+
+
+    public void PlayPlush()
+    {
+        Plush.start();
+    }
+
+
+
 }
