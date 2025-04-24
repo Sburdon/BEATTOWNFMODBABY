@@ -26,8 +26,6 @@ public class ElectricianMove : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     public bool InPuddle;
 
-    private int fatigue = 2; // Fatigue resets to 2 at the start of each turn
-
     private All_SFX allSFX; // Reference to the sound manager
 
     private void Awake()
@@ -73,56 +71,6 @@ public class ElectricianMove : MonoBehaviour
         }
     }
 
-    public void ResetFatigue()
-    {
-        fatigue = 2;
-        Debug.Log("Electrician: Fatigue reset to 2.");
-    }
-
-    public IEnumerator MoveAction()
-{
-    while (fatigue > 0 && currentRouteIndex < routePositions.Count)
-    {
-        Vector3Int destinationTile = routePositions[currentRouteIndex];
-        List<Vector3Int> path = CalculateOrthPathAvoidingHoles(CurrentTilePosition, destinationTile);
-
-        int maxSteps = Mathf.Min(2, path.Count); // 2 steps per fatigue
-        if (maxSteps == 0)
-        {
-            Debug.Log("Electrician: No valid steps remaining.");
-            break;
-        }
-
-        List<Vector3Int> moveSteps = path.GetRange(0, maxSteps);
-        yield return StartCoroutine(MoveAlongPath(moveSteps));
-        fatigue--;
-
-        // Try fixing panel after each move
-        if (panelObjects.ContainsKey(CurrentTilePosition))
-        {
-            yield return StartCoroutine(FixPanel());
-
-            // If panel was fixed, don't move more this turn
-            break;
-        }
-
-        if (CurrentTilePosition == destinationTile)
-        {
-            currentRouteIndex++;
-        }
-    }
-
-    ElectricianFatigue fatigueComp = GetComponent<ElectricianFatigue>();
-if (fatigueComp != null && fatigueComp.prone)
-{
-    Debug.Log($"{name}: Became prone during MoveUsingFatigue, ending early.");
-    yield break;
-}
-
-
-}
-
-
     private void SpawnBrokenPanels()
     {
         if (brokenPanelPrefab == null)
@@ -141,36 +89,40 @@ if (fatigueComp != null && fatigueComp.prone)
 
     public IEnumerator FixPanel()
     {
-        if (!panelObjects.ContainsKey(CurrentTilePosition) || panelObjects[CurrentTilePosition] == null)
+        Vector3 worldPos = tilemap.GetCellCenterWorld(CurrentTilePosition);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(worldPos, new Vector2(0.6f, 0.6f), 0f);
+
+        GameObject brokenPanel = null;
+
+        foreach (var hit in hits)
         {
+            if (hit.CompareTag("BrokenPanel"))
+            {
+                brokenPanel = hit.gameObject;
+                break;
+            }
+        }
+
+        if (brokenPanel == null)
+        {
+            Debug.Log("No broken panel found at current tile.");
             yield break;
         }
 
-        if (fatigue < 1)
-        {
-            Debug.Log("Electrician: Not enough fatigue to fix the panel!");
-            yield break;
-        }
-
-        Debug.Log($"Electrician: Fixing panel at {CurrentTilePosition}...");
-
+        Debug.Log($"[FixPanel] Fixing {brokenPanel.name} at {CurrentTilePosition}");
         allSFX?.PlayPanelFix();
 
         yield return new WaitForSeconds(1.5f);
 
-        GameObject brokenPanel = panelObjects[CurrentTilePosition];
         Destroy(brokenPanel);
 
         if (fixedPanelPrefab != null)
         {
-            Vector3 worldPos = tilemap.GetCellCenterWorld(CurrentTilePosition);
             GameObject fixedPanel = Instantiate(fixedPanelPrefab, worldPos, Quaternion.identity);
-            panelObjects[CurrentTilePosition] = fixedPanel;
+            // Optional: update panelObjects dictionary if you still use it
         }
 
-        fatigue--;
         allSFX?.PlayPanelAdded();
-
         Debug.Log("Electrician: Panel fixed!");
 
         if (!HasAnyBrokenPanelsLeft())
@@ -179,6 +131,53 @@ if (fatigueComp != null && fatigueComp.prone)
             UnityEngine.SceneManagement.SceneManager.LoadScene("WinScreen");
         }
     }
+
+    public IEnumerator FixPanelAtRoutePosition()
+{
+    Vector3Int tile = routePositions[currentRouteIndex];
+
+    if (!panelObjects.ContainsKey(tile) || panelObjects[tile] == null)
+    {
+        Debug.Log("No panel found at route tile.");
+        yield break;
+    }
+
+    GameObject currentPanel = panelObjects[tile];
+
+    if (!currentPanel.CompareTag("BrokenPanel"))
+    {
+        Debug.Log("Panel at route tile is already fixed.");
+        yield break;
+    }
+
+    Debug.Log($"[FixPanel] Fixing panel at route tile {tile}.");
+    allSFX?.PlayPanelFix();
+
+    yield return new WaitForSeconds(1.5f);
+
+    Destroy(currentPanel);
+
+    if (fixedPanelPrefab != null)
+    {
+        Vector3 worldPos = tilemap.GetCellCenterWorld(tile);
+        GameObject fixedPanel = Instantiate(fixedPanelPrefab, worldPos, Quaternion.identity);
+        panelObjects[tile] = fixedPanel;
+    }
+
+    allSFX?.PlayPanelAdded();
+    Debug.Log("Electrician: Panel fixed!");
+
+    currentRouteIndex++;
+
+    if (!HasAnyBrokenPanelsLeft())
+    {
+        Debug.Log("All panels fixed! Player wins!");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("WinScreen");
+    }
+}
+
+
+
 
     private List<Vector3Int> CalculateOrthPathAvoidingHoles(Vector3Int start, Vector3Int end)
     {
@@ -235,60 +234,49 @@ if (fatigueComp != null && fatigueComp.prone)
     }
 
     private bool IsHoleTile(Vector3Int tilePos)
-{
-    Vector3 center = tilemap.GetCellCenterWorld(tilePos);
-    
-    // Check a slightly larger area than just a single point
-    Collider2D[] hits = Physics2D.OverlapBoxAll(center, new Vector2(0.6f, 0.6f), 0f);
-
-    foreach (var hit in hits)
     {
-        if (hit != null && hit.CompareTag("Hole"))
+        Vector3 center = tilemap.GetCellCenterWorld(tilePos);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(center, new Vector2(0.6f, 0.6f), 0f);
+
+        foreach (var hit in hits)
         {
-            Debug.Log($"[IsHoleTile] Hit: {hit.name} at {tilePos}");
-            return true;
+            if (hit != null && hit.CompareTag("Hole"))
+            {
+                Debug.Log($"[IsHoleTile] Hit: {hit.name} at {tilePos}");
+                return true;
+            }
         }
+
+        return false;
     }
 
-    return false;
-}
-
-
     private IEnumerator MoveAlongPath(List<Vector3Int> path)
-{
-    foreach (Vector3Int tile in path)
     {
-        if (OccupiedTilesManager.Instance != null)
-            OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
+        foreach (Vector3Int tile in path)
+{
+    if (OccupiedTilesManager.Instance != null)
+        OccupiedTilesManager.Instance.RemoveOccupiedPosition(CurrentTilePosition);
 
-        yield return StartCoroutine(MoveToTile(tile));
-        CurrentTilePosition = tile;
+    yield return StartCoroutine(MoveToTile(tile));
+    CurrentTilePosition = tile;
 
-        if (OccupiedTilesManager.Instance != null)
-            OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
+    if (OccupiedTilesManager.Instance != null)
+        OccupiedTilesManager.Instance.AddOccupiedPosition(CurrentTilePosition);
 
-        // ✅ STOP IMMEDIATELY IF HOLE
-            // ▶️ FALLING IN A HOLE: mark prone, but don’t zero fatigue or kill the turn here
     if (IsHoleTile(tile))
     {
         Debug.Log($"{name}: Fell into a hole at {tile}.");
-
         var fatigueScript = GetComponent<ElectricianFatigue>();
         if (fatigueScript != null)
         {
             fatigueScript.prone = true;
-            // no StopAllCoroutines(), no setting fatigue = 0
         }
 
-        yield break;  // exit MoveAlongPath back to the Turn handler
-    }
-
+        // ✅ Let the move complete, but stop any further movement
+        break; // not yield break
     }
 }
-
-
-
-
+    }
 
     private IEnumerator MoveToTile(Vector3Int tile)
     {
@@ -311,29 +299,23 @@ if (fatigueComp != null && fatigueComp.prone)
         transform.position = endPos;
     }
 
-   private bool IsMoveValid(Vector3Int tilePos)
-{
-    if (tilemap == null || !tilemap.HasTile(tilePos))
-        return false;
-
-    // If the tile is occupied by the player or enemies, it's blocked
-    Vector3 checkPos = tilemap.GetCellCenterWorld(tilePos);
-    Collider2D[] hits = Physics2D.OverlapPointAll(checkPos);
-    foreach (var col in hits)
+    private bool IsMoveValid(Vector3Int tilePos)
     {
-        if (col.CompareTag("Player") || col.CompareTag("Enemy"))
+        if (tilemap == null || !tilemap.HasTile(tilePos))
             return false;
 
-        // ✅ Allow BrokenPanel tiles to be walkable
-        if (col.CompareTag("BrokenPanel"))
-            continue;
+        Vector3 checkPos = tilemap.GetCellCenterWorld(tilePos);
+        Collider2D[] hits = Physics2D.OverlapPointAll(checkPos);
+        foreach (var col in hits)
+        {
+            if (col.CompareTag("Player") || col.CompareTag("Enemy"))
+                return false;
+
+            if (col.CompareTag("BrokenPanel"))
+                continue;
+        }
+        return true;
     }
-
-    // Do not rely solely on the OccupiedTilesManager if it's not accounting for panels correctly
-    return true;
-}
-
-
 
     private bool IsBlockedByObject(Vector3Int tilePos)
     {
@@ -348,79 +330,66 @@ if (fatigueComp != null && fatigueComp.prone)
     }
 
     public bool IsOnBrokenPanel()
-{
-    Vector3 worldPos = tilemap.GetCellCenterWorld(CurrentTilePosition);
-    Collider2D[] hits = Physics2D.OverlapPointAll(worldPos);
-    foreach (var hit in hits)
     {
-        if (hit.CompareTag("BrokenPanel"))
-            return true;
-    }
-    return false;
-}
+        Vector3 worldPos = tilemap.GetCellCenterWorld(CurrentTilePosition);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(worldPos, new Vector2(0.6f, 0.6f), 0f);
 
-public IEnumerator MoveUsingFatigue(int fatigueToSpend, bool limitToOneTile = false)
-{
-    // 1 fatigue → 1 tile (or limit to 1 if asked)
-    int stepsAllowed = limitToOneTile
-        ? 1
-        : Mathf.Min(fatigueToSpend, moveDistance);
-
-    // Nothing to do if we finished the route
-    if (currentRouteIndex >= routePositions.Count)
-        yield break;
-
-    // Find path to next target
-    Vector3Int destinationTile = routePositions[currentRouteIndex];
-    List<Vector3Int> path = CalculateOrthPathAvoidingHoles(CurrentTilePosition, destinationTile);
-
-    // Trim to our allowed steps
-    if (path.Count > stepsAllowed)
-        path = path.GetRange(0, stepsAllowed);
-
-    Debug.Log($"{name} MoveUsingFatigue: stepsAllowed={stepsAllowed}, pathCount={path.Count}");
-
-    // Walk the path
-    bool fellInHole = false;
-    foreach (Vector3Int tile in path)
-    {
-        // Update occupied tracking
-        OccupiedTilesManager.Instance?.RemoveOccupiedPosition(CurrentTilePosition);
-
-        // Slide over
-        yield return StartCoroutine(MoveToTile(tile));
-        CurrentTilePosition = tile;
-
-        OccupiedTilesManager.Instance?.AddOccupiedPosition(CurrentTilePosition);
-
-        // Hole check: just flag prone and break out
-        if (IsHoleTile(tile))
+        foreach (var hit in hits)
         {
-            Debug.Log($"{name}: Fell into a hole at {tile}!");
-            var fatigueScript = GetComponent<ElectricianFatigue>();
-            if (fatigueScript != null)
-                fatigueScript.prone = true;
-
-            fellInHole = true;
-            break;
+            if (hit.CompareTag("BrokenPanel"))
+                return true;
         }
+        return false;
     }
 
-    // If we fell, end this movement coroutine (turn handler will climb out)
-    if (fellInHole)
-        yield break;
+    public IEnumerator MoveUsingFatigue(int fatigueToSpend, bool limitToOneTile = false)
+    {
+        int stepsAllowed = limitToOneTile
+            ? 1
+            : Mathf.Min(fatigueToSpend, moveDistance);
 
-    // Otherwise, if we reached our waypoint, advance the route index
-    if (CurrentTilePosition == destinationTile)
-        currentRouteIndex++;
-}
+        if (currentRouteIndex >= routePositions.Count)
+            yield break;
 
+        Vector3Int destinationTile = routePositions[currentRouteIndex];
+        List<Vector3Int> path = CalculateOrthPathAvoidingHoles(CurrentTilePosition, destinationTile);
 
+        if (path.Count > stepsAllowed)
+            path = path.GetRange(0, stepsAllowed);
 
+        Debug.Log($"{name} MoveUsingFatigue: stepsAllowed={stepsAllowed}, pathCount={path.Count}");
 
+        bool fellInHole = false;
+        foreach (Vector3Int tile in path)
+        {
+            OccupiedTilesManager.Instance?.RemoveOccupiedPosition(CurrentTilePosition);
 
+            yield return StartCoroutine(MoveToTile(tile));
+            CurrentTilePosition = tile;
 
+            OccupiedTilesManager.Instance?.AddOccupiedPosition(CurrentTilePosition);
 
+            if (IsHoleTile(tile))
+            {
+                Debug.Log($"{name}: Fell into a hole at {tile}!");
+                var fatigueScript = GetComponent<ElectricianFatigue>();
+                if (fatigueScript != null)
+                    fatigueScript.prone = true;
 
+                fellInHole = true;
+                break;
+            }
+        }
+
+        if (fellInHole)
+            yield break;
+    }
+
+    public GameObject GetPanelAtTile(Vector3Int tile)
+        {
+            if (panelObjects.ContainsKey(tile))
+                return panelObjects[tile];
+            return null;
+        }
 
 }

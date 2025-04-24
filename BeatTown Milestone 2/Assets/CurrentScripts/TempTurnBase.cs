@@ -585,6 +585,8 @@ public class TempTurnBase : MonoBehaviour
 
     private IEnumerator ProcessGoonTurn(GoonMove goon)
     {
+        GoonMove.GloballyReservedTiles.Clear();
+
         isProcessingTurn = true;
 
         GoonFatigue goonFatigue = goon.GetComponent<GoonFatigue>();
@@ -592,6 +594,7 @@ public class TempTurnBase : MonoBehaviour
         {
             Debug.Log($"Goon {goon.gameObject.name} is taking its turn.");
             yield return StartCoroutine(goonFatigue.HandleTurn());
+            
         }
         else
         {
@@ -605,21 +608,26 @@ public class TempTurnBase : MonoBehaviour
     }
 
     private IEnumerator ProcessElectricianTurn(ElectricianMove electrician)
+{
+    isProcessingTurn = true;
+    Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
+
+    ElectricianFatigue elecFatigue = electrician.GetComponent<ElectricianFatigue>();
+    if (elecFatigue != null)
     {
-        isProcessingTurn = true;
-        Debug.Log($"Electrician {electrician.gameObject.name} is taking its turn.");
-
-        // Reset fatigue at the start of the turn
-        electrician.ResetFatigue();
-
-        // Execute movement and panel fixing
-        yield return StartCoroutine(electrician.MoveAction());
-
-        // Rotate turn order and proceed to next turn
-        RotateTurnOrder();
-        StartTurn();
-        isProcessingTurn = false;
+        yield return StartCoroutine(elecFatigue.HandleTurn());
     }
+    else
+    {
+        Debug.LogWarning("Electrician is missing ElectricianFatigue script!");
+        yield return null;
+    }
+
+    RotateTurnOrder();
+    StartTurn();
+    isProcessingTurn = false;
+}
+
 
     // ─────────────────────────────────────
     // Start Player Turn
