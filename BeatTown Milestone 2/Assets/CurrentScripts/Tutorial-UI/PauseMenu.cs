@@ -12,31 +12,57 @@ public class PauseMenu : MonoBehaviour
     public Button[] barray;
     public bool isPaused = false;
     private Tutorial tutorialScript;
+    private bool isOptionsMenu = false;
+
+    [SerializeField] GameObject[] PauseMenuItems; // Brady 
+   
 
 
     private void Start()
     {
+
         tutorialScript = FindObjectOfType<Tutorial>();
+       
     }
 
     private void Update()
     {
+        // if (isOptionsMenu)
+       // {
+       //     Back();
+      //  }
+
+        if (isPaused)
+        {
+            // set all pause menu items to inactive
+            foreach (GameObject item in PauseMenuItems)
+            {
+                item.SetActive(false);
+            }
+        }
         // Check for ESC key to toggle pause state
         PauseGameOnESC();
     }
 
     public void PauseGameOnESC()
     {
+
         if (Input.GetKeyDown(KeyCode.Escape) && !isPaused)
         {
-         
-            foreach (Button b in barray)
-            {
-                b.interactable = false;
-            }
+            if (!tutorialScript.isTutorialActive)
+                foreach (Button b in barray)
+                {
+                    b.gameObject.SetActive(false);
+
+                }
+                foreach (GameObject item in PauseMenuItems)
+                {
+                    item.SetActive(false);
+                }
 
             // show the pause menu
             pauseMenuUI.SetActive(true);
+            isOptionsMenu = true;
             // pause the game
             Time.timeScale = 0f;
             isPaused = true;
@@ -49,11 +75,17 @@ public class PauseMenu : MonoBehaviour
             {
                 foreach (Button b in barray)
                 {
-                    b.interactable = true;
+                    b.gameObject.SetActive(true);
+                }
+                foreach (GameObject item in PauseMenuItems)
+                {
+                    item.SetActive(true);
                 }
             }   
+
             // hide the pause menu
             pauseMenuUI.SetActive(false);
+            isOptionsMenu = false;
             // resume the game
             Time.timeScale = 1f;
             isPaused = false;
