@@ -16568,6 +16568,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1635339908}
+  - component: {fileID: 1635339909}
   m_Layer: 0
   m_Name: PauseManger
   m_TagString: Untagged
@@ -16590,6 +16591,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1635339909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635339906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9b0ce6704930254ca999415c38652ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pauseMenuUI: {fileID: 0}
+  pauseOptionsUI: {fileID: 0}
+  barray:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  isPaused: 0
 --- !u!1 &1636222655
 GameObject:
   m_ObjectHideFlags: 0
@@ -23414,10 +23436,10 @@ SceneRoots:
   - {fileID: 1426817632}
   - {fileID: 1562467053}
   - {fileID: 1766197736}
-  - {fileID: 1635339908}
   - {fileID: 2040732399}
   - {fileID: 23854748}
   - {fileID: 1463717793}
   - {fileID: 1981589901}
   - {fileID: 340371948}
   - {fileID: 810098805}
+  - {fileID: 1635339908}
