@@ -16054,8 +16054,8 @@ MonoBehaviour:
   playerRedSprite: {fileID: 21300000, guid: 7ff35a6abd326c2408c2fc32b924afdf, type: 3}
   enemyBlueSprite: {fileID: 21300000, guid: 1be1059d00665aa49a2a3026f0acaf4f, type: 3}
   enemyRedSprite: {fileID: 21300000, guid: 4367b4ab9ce71384ab323352be6875cc, type: 3}
-  barraBlueSprite: {fileID: 21300000, guid: 5022d49213b23f34c9e73a4bece25cac, type: 3}
-  barraRedSprite: {fileID: 21300000, guid: 76b673cb7f91b9344b29d86d3d3e67a2, type: 3}
+  barraBlueSprite: {fileID: 21300000, guid: 60175d8c7278a7f41938fc494bec45c2, type: 3}
+  barraRedSprite: {fileID: 21300000, guid: 96d0b5c4a3e95314b84e61377f338e2e, type: 3}
   goonRedSprite: {fileID: 21300000, guid: 884c5767696f2594085a9a73bbb3a285, type: 3}
   goonBlueSprite: {fileID: 21300000, guid: 0c11579742c58c7469b786966560f230, type: 3}
   electBlueSprite: {fileID: 21300000, guid: a8a44a2fd7e21ad4fb9802201f69ba15, type: 3}
