@@ -128,7 +128,7 @@ public class ElectricianMove : MonoBehaviour
         if (!HasAnyBrokenPanelsLeft())
         {
             Debug.Log("All panels fixed! Player wins!");
-            UnityEngine.SceneManagement.SceneManager.LoadScene("WinScreen");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Level Switcher");
         }
     }
 
