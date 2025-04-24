@@ -27,11 +27,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        // if (isOptionsMenu)
-       // {
-       //     Back();
-      //  }
-
+   
         if (isPaused)
         {
             // set all pause menu items to inactive
@@ -47,7 +43,7 @@ public class PauseMenu : MonoBehaviour
     public void PauseGameOnESC()
     {
 
-        if (Input.GetKeyDown(KeyCode.Escape) && !isPaused)
+        if (Input.GetKeyDown(KeyCode.Escape) && !isPaused && !isOptionsMenu)
         {
             if (!tutorialScript.isTutorialActive)
                 foreach (Button b in barray)
@@ -62,14 +58,13 @@ public class PauseMenu : MonoBehaviour
 
             // show the pause menu
             pauseMenuUI.SetActive(true);
-            isOptionsMenu = true;
-            // pause the game
-            Time.timeScale = 0f;
             isPaused = true;
 
+            // pause the game
+            Time.timeScale = 0f;
         }
 
-        else if (Input.GetKeyDown(KeyCode.Escape) && isPaused)
+        else if (Input.GetKeyDown(KeyCode.Escape) && isPaused && !isOptionsMenu)
         {
             if (!tutorialScript.isTutorialActive)
             {
@@ -83,12 +78,18 @@ public class PauseMenu : MonoBehaviour
                 }
             }   
 
-            // hide the pause menu
+            // hide the pause menu and resume
             pauseMenuUI.SetActive(false);
-            isOptionsMenu = false;
+            pauseOptionsUI.SetActive(false); // just in case
+            isPaused = false;
             // resume the game
             Time.timeScale = 1f;
-            isPaused = false;
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape) && isOptionsMenu) // ESC backs out of options --> pause menu
+        {
+            pauseOptionsUI.SetActive(false);
+            pauseMenuUI.SetActive(true);
+            isOptionsMenu = false;
         }
     }
 
@@ -134,7 +135,7 @@ public class PauseMenu : MonoBehaviour
 
         // show the options menu
         pauseOptionsUI.SetActive(true);
-
+        isOptionsMenu = true;
     }
 
     // back button for options (back to regular pause menu)
