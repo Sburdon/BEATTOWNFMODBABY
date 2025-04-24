@@ -19,6 +19,8 @@ public class ButtonHoverAnimation : MonoBehaviour, IPointerEnterHandler, IPointe
     private Coroutine blinkingCoroutine;
     public ActionType actionType;
     //public All_SFX all_SFX;
+    private static PauseMenu pauseMenu;
+    private static Tutorial tutorialScript;
 
 
     private void Start()
@@ -27,16 +29,18 @@ public class ButtonHoverAnimation : MonoBehaviour, IPointerEnterHandler, IPointe
         playerFatigue = FindObjectOfType<PlayerFatigue>();
         swing = FindObjectOfType<Swing>();
         playerMove = FindObjectOfType<PlayerMove>();
+        pauseMenu = FindObjectOfType<PauseMenu>();
+        tutorialScript = FindObjectOfType<Tutorial>();
     }
 
     private void Update()
     {
-        if (tempTurnBase.isPlayerTurn && playerFatigue.currentFatigue > 0)
+        if (tempTurnBase.isPlayerTurn && playerFatigue.currentFatigue > 0 && !pauseMenu.isPaused && !tutorialScript.isTutorialActive)
         {
             EnableButton();
         }
 
-        if (!swing.disableSwing)
+        if (!swing.disableSwing && !pauseMenu.isPaused && !tutorialScript.isTutorialActive)
         {
             EnableSwingButton();
         }
