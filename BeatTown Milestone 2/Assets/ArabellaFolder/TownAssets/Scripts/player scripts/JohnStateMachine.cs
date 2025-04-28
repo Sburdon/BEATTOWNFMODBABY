@@ -18,7 +18,7 @@ public class JohnStateMachine : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         animator.SetFloat("moveX", 0);
-        animator.SetFloat("moveY", -1);
+        animator.SetFloat("moveY", -1);        
     }
 
     // Update is called once per frame
@@ -49,5 +49,17 @@ public class JohnStateMachine : MonoBehaviour
             transform.position + change.normalized * speed * Time.deltaTime
         );
     }
+
+    // void OnTriggerEnter2D(Collider2D other){
+    //     if(other.CompareTag("ContextClue")){
+    //         contextClue.SetActive(true);
+    //     }
+    // }
+
+    // void OnTriggerExit2D(Collider2D other){
+    //     if(other.CompareTag("ContextClue")){
+    //         contextClue.SetActive(false);
+    //     }
+    // }
 
 }

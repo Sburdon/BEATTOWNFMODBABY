@@ -171,7 +171,7 @@ public class DialogController : MonoBehaviour
     void EndDialogue()
     {
         characterBox.SetActive(false);
-        contextBox.SetActive(false);
+        contextBox.SetActive(false);        
 
         //enable player movement
         if (playerScript != null){

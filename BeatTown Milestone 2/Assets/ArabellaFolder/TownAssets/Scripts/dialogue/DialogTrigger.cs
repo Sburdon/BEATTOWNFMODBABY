@@ -19,13 +19,20 @@ public class DialogueTrigger : MonoBehaviour
 
     public Animator fishAnimator; 
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (!triggered && other.CompareTag("Player"))
+    public GameObject contextClue; 
+
+    public DialogController dc; // cache reference
+    private bool playerInRange = false;
+
+    private void Start(){
+        contextClue.SetActive(false);
+    }
+
+    private void Update(){
+        if (playerInRange && !dc.IsDialogueActive() && Input.GetKeyDown(KeyCode.Space))
         {
             triggered = true;
-
-            DialogController dc = FindObjectOfType<DialogController>();
+            playerInRange = false;
 
             if (isCharacterDialogue)
             {
@@ -34,9 +41,31 @@ public class DialogueTrigger : MonoBehaviour
 
             dc.StartDialogue(lines, isCharacterDialogue);
 
-            if(cutsceneTrigger){
+            if (cutsceneTrigger)
+            {
                 StartCoroutine(WaitForDialogueThenCutscene(dc));
             }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!triggered && other.CompareTag("Player"))
+        {
+            playerInRange = true;
+            contextClue.SetActive(true); // Show context clue
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (playerInRange && other.CompareTag("Player"))
+        {
+            playerInRange = false;
+            
+        }
+        if(other.CompareTag("Player")){
+            contextClue.SetActive(false); // Hide context clue
         }
     }
 
