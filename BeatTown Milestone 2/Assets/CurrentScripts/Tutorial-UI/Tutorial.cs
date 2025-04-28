@@ -36,6 +36,7 @@ public class Tutorial : MonoBehaviour
     }
 
 
+
     private IEnumerator AllowInputAfterSplash()
     {
         // Wait at least a couple seconds after the scene starts, or match Unity splash duration
@@ -199,6 +200,7 @@ public class Tutorial : MonoBehaviour
 
         if (isTutorialActive)
         {
+            HideSprites();
             // Check if any key is pressed to advance the tutorial (exclude ESC key to avoid conflict with pause)
             if (Input.anyKeyDown && !Input.GetKeyDown(KeyCode.Escape)) // && !Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1))
             {
@@ -207,6 +209,7 @@ public class Tutorial : MonoBehaviour
         }
         else if (isBarraTutorialActive)
         {
+            ShowSprites();
             // Check if SpaceBar is pressed to advance the tutorial
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -216,6 +219,7 @@ public class Tutorial : MonoBehaviour
         }
         else if (isEnemyTutorialActive)
         {
+            ShowSprites();
             // Check if SpaceBar is pressed to advance the tutorial
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -224,6 +228,7 @@ public class Tutorial : MonoBehaviour
         }
         else if (isHookedTutorialActive)
         {
+            ShowSprites();
             // Check if SpaceBar is pressed to advance the tutorial
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -233,7 +238,7 @@ public class Tutorial : MonoBehaviour
         }
         else
         {
-
+            ShowSprites();
         }
     }
 
