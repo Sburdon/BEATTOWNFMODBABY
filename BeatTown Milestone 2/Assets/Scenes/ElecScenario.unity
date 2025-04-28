@@ -4132,7 +4132,7 @@ MonoBehaviour:
   myButton: {fileID: 539697138}
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
-  actionType: 0
+  actionType: 2
 --- !u!1 &559996908
 GameObject:
   m_ObjectHideFlags: 0
@@ -7923,11 +7923,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6d193934cfd5b742a266f58e6196b14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  childAnimator: {fileID: 0}
+  childAnimator: {fileID: 1872111468}
   myButton: {fileID: 539697138}
   swingButton: {fileID: 837347889}
   moveButton: {fileID: 1620997631}
-  actionType: 0
+  actionType: 4
 --- !u!1 &886406406
 GameObject:
   m_ObjectHideFlags: 0
@@ -8806,7 +8806,7 @@ MonoBehaviour:
   myButton: {fileID: 921817470}
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
-  actionType: 0
+  actionType: 5
 --- !u!1 &925308356
 GameObject:
   m_ObjectHideFlags: 0
@@ -10470,7 +10470,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1143006667
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10526,14 +10526,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85fa3427f3f34b14fa27fb69910b59af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PauseMenuItems: []
   barray:
   - {fileID: 1620997631}
   - {fileID: 539697138}
   - {fileID: 1766274695}
   - {fileID: 921817470}
-  - {fileID: 0}
-  isPaused: 0
+  - {fileID: 837347889}
   isTutorialActive: 1
 --- !u!1 &1148334531
 GameObject:
@@ -14801,7 +14799,7 @@ MonoBehaviour:
   myButton: {fileID: 539697138}
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
-  actionType: 0
+  actionType: 1
 --- !u!1 &1635339906
 GameObject:
   m_ObjectHideFlags: 0
@@ -14811,7 +14809,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1635339908}
-  - component: {fileID: 1635339907}
+  - component: {fileID: 1635339909}
   m_Layer: 0
   m_Name: PauseManger
   m_TagString: Untagged
@@ -14819,18 +14817,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1635339907
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1635339906}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 991355a93011a954196d183ddcfae7fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1635339908
 Transform:
   m_ObjectHideFlags: 0
@@ -14846,6 +14832,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1635339909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635339906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9b0ce6704930254ca999415c38652ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pauseMenuUI: {fileID: 0}
+  pauseOptionsUI: {fileID: 0}
+  barray: []
+  isPaused: 0
+  PauseMenuItems: []
 --- !u!1 &1637643125
 GameObject:
   m_ObjectHideFlags: 0
@@ -15946,7 +15949,7 @@ MonoBehaviour:
   myButton: {fileID: 539697138}
   swingButton: {fileID: 1766274695}
   moveButton: {fileID: 1620997631}
-  actionType: 0
+  actionType: 3
 --- !u!1 &1780642362
 GameObject:
   m_ObjectHideFlags: 0
