@@ -24,6 +24,7 @@ public class SceneLoader : MonoBehaviour
     public void LoadCreditsScene()
     {
         SceneManager.LoadScene("RollingCredits");
+        Debug.LogWarning("Loading Credits Scene");
         StartCoroutine(WaitAndLoadMainMenu());
     }
 
@@ -39,12 +40,13 @@ public class SceneLoader : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 ReturnToMainMenu();
+                Debug.Log("Escape key pressed, returning to main menu.");
                 yield break; // Exit coroutine
             }
 
             yield return null;
         }
-
+        Debug.Log("Wait time completed, returning to main menu.");
         ReturnToMainMenu();
     }
 
