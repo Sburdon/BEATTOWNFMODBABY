@@ -1,0 +1,55 @@
+
+ROW 1 - 	PUB
+	Drinks:	Martini, hurricane, margarita, cosmopolitan, zombie, sherry, brandy,
+		old fashioned, wine, prosecco, beer, irish coffee
+	Food:	Cheese burger, veggie burger, fries, onion rings
+
+
+ROW 2 - 	ARCADE
+	Prizes:	Heart pillow: Yellow, pink, red, blue, 
+		Engagement ring: Yellow, pink, red, blue
+		Cat pillow: Grey, brown, white/black, orange
+		Cat plush: Grey, brown, white/black, orange
+		Bunny plush: Grey, brown, white/black, orange
+		Star pillow: Yellow, pink, red, blue
+		Giga bear: brown, beige
+		Weird toy: Pink, purple, blue, green
+		Alien doll: Green, blue, purple
+		Tickets: Red, orange, yellow. green, blue, purple, pink
+		Neon signs: Lady, love, moon, city life
+		Consolation prizes: blue, green, orange, pink, yellow, red, purple
+
+ROW 3 - 	BAKERY
+	Drinks: 	Cappochino, latte macchiato, coffee, espresso, romano
+	Food: 	Baguette, donut (choco, sprinkles, sugar, plain),
+		cake (confetti, strawberry, choco), pancakes
+		cookies (choco, white choco, raspberry, raisin, sprinkles, double choco)
+		bun, croissant, sandwich
+
+
+ROW 4 - 	FOOD TRUCK
+	Eggs: Pink, green/blue/yellow/red, blue/green, pink/yellow striped, blue/green swirl
+	Ice cream: Strawberry, vanilla, choco, choco mint, blueberry
+	Halloween: Eyeball candy (red, purple, blue), pumpkin candy, licorice skull, jelly beans
+	Winter: Gingerbread, candy cane, holiday roll up cake, holiday pudding, lussekatter
+
+ROW 5 - 	CINEMA
+	Snacks: Popcorn, slushie (blue, pink, green), soda (red, blue, yellow), hotdog
+	Other: Movie ticket
+
+ROW 6 - 	BLACKSMITH
+	Lucky cat: gold, silver, copper, steel
+
+ROW 7 - SUPAM
+	Ice pops: 	Mouse, cat, bunny, bear, bird, fox
+	Pizza: 	Pepperoni, margherita, mozzarella, pineapple, tuna, olives
+	Drink: 	Blueberry, lime, raspberry, lemon, orange, watermelon
+	Canned: 	Tomato soup, tuna, chili, mushroom soup, chicken soup, kidney beans
+	Chips: 	Classic, light, veggie, cheddar, chili, sour cream onion
+	Cookies: 	Choco chip, white choco, raspberry, rainsins, sprinkles, double choc
+
+
+ROW 8 - TRAIN
+	Ticket bus, ticket train, collectable girl dolls (pink, purple, green, blue, red
+	collectable boy figures ( orange, yellow, green, blue, red)
+	stone, coal, wood 

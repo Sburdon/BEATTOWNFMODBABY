@@ -14,6 +14,7 @@ TagManager:
   - BrokenPanel
   - FixedPanel
   - FishTrigger
+  - ContextClue
   layers:
   - Default
   - TransparentFX

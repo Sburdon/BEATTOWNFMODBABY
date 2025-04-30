@@ -1,0 +1,24 @@
+
+Minigames tile size: 8x8
+(please check example version for possible layout)
+
+
+Duck auto scroller
+	- Collect your missing ducklings 
+	- Move player 1 square up or down to avoid tree stumps crocodiles and rocks
+	- Regenerate health by collecting bread
+	- Get a bonus life by collecting floating hearts
+Tiles
+Duckling counter, player duck, player duck damaged, duckling, bread, heart, crocodile, log, stone
+water cliff, grass, water, bush, frame
+
+Fruit memory game
+	- Remember the fruity layout
+	- Don't get tricked, some fruits stay in the same place but are mirrored
+	- Pick the right layout and advance a level
+Fruit
+Lemon, apple, orange, plum, cherry, pear
+
+
+
+	
