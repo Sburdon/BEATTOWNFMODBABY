@@ -87,7 +87,7 @@ public class RespawnManager : MonoBehaviour
             Debug.LogError("RespawnManager: One or more required references are missing.");
             return;
         }
-        if (SceneManager.GetActiveScene().buildIndex == 1)
+        if (SceneManager.GetActiveScene().name == "Brady")
         {
             MaintainEnemyCount();
         }

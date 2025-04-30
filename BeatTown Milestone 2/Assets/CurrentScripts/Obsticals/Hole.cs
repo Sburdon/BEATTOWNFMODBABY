@@ -59,10 +59,11 @@ public class Hole : MonoBehaviour
         // Apply fatigue effect
         ElectricianFatigue electricianFatigue = collision.GetComponent<ElectricianFatigue>();
         if (electricianFatigue != null)
-        {
-            electricianFatigue.prone = true;
-            electricianFatigue.UseGetUpFatigue(); // Spend 1 fatigue to get out
-        }
+            {
+                electricianFatigue.prone = true;
+                Debug.Log("Electrician is now prone and will recover at the start of their next turn.");
+            }
+
         }
         else if (collision.gameObject.CompareTag("Goon"))
 {

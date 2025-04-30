@@ -101,11 +101,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 4320
-        width: 3840
-        height: 2160
+        y: 2466
+        width: 1733
+        height: 1233
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -121,12 +121,12 @@ TextureImporter:
       name: End_turn_Sprite_Sheet_1
       rect:
         serializedVersion: 2
-        x: 3840
-        y: 4320
-        width: 3840
-        height: 2160
+        x: 1884
+        y: 2466
+        width: 1725
+        height: 1233
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -143,11 +143,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 2160
-        width: 3840
-        height: 2160
+        y: 1233
+        width: 1725
+        height: 1229
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -163,12 +163,12 @@ TextureImporter:
       name: End_turn_Sprite_Sheet_3
       rect:
         serializedVersion: 2
-        x: 3840
-        y: 2160
-        width: 3840
-        height: 2160
+        x: 1884
+        y: 1237
+        width: 1724
+        height: 1233
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -186,10 +186,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 3840
-        height: 2160
+        width: 1729
+        height: 1233
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -205,13 +205,13 @@ TextureImporter:
       name: End_turn_Sprite_Sheet_5
       rect:
         serializedVersion: 2
-        x: 3840
+        x: 1884
         y: 0
-        width: 3840
-        height: 2160
+        width: 1724
+        height: 1233
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 5, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0

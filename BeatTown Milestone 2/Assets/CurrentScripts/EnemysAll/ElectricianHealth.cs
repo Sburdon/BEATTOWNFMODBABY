@@ -42,6 +42,6 @@ public class ElectricianHealth : MonoBehaviour
         gameObject.SetActive(false);
 
         // 🔥 Load your Lose Scene — placeholder
-        UnityEngine.SceneManagement.SceneManager.LoadScene("LoseScreen");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Level Switcher");
     }
 }

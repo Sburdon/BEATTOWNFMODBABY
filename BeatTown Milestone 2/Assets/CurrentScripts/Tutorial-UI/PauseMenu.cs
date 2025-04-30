@@ -1,0 +1,150 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class PauseMenu : MonoBehaviour
+{
+    public GameObject pauseMenuUI;
+    [SerializeField] private GameObject pauseOptionsUI;
+
+    public Button[] barray;
+    public bool isPaused = false;
+    private Tutorial tutorialScript;
+    private bool isOptionsMenu = false;
+
+    [SerializeField] GameObject[] PauseMenuItems; // Brady 
+   
+
+
+    private void Start()
+    {
+
+        tutorialScript = FindObjectOfType<Tutorial>();
+       
+    }
+
+    private void Update()
+    {
+   
+        if (isPaused)
+        {
+            // set all pause menu items to inactive
+            foreach (GameObject item in PauseMenuItems)
+            {
+                item.SetActive(false);
+            }
+        }
+        // Check for ESC key to toggle pause state
+        PauseGameOnESC();
+    }
+
+    public void PauseGameOnESC()
+    {
+
+        if (Input.GetKeyDown(KeyCode.Escape) && !isPaused && !isOptionsMenu)
+        {
+            if (!tutorialScript.isTutorialActive)
+                foreach (Button b in barray)
+                {
+                    b.gameObject.SetActive(false);
+
+                }
+                foreach (GameObject item in PauseMenuItems)
+                {
+                    item.SetActive(false);
+                }
+
+            // show the pause menu
+            pauseMenuUI.SetActive(true);
+            isPaused = true;
+
+            // pause the game
+            Time.timeScale = 0f;
+        }
+
+        else if (Input.GetKeyDown(KeyCode.Escape) && isPaused && !isOptionsMenu)
+        {
+            if (!tutorialScript.isTutorialActive)
+            {
+                foreach (Button b in barray)
+                {
+                    b.gameObject.SetActive(true);
+                }
+                foreach (GameObject item in PauseMenuItems)
+                {
+                    item.SetActive(true);
+                }
+            }   
+
+            // hide the pause menu and resume
+            pauseMenuUI.SetActive(false);
+            pauseOptionsUI.SetActive(false); // just in case
+            isPaused = false;
+            // resume the game
+            Time.timeScale = 1f;
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape) && isOptionsMenu) // ESC backs out of options --> pause menu
+        {
+            pauseOptionsUI.SetActive(false);
+            pauseMenuUI.SetActive(true);
+            isOptionsMenu = false;
+        }
+    }
+
+
+    // resume method for button
+    public void Resume()
+    {
+        foreach (Button b in barray)
+        {
+            b.interactable = true;
+        }
+        // hide the pause menu
+        pauseMenuUI.SetActive(false);
+        // resume the game
+        Time.timeScale = 1f;
+        isPaused = false;
+    }
+
+    // main menu method for button 
+
+    public void MainMenu()
+    {
+        Time.timeScale = 1f; // Resume the game before loading the main menu
+        // swap scene by name "MainMenu" 
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    // quit method for button
+
+    public void Quit()
+    {
+        // quit the game
+        Application.Quit();
+    }
+
+
+    // options method for button 
+
+    public void Options()
+    {
+        // hide the pause menu
+        pauseMenuUI.SetActive(false);
+
+        // show the options menu
+        pauseOptionsUI.SetActive(true);
+        isOptionsMenu = true;
+    }
+
+    // back button for options (back to regular pause menu)
+    public void Back()
+    {
+        // hide the options menu
+        pauseOptionsUI.SetActive(false);
+
+        // show the pause menu
+        pauseMenuUI.SetActive(true);
+    }
+}

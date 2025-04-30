@@ -198,6 +198,6 @@ public class Hook : MonoBehaviour
     private void EndGame()
     {
         Debug.Log("Game Over! You've caught 6 enemies.");
-        SceneManager.LoadScene("WinScreen");
+        SceneManager.LoadScene("WinScreen2");
     }
 }

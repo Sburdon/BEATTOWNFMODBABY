@@ -25,7 +25,7 @@ public class Score : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "HIGHSCORE: " + score.ToString();
+            scoreText.text = "SCORE: " + score.ToString();
         }
     }
 }

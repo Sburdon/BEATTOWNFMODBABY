@@ -141,7 +141,9 @@ MonoBehaviour:
   moveDistance: 2
   moveSpeed: 1.5
   routePositions:
-  - {x: 0, y: -3, z: 0}
+  - {x: 1, y: 1, z: 0}
+  - {x: -3, y: 1, z: 0}
+  - {x: 1, y: -3, z: 0}
   currentRouteIndex: 0
   brokenPanelPrefab: {fileID: 5413405559751626241, guid: b6c135019efb972499ed5c8c9027c95a,
     type: 3}

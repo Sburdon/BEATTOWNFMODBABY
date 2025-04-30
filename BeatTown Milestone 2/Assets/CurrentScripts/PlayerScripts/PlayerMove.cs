@@ -130,6 +130,7 @@ public class PlayerMove : MonoBehaviour
             {
                 Debug.Log("Clicked tile is out of range or no moves remaining.");
             }
+
         }
 
         // Handle locked movement without a button press
@@ -412,10 +413,16 @@ public class PlayerMove : MonoBehaviour
 */
     public void CancelMove()
     {
+        if (pendingMovePurchase)
+        {
+            ResetPendingMove();
+            UpdateMoveImages();
+        }
         if (currentMoveCoroutine != null)
         {
             StopCoroutine(currentMoveCoroutine);
             currentMoveCoroutine = null;
+            
         }
         canMove = false;
         Debug.Log("Move action canceled, but further movement is allowed if remaining moves exist.");
@@ -523,6 +530,7 @@ public class PlayerMove : MonoBehaviour
             {
                 if (pendingMovePurchase)
                 {
+                    //was ResetPendingMove();
                     pendingMovePurchase = false; // Cancel pending purchase but retain moves
                     Debug.Log("Pending move purchase canceled, but remaining moves retained.");
                 }

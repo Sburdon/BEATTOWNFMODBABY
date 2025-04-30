@@ -6,9 +6,8 @@ using UnityEngine.UI;
 public class Tutorial : MonoBehaviour
 {
     Animator animtut;
-    [SerializeField] GameObject[] PauseMenuItems;
     public Button[] barray;
-    public bool isPaused = false;
+    private bool isPaused = false;
     public bool isTutorialActive = true;
     private bool isBarraTutorialActive = false;
     private bool isEnemyTutorialActive = false;
@@ -18,10 +17,6 @@ public class Tutorial : MonoBehaviour
 
     private void Start()
     {
-        foreach (GameObject item in PauseMenuItems)
-        {
-            item.SetActive(false);
-        }
         animtut = GetComponent<Animator>();
 
         // Disable button interactions
@@ -30,6 +25,8 @@ public class Tutorial : MonoBehaviour
             b.interactable = false;
         }
 
+        // for each hover over, disable the script (abandoned/not necessary with raycast block image component (TRAVON))
+
         // Make unwanted sprites (i.e. hook) invisible
         HideSprites();
 
@@ -37,6 +34,8 @@ public class Tutorial : MonoBehaviour
         StartCoroutine(DelayPause());
         StartCoroutine(AllowInputAfterSplash());
     }
+
+
 
     private IEnumerator AllowInputAfterSplash()
     {
@@ -182,6 +181,7 @@ public class Tutorial : MonoBehaviour
         isPaused = false;
         isTutorialActive = false; // mark tutorial as finished
 
+
         // re enable sprites after tutorial
         ShowSprites();
         animtut.SetBool("MainTutOver", true); // declare end of main tutorial
@@ -200,23 +200,26 @@ public class Tutorial : MonoBehaviour
 
         if (isTutorialActive)
         {
+            HideSprites();
             // Check if any key is pressed to advance the tutorial (exclude ESC key to avoid conflict with pause)
-            if (Input.anyKeyDown)
+            if (Input.anyKeyDown && !Input.GetKeyDown(KeyCode.Escape)) // && !Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1))
             {
                 ChangeAnimation();
             }
         }
         else if (isBarraTutorialActive)
         {
+            ShowSprites();
             // Check if SpaceBar is pressed to advance the tutorial
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.LogWarning("Spacebar pressed");
+                Debug.LogWarning("barra tutorial advanced");
                 ChangeBarraAnimation();
             }
         }
         else if (isEnemyTutorialActive)
         {
+            ShowSprites();
             // Check if SpaceBar is pressed to advance the tutorial
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -225,57 +228,19 @@ public class Tutorial : MonoBehaviour
         }
         else if (isHookedTutorialActive)
         {
+            ShowSprites();
             // Check if SpaceBar is pressed to advance the tutorial
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                Debug.LogWarning("Hooked tutorial advanced");
                 ChangeHookedAnimation();
             }
         }
         else
         {
-            // Check for ESC key to toggle pause state
-            PauseGameOnESC();
+            ShowSprites();
         }
     }
 
-    public void PauseGameOnESC()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (!isTutorialActive) // only allow pausing/resuming if tutorial is completed
-            {
-                if (!isPaused)
-                {
-                    // Disable button interactions before freezing
-                    foreach (Button b in barray)
-                    {
-                        b.interactable = false;
-                    }
-                    // pause the game
-                    Time.timeScale = 0f;
-                    isPaused = true;
-                    foreach (GameObject item in PauseMenuItems)
-                    {
-                        item.SetActive(true);
-                    }
-                }
-                else
-                {
-                    // enable button interactions 
-                    foreach (Button b in barray)
-                    {
-                        b.interactable = true;
-                    }
-                    // resume the game
-                    Time.timeScale = 1f;
-                    isPaused = false;
-                    foreach (GameObject item in PauseMenuItems)
-                    {
-                        item.SetActive(false);
-                    }
-                }
-            }
-        }
-    }
+
 }
-

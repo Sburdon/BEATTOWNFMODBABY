@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-
 [RequireComponent(typeof(ElectricianMove))]
 public class ElectricianFatigue : MonoBehaviour
 {
@@ -9,6 +8,9 @@ public class ElectricianFatigue : MonoBehaviour
     private int currentFatigue;
 
     private ElectricianMove electricianMove;
+
+    [HideInInspector]
+    public bool prone = false;
 
     private void Awake()
     {
@@ -21,55 +23,65 @@ public class ElectricianFatigue : MonoBehaviour
     }
 
     public IEnumerator HandleTurn()
-{
-    ResetFatigue(); 
-    Debug.Log($"Electrician Turn Start — Fatigue: {currentFatigue}");
-
-    while (currentFatigue > 0)
     {
-        // ◀ If we're in a hole, spend 1 fatigue to climb out (one tile)
-        if (prone)
-        {
-            if (currentFatigue > 0)
-            {
-                Debug.Log("Electrician is prone: spending 1 fatigue to climb out.");
-                yield return StartCoroutine(UseGetUpFatigue());
-                continue;  // re-enter loop
-            }
-            else
-            {
-                Debug.Log("No fatigue to climb out. Turn ends.");
-                yield break;
-            }
-        }
+        ResetFatigue();
+        Debug.Log($"Electrician Turn Start — Fatigue: {currentFatigue}");
 
-        // ◀ If standing on a broken panel, fix it
-        if (electricianMove.IsOnBrokenPanel())
+        while (currentFatigue > 0)
         {
-            yield return StartCoroutine(electricianMove.FixPanel());
+            if (prone)
+            {
+                if (currentFatigue >= 1)
+                {
+                    currentFatigue--;
+                    prone = false;
+                    Debug.Log($"{name}: Stood up from hole. Remaining fatigue: {currentFatigue}");
+
+                    yield return StartCoroutine(electricianMove.MoveUsingFatigue(1, true));
+                    continue;
+                }
+                else
+                {
+                    Debug.Log($"{name}: Not enough fatigue to stand up from hole.");
+                    break;
+                }
+            }
+
+            if (electricianMove.currentRouteIndex >= electricianMove.routePositions.Count)
+            {
+                Debug.Log("Electrician: Finished all route positions.");
+                break;
+            }
+
+            Vector3Int currentTile = electricianMove.CurrentTilePosition;
+            Vector3Int destinationTile = electricianMove.routePositions[electricianMove.currentRouteIndex];
+
+            if (currentTile == destinationTile)
+            {
+                if (currentFatigue > 0)
+                {
+                    Debug.Log("✅ Electrician: Fixing guaranteed panel at destination.");
+                    yield return StartCoroutine(electricianMove.FixPanelAtRoutePosition());
+                    UseFatigue(1);
+                    continue;
+                }
+                else
+                {
+                    Debug.Log("⚠️ Not enough fatigue to fix panel.");
+                    break;
+                }
+            }
+
+            Debug.Log("Electrician: Attempting to move.");
+            yield return StartCoroutine(electricianMove.MoveUsingFatigue(electricianMove.moveDistance));
             UseFatigue(1);
-            continue;
+
+            
         }
 
-        // ◀ Normal move: spend 1 fatigue for exactly 1 tile
-        Debug.Log("Electrician attempting one‐tile move...");
-        yield return StartCoroutine(electricianMove.MoveUsingFatigue(1));
-        UseFatigue(1);
-
-        // ◀ Check if we fell into a hole mid‐move
-        if (prone)
-        {
-            Debug.Log("Fell into hole during move. Handling climb‐out next iteration.");
-            continue;  // next loop will catch prone and spend get-up fatigue
-        }
+        Debug.Log("Electrician turn ends.");
+        yield return null;
     }
-
-    Debug.Log("Electrician turn ends: no fatigue left");
-    yield break;
-}
-
-
-
 
     public bool UseFatigue(int amount)
     {
@@ -82,22 +94,6 @@ public class ElectricianFatigue : MonoBehaviour
         Debug.Log("Electrician: Not enough fatigue!");
         return false;
     }
-
-    [HideInInspector]
-public bool prone = false;
-
-public IEnumerator UseGetUpFatigue()
-{
-    if (!prone || currentFatigue < 1)
-        yield break;
-
-    currentFatigue--;
-    prone = false;
-    Debug.Log($"{name}: Used 1 fatigue to stand up from hole. Remaining: {currentFatigue}");
-
-    yield return electricianMove.MoveUsingFatigue(1, limitToOneTile: true);
-}
-
 
     public int GetCurrentFatigue() => currentFatigue;
     public bool HasFatigue() => currentFatigue > 0;
