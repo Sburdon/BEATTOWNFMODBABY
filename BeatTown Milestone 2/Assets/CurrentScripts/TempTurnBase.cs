@@ -311,7 +311,7 @@ public class TempTurnBase : MonoBehaviour
                     StartPlayerTurn();
                     return;
                 }
-                if ((currentKills == 10 || currentKills == 11) && spawnBarra4)
+                if (currentKills >= 10 && spawnBarra4)
                 {
                     RespawnManager.Instance.SpawnBarra();
                     spawnBarra4 = false;
@@ -321,7 +321,7 @@ public class TempTurnBase : MonoBehaviour
                 }
 
                 // After 11 kills, spawn a barra per kill
-                if (currentKills > 11)
+                if (currentKills > 10 && !spawnBarra4)
                 {
                     int killsToProcess = currentKills - holderOfHookkills;
 
