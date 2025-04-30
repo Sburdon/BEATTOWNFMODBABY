@@ -9,19 +9,22 @@ public class DialogController : MonoBehaviour
     [Header("UI")]
     public GameObject characterBox, contextBox;
 
-    [Header("Contextual Dialog")]
+    [Header("Contextual Dialogue")]
     public TextMeshProUGUI descriptiveText;
 
-    [Header("Character Dialog")]
+    [Header("Character Dialogue")]
     public TextMeshProUGUI speakerNameText;
     public TextMeshProUGUI dialogueText;
     public Image portraitImage;
 
-    [Header("Character Pictures")]
+    [Header("Portraits")]
     public Sprite johnSprite, fishermanSprite;
 
-    [Header("Misc.")]
+    [Header("Typing Settings")]
     public float typingSpeed = 0.02f;
+
+    [Header("Player Script")]
+    public JohnStateMachine playerScript;
 
     private Queue<string> dialogueLines = new Queue<string>();
     private bool isTyping = false;
@@ -30,8 +33,6 @@ public class DialogController : MonoBehaviour
 
     private string overrideSpeakerName = "";
     private Sprite overridePortrait = null;
-
-    public JohnStateMachine playerScript; 
 
     void Start()
     {
@@ -62,10 +63,8 @@ public class DialogController : MonoBehaviour
 
     public void StartDialogue(string[] lines, bool characterMode)
     {
-        // if(playerScript == null){
-        //     playerScript == GameObject.FindWithTag("Player").GetComponent<JohnStateMachine>();
-        // }
-        if(playerScript != null){
+        if (playerScript != null)
+        {
             playerScript.enabled = false;
             playerScript.animator.SetBool("moving", false);
         }
@@ -99,12 +98,14 @@ public class DialogController : MonoBehaviour
         }
 
         string fullLine = dialogueLines.Dequeue();
+        currentLine = fullLine;
 
         if (isCharacterDialogue)
         {
             string speaker = overrideSpeakerName;
             string lineText = fullLine;
 
+            // Check if line starts with "Speaker: text"
             if (fullLine.Contains(":"))
             {
                 var split = fullLine.Split(new char[] { ':' }, 2);
@@ -114,17 +115,12 @@ public class DialogController : MonoBehaviour
 
             speakerNameText.text = speaker;
             UpdatePortrait(speaker);
-
-            // Use override portrait if set and no speaker in line
-            if (!fullLine.Contains(":") && overridePortrait != null)
-                portraitImage.sprite = overridePortrait;
-
             currentLine = lineText;
+
             StartCoroutine(TypeLine(lineText, true));
         }
         else
         {
-            currentLine = fullLine;
             StartCoroutine(TypeLine(fullLine, false));
         }
     }
@@ -132,8 +128,11 @@ public class DialogController : MonoBehaviour
     IEnumerator TypeLine(string line, bool isCharacter)
     {
         isTyping = true;
-        if (isCharacter) dialogueText.text = "";
-        else descriptiveText.text = "";
+
+        if (isCharacter)
+            dialogueText.text = "";
+        else
+            descriptiveText.text = "";
 
         foreach (char letter in line)
         {
@@ -159,7 +158,6 @@ public class DialogController : MonoBehaviour
                 portraitImage.sprite = fishermanSprite;
                 break;
             default:
-                // Only apply override portrait if no match and it's set
                 if (overridePortrait != null)
                     portraitImage.sprite = overridePortrait;
                 else
@@ -171,12 +169,12 @@ public class DialogController : MonoBehaviour
     void EndDialogue()
     {
         characterBox.SetActive(false);
-        contextBox.SetActive(false);        
+        contextBox.SetActive(false);
 
-        //enable player movement
-        if (playerScript != null){
+        if (playerScript != null)
+        {
             playerScript.enabled = true;
-        }   
+        }
 
         overrideSpeakerName = "";
         overridePortrait = null;
