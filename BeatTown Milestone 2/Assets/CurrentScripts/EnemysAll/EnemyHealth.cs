@@ -166,6 +166,7 @@ public class EnemyHealth : MonoBehaviour
             else if (TryGetComponent(out BarraMove barraMoveComponent))
             {
                 tempTurnBase.RemoveBarraUnit(barraMoveComponent);
+                OccupiedTilesManager.Instance.UnregisterBarraMove(barraMoveComponent);
             }
         }
 
