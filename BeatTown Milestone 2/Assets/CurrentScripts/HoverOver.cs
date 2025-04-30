@@ -10,6 +10,15 @@ public class HoverOver : MonoBehaviour
 
     private GameObject lastHoveredEnemy;
     private GameObject lastHoveredBarra;
+    private PauseMenu pause;
+    private Tutorial tutorialScript;
+
+    private void Start()
+    {
+        pause = FindObjectOfType<PauseMenu>();
+        tutorialScript = FindObjectOfType<Tutorial>();
+
+    }
 
     private void Update()
     {
@@ -75,8 +84,12 @@ public class HoverOver : MonoBehaviour
         }
 
         // Update UI elements visibility
-        uiElementA.SetActive(hoverOverEnemy);
-        uiElementB.SetActive(hoverOverBarra);
+        if (pause.isPaused == false && tutorialScript.isTutorialActive == false) 
+        {
+            uiElementA.SetActive(hoverOverEnemy);
+            uiElementB.SetActive(hoverOverBarra);
+        }
+        
     }
 
     private void HandleHover(GameObject unit, string tag, ref bool hoverFlag, ref GameObject lastHovered)
