@@ -14,6 +14,7 @@ public class Hook : MonoBehaviour
     public delegate void HookKillCountChangedEvent(int killCount);
     public static event HookKillCountChangedEvent OnHookKillCountChanged;
 
+
     [Header("References")]
     public Tilemap tilemap;
     public PlayerMove player;
@@ -39,6 +40,7 @@ public class Hook : MonoBehaviour
             return;
         }
     }
+   
 
     void Start()
     {
