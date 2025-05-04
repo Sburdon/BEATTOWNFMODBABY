@@ -5,10 +5,8 @@ using UnityEngine.SceneManagement;
 public class DialogueTrigger : MonoBehaviour
 {
     public bool isCharacterDialogue = false;
-    public string[] lines;
-
-    public string speakerName;
-    public Sprite speakerPortrait;
+    public DialogueLine[] characterLines;
+    public string[] contextualLines;
 
     public bool cutsceneTrigger = false;
     public GameObject cutsceneObject;
@@ -17,9 +15,11 @@ public class DialogueTrigger : MonoBehaviour
     public Animator fishAnimator;
     public GameObject contextClue;
 
-    public DialogController dc; // reference to the dialogue controller
     private bool playerInRange = false;
     private bool triggered = false;
+
+    public CharacterDialogue characterDialogue;
+    public ContextDialogue contextualDialogue;
 
     private void Start()
     {
@@ -28,28 +28,44 @@ public class DialogueTrigger : MonoBehaviour
 
     private void Update()
     {
-        if (playerInRange && !dc.IsDialogueActive() && Input.GetKeyDown(KeyCode.Space))
+        if (playerInRange && Input.GetKeyDown(KeyCode.Space))
         {
-            triggered = true;
-            playerInRange = false;
-            contextClue.SetActive(false);
-
             if (isCharacterDialogue)
-                dc.SetSpeakerInfo(speakerName, speakerPortrait);
+            {
+                if (!characterDialogue.IsActive() && !triggered)
+                {
+                    triggered = true;
+                    playerInRange = false;
+                    contextClue.SetActive(false);
 
-            dc.StartDialogue(lines, isCharacterDialogue);
+                    characterDialogue.StartDialogue(characterLines);
 
-            if (cutsceneTrigger)
-                StartCoroutine(WaitForDialogueThenCutscene());
+                    if (cutsceneTrigger)
+                        StartCoroutine(WaitForDialogueThenCutscene());
+                }
+            }
+            else
+            {
+                if (!contextualDialogue.IsActive())
+                {
+                    playerInRange = false;
+                    contextClue.SetActive(false);
+
+                    contextualDialogue.StartDialogue(contextualLines);
+                }
+            }
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!triggered && other.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
-            playerInRange = true;
-            contextClue.SetActive(true);
+            if (!triggered || !isCharacterDialogue)
+            {
+                playerInRange = true;
+                contextClue.SetActive(true);
+            }
         }
     }
 
@@ -64,7 +80,7 @@ public class DialogueTrigger : MonoBehaviour
 
     IEnumerator WaitForDialogueThenCutscene()
     {
-        while (dc.IsDialogueActive())
+        while (characterDialogue.IsActive())
             yield return null;
 
         yield return screenFader.FadeOut();
@@ -74,6 +90,17 @@ public class DialogueTrigger : MonoBehaviour
             SceneManager.LoadScene("Scenes/Brady");
         }
 
-        yield return screenFader.FadeIn();
+        // // yield return screenFader.FadeIn();
+        // yield return new WaitUntil(() => !characterDialogue.IsActive());
+
+        // // Start the fade
+        // yield return fadeController.FadeOut(); // assumes this returns IEnumerator
+
+        // // Then start the cutscene
+        // cutsceneManager.PlayCutscene(); // or trigger Timeline, animation, etc.
+
+        // // After cutscene finishes, load next scene
+        // yield return new WaitForSeconds(cutsceneManager.cutsceneLength);
+        // SceneManager.LoadScene("Scenes/Brady"); // Replace with your actual scene
     }
 }
