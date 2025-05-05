@@ -24,7 +24,8 @@ public class EnemyHealth : MonoBehaviour
     private RespawnManager respawnManager;
     private TempTurnBase tempTurnBase;
     private Score score;
-
+    private PauseMenu pause;
+    private Tutorial tutorialScript;
 
 
     public int CurrentHealth
@@ -39,10 +40,11 @@ public class EnemyHealth : MonoBehaviour
 
     void Start()
     {
+        tutorialScript = FindObjectOfType<Tutorial>();
         score = FindObjectOfType<Score>();
         health = maxHealth;
         CurrentHealth = health;
-
+        pause = FindObjectOfType<PauseMenu>();
         respawnManager = RespawnManager.Instance;
         tempTurnBase = FindObjectOfType<TempTurnBase>();
 
@@ -94,7 +96,7 @@ public class EnemyHealth : MonoBehaviour
 
     public void ShowHealthSlider(bool show)
     {
-        if (healthSlider != null)
+        if (healthSlider != null && pause.isPaused == false && tutorialScript.isTutorialActive == false)
         {
             healthSlider.gameObject.SetActive(show);
             UpdateHealthSlider();
