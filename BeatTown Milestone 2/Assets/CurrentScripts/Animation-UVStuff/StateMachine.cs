@@ -121,29 +121,7 @@ public class StateMachine : MonoBehaviour
     //// handles player input to switch between states
     void HandleInput()
     {
-        if (Input.GetAxisRaw("Horizontal") != 0 && currentState != WrestlerState.React && canMove)
-        {
-            ChangeState(WrestlerState.Move);
-        }
 
-        if (Input.GetKeyDown(KeyCode.P) && canMove)
-        {
-            ChangeState(WrestlerState.Punch);
-        }
-
-        if (Input.GetKeyDown(KeyCode.S) && canMove)
-        {
-            ChangeState(WrestlerState.Swing);
-        }
-
-        if (Input.GetKeyDown(KeyCode.O) && canMove)
-        {
-            ChangeState(WrestlerState.Push);
-        }
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            ChangeState(WrestlerState.React);
-        }
     }
 
     void HandleState()
