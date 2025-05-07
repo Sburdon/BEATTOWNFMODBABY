@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Playables;
 
 public class DialogueTrigger : MonoBehaviour
 {
@@ -87,7 +88,12 @@ public class DialogueTrigger : MonoBehaviour
 
         if (cutsceneObject != null)
         {
-            SceneManager.LoadScene("Scenes/Brady");
+            PlayableDirector director = cutsceneObject.GetComponent<PlayableDirector>();
+            if (director != null)
+            {
+                director.Play();
+                yield return screenFader.FadeIn();
+            }
         }
 
         // // yield return screenFader.FadeIn();
