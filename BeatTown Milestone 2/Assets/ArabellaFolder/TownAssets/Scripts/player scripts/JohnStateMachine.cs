@@ -12,13 +12,16 @@ public class JohnStateMachine : MonoBehaviour
     //animation
     public Animator animator; 
 
+    public VectorValue startingPosition;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         animator.SetFloat("moveX", 0);
-        animator.SetFloat("moveY", -1);        
+        animator.SetFloat("moveY", -1);    
+        transform.position = startingPosition.initialValue; 
     }
 
     // Update is called once per frame
