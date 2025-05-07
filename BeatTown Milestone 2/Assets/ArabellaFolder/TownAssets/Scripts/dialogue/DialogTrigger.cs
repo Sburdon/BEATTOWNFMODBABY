@@ -109,4 +109,5 @@ public class DialogueTrigger : MonoBehaviour
         // yield return new WaitForSeconds(cutsceneManager.cutsceneLength);
         // SceneManager.LoadScene("Scenes/Brady"); // Replace with your actual scene
     }
+
 }

@@ -14,6 +14,10 @@ public class TimelineDialogueBridge : MonoBehaviour
 
     private bool waitingForDialogue;
 
+    //saving position and scene
+    public GameObject player;
+    public VectorValue savedPosition;
+
     public void Awake(){
         StartCoroutine(FadeAndBeginScene());
     }
@@ -54,6 +58,9 @@ public class TimelineDialogueBridge : MonoBehaviour
     IEnumerator FadeAndLoadScene()
     {
         yield return screenFader.FadeOut();
+        savedPosition.initialValue = player.transform.position;
+        TownManager.Instance.savedPlayerPosition = player.transform.position;
+        TownManager.Instance.returningToScene = true;
         UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneName);
     }
 }
