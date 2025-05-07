@@ -96,14 +96,10 @@
 			<destination>{abd2f048-48a1-4c1b-8910-44b081805723}</destination>
 		</relationship>
 		<relationship name="sounds">
-			<destination>{ccca250c-17e6-4803-afa5-9d16f7acc794}</destination>
 			<destination>{343146d1-685f-4036-abfb-37b30a39f4af}</destination>
 			<destination>{52abee61-c2d1-4a64-ae8e-2c8d14c501ff}</destination>
 			<destination>{db195863-cb37-4211-b4fd-8e2348fd2310}</destination>
 			<destination>{a908c724-9453-4afe-9429-aebdf3fecb57}</destination>
-		</relationship>
-		<relationship name="playPercentages">
-			<destination>{beb236e7-8d44-45e5-8e6b-144729d1c85c}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{8d3b4227-e271-448f-9d95-5f409d6f0dbd}">
@@ -134,11 +130,9 @@
 		<property name="nameOfPropertyBeingModulated">
 			<value>pitch</value>
 		</property>
-	</object>
-	<object class="SingleSound" id="{ccca250c-17e6-4803-afa5-9d16f7acc794}">
-		<relationship name="audioFile">
-			<destination>{89e5d4d7-81c6-4741-8253-cd261d2128b4}</destination>
-		</relationship>
+		<property name="amount">
+			<value>2</value>
+		</property>
 	</object>
 	<object class="SingleSound" id="{343146d1-685f-4036-abfb-37b30a39f4af}">
 		<relationship name="audioFile">
@@ -158,14 +152,6 @@
 	<object class="SingleSound" id="{a908c724-9453-4afe-9429-aebdf3fecb57}">
 		<relationship name="audioFile">
 			<destination>{d475ab95-e2d0-4324-abb7-ae61d1f5a85b}</destination>
-		</relationship>
-	</object>
-	<object class="PlayPercentage" id="{beb236e7-8d44-45e5-8e6b-144729d1c85c}">
-		<property name="percentage">
-			<value>10</value>
-		</property>
-		<relationship name="sound">
-			<destination>{ccca250c-17e6-4803-afa5-9d16f7acc794}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusEffectChain" id="{7bbf97d5-54fd-4a91-9e53-f860a2c9ad4e}">
