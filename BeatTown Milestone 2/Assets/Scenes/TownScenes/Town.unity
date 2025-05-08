@@ -968,7 +968,7 @@ Transform:
   m_GameObject: {fileID: 97724267}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.4484742, y: 1.0662553, z: -10}
+  m_LocalPosition: {x: 3.6471887, y: 1.0664387, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1122,8 +1122,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6c008b87f296477d8c2805169a7e76b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  savedPlayerPosition: {x: 0, y: 0, z: 0}
-  returningToScene: 1
+  savedPlayerPosition: {x: 3.65, y: -2.03, z: 0}
+  returningToScene: 0
 --- !u!4 &130963033
 Transform:
   m_ObjectHideFlags: 0
@@ -1151,8 +1151,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a82e0b5ef29849de929f70ffd0c435e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1544353863}
-  savedPosition: {fileID: 11400000, guid: 9b53adf02e9ad4368b151b0b533b1ddd, type: 2}
+  player: {fileID: 90644245}
+  playerPosition: {fileID: 11400000, guid: 9b53adf02e9ad4368b151b0b533b1ddd, type: 2}
+  playReturnCutscene: {fileID: 11400000, guid: f8ffae3b937c94e399b392c4b1065aff, type: 2}
+  returnCutsceneTrigger: {fileID: 156451127}
 --- !u!1 &139056245
 GameObject:
   m_ObjectHideFlags: 0
@@ -1367,6 +1369,113 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &156451125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 156451126}
+  - component: {fileID: 156451128}
+  - component: {fileID: 156451127}
+  m_Layer: 0
+  m_Name: ReturnCutscene
+  m_TagString: FishTrigger
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &156451126
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156451125}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1802953370}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &156451127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156451125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d9c96ca8cee84c4b80e5d7aeb18de50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isCharacterDialogue: 1
+  characterLines:
+  - speakerName: Gus
+    line: "HA. That was a finstatic battle. Did you see the look on those fish\u2019s
+      faces? Classic. Anyway, ready for round 2?"
+    portrait: {fileID: 21300000, guid: 6fa6e3f8e9e3eaa499dc7344aeb0654d, type: 3}
+  - speakerName: John
+    line: Mmh... maybe another time.
+    portrait: {fileID: 21300000, guid: 7270cd6bddc57924da2d126737a2c130, type: 3}
+  contextualLines: []
+  cutsceneTrigger: 1
+  cutsceneObject: {fileID: 1673584038}
+  screenFader: {fileID: 579120072}
+  fishAnimator: {fileID: 71753390}
+  contextClue: {fileID: 1239717044}
+  characterDialogue: {fileID: 1384802726}
+  contextualDialogue: {fileID: 298729350}
+--- !u!61 &156451128
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156451125}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 6.0320888, y: 0.7598698}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.6663675, y: 2.5669503}
+  m_EdgeRadius: 0
 --- !u!1 &176349123
 GameObject:
   m_ObjectHideFlags: 0
@@ -99648,7 +99757,7 @@ Transform:
   m_GameObject: {fileID: 914292449}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.284942, y: -11.463244, z: -9.637385}
+  m_LocalPosition: {x: -12.084942, y: -12.903244, z: -9.637385}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -110484,12 +110593,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1470789963}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1544353863 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 23110834335609072, guid: 6c01fe90003324956aaeee6f16ca32fe,
-    type: 3}
-  m_PrefabInstance: {fileID: 799909331654100498}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1561041513
 GameObject:
   m_ObjectHideFlags: 0
@@ -111336,8 +111439,11 @@ MonoBehaviour:
   director: {fileID: 1673584039}
   screenFader: {fileID: 579120072}
   nextSceneName: Scenes/Brady
-  player: {fileID: 1544353863}
-  savedPosition: {fileID: 11400000, guid: 9b53adf02e9ad4368b151b0b533b1ddd, type: 2}
+  playerPosition: {fileID: 11400000, guid: 9b53adf02e9ad4368b151b0b533b1ddd, type: 2}
+  player: {fileID: 90644245}
+  playReturnCutscene: {fileID: 11400000, guid: f8ffae3b937c94e399b392c4b1065aff, type: 2}
+  returnPosition: {x: 0, y: 0}
+  townManager: {fileID: 130963032}
 --- !u!1 &1681924103
 GameObject:
   m_ObjectHideFlags: 0
@@ -126063,6 +126169,7 @@ Transform:
   m_Children:
   - {fileID: 911333253}
   - {fileID: 1744781665}
+  - {fileID: 156451126}
   - {fileID: 1348052471}
   - {fileID: 540222596}
   - {fileID: 1604892633}
@@ -131905,12 +132012,12 @@ PrefabInstance:
     - target: {fileID: 3071199742097307507, guid: 6c01fe90003324956aaeee6f16ca32fe,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.45
+      value: 3.65
       objectReference: {fileID: 0}
     - target: {fileID: 3071199742097307507, guid: 6c01fe90003324956aaeee6f16ca32fe,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.59
+      value: -2.03
       objectReference: {fileID: 0}
     - target: {fileID: 3071199742097307507, guid: 6c01fe90003324956aaeee6f16ca32fe,
         type: 3}

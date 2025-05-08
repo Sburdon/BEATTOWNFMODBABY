@@ -95,19 +95,23 @@ public class DialogueTrigger : MonoBehaviour
                 yield return screenFader.FadeIn();
             }
         }
+    }
 
-        // // yield return screenFader.FadeIn();
-        // yield return new WaitUntil(() => !characterDialogue.IsActive());
+    public void TriggerAutomatically()
+    {
+        triggered = true;
 
-        // // Start the fade
-        // yield return fadeController.FadeOut(); // assumes this returns IEnumerator
+        if (isCharacterDialogue)
+        {
+            characterDialogue.StartDialogue(characterLines);
 
-        // // Then start the cutscene
-        // cutsceneManager.PlayCutscene(); // or trigger Timeline, animation, etc.
-
-        // // After cutscene finishes, load next scene
-        // yield return new WaitForSeconds(cutsceneManager.cutsceneLength);
-        // SceneManager.LoadScene("Scenes/Brady"); // Replace with your actual scene
+            if (cutsceneTrigger)
+                StartCoroutine(WaitForDialogueThenCutscene());
+        }
+        else
+        {
+            contextualDialogue.StartDialogue(contextualLines);
+        }
     }
 
 }

@@ -4,19 +4,21 @@ using UnityEngine;
 
 public class SceneRestore : MonoBehaviour
 {
-    public GameObject player;
-    public VectorValue savedPosition;
-    // public DialogueTrigger cutsceneTrigger; 
+    public Transform player;
+    public VectorValue playerPosition;
+    public BoolValue playReturnCutscene;
+    public DialogueTrigger returnCutsceneTrigger;
 
-    void Start()
+    private void Start()
     {
-        if (TownManager.Instance.returningToScene)
-        {
-            player.transform.position = savedPosition.initialValue;
-            // player.transform.position = TownManager.Instance.savedPlayerPosition;
+        player.position = playerPosition.initialValue;
 
-            TownManager.Instance.returningToScene = false;
+        if (playReturnCutscene.Value)
+        {
+            // returnCutsceneTrigger.SetActive(true);
+            player.position = TownManager.Instance.savedPlayerPosition;
+            returnCutsceneTrigger.TriggerAutomatically();
+            playReturnCutscene.Value = false;
         }
-        
     }
 }
