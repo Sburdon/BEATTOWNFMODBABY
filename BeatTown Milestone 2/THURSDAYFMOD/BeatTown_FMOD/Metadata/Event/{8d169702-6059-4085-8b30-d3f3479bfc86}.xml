@@ -123,7 +123,7 @@
 	</object>
 	<object class="LoopRegion" id="{9fe372a2-88c7-4816-b43a-a4ed27402b1c}">
 		<property name="position">
-			<value>0</value>
+			<value>6</value>
 		</property>
 		<property name="length">
 			<value>145.5</value>
