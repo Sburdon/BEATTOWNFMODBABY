@@ -1102,7 +1102,6 @@ GameObject:
   m_Component:
   - component: {fileID: 130963033}
   - component: {fileID: 130963032}
-  - component: {fileID: 130963034}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1122,8 +1121,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6c008b87f296477d8c2805169a7e76b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  savedPlayerPosition: {x: 3.65, y: -2.03, z: 0}
-  returningToScene: 0
+  savedPlayerPosition: {x: 0, y: 0, z: 0}
+  returningToScene: 1
 --- !u!4 &130963033
 Transform:
   m_ObjectHideFlags: 0
@@ -1133,28 +1132,12 @@ Transform:
   m_GameObject: {fileID: 130963031}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.3148603, y: -6.0675564, z: 0.29498276}
+  m_LocalPosition: {x: 8.420081, y: 4.805688, z: -0.06763217}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1660637534}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &130963034
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 130963031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a82e0b5ef29849de929f70ffd0c435e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 90644245}
-  playerPosition: {fileID: 11400000, guid: 9b53adf02e9ad4368b151b0b533b1ddd, type: 2}
-  playReturnCutscene: {fileID: 11400000, guid: f8ffae3b937c94e399b392c4b1065aff, type: 2}
-  returnCutsceneTrigger: {fileID: 156451127}
 --- !u!1 &139056245
 GameObject:
   m_ObjectHideFlags: 0
@@ -99471,6 +99454,90 @@ Transform:
   - {fileID: 2096798136}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &880070883
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 880070884}
+  - component: {fileID: 880070885}
+  - component: {fileID: 880070886}
+  m_Layer: 0
+  m_Name: FishReturnCutscene
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &880070884
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880070883}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1660637534}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!320 &880070885
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880070883}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: fd970310015674d0bb5aa38833392f4b, type: 2}
+  m_InitialState: 0
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: -1753988594571472099, guid: fd970310015674d0bb5aa38833392f4b, type: 2}
+    value: {fileID: 24119590}
+  - key: {fileID: 5476862447706225206, guid: fd970310015674d0bb5aa38833392f4b, type: 2}
+    value: {fileID: 1167814051}
+  m_ExposedReferences:
+    m_References: []
+--- !u!114 &880070886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880070883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Events:
+    m_Signals:
+    - {fileID: 11400000, guid: 1edb917a404fd4918ae54dae6d7ea550, type: 2}
+    m_Events:
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 880070883}
+          m_TargetAssemblyTypeName: 
+          m_MethodName: 
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &882109865
 GameObject:
   m_ObjectHideFlags: 0
@@ -101402,6 +101469,12 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1167814051 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 23110834335609072, guid: 6c01fe90003324956aaeee6f16ca32fe,
+    type: 3}
+  m_PrefabInstance: {fileID: 799909331654100498}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1187083046
 GameObject:
   m_ObjectHideFlags: 0
@@ -109331,6 +109404,59 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1262605143
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1262605145}
+  - component: {fileID: 1262605144}
+  m_Layer: 0
+  m_Name: SceneRestore
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1262605144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262605143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a82e0b5ef29849de929f70ffd0c435e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 90644245}
+  playReturnCutscene: {fileID: 11400000, guid: f8ffae3b937c94e399b392c4b1065aff, type: 2}
+  returnCutsceneTrigger: {fileID: 156451127}
+  destroyOnReturn:
+  - {fileID: 1338946858}
+  - {fileID: 693001018}
+  - {fileID: 71753387}
+  - {fileID: 1744781664}
+  returnCutscene: {fileID: 156451125}
+--- !u!4 &1262605145
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262605143}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 8.420081, y: 4.805688, z: -0.06763217}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1292260732
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -111293,10 +111419,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1673584040}
-  - {fileID: 130963033}
   - {fileID: 1705759502}
   - {fileID: 807391828}
   - {fileID: 1658486366}
+  - {fileID: 880070884}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1673584038
@@ -132763,3 +132889,5 @@ SceneRoots:
   - {fileID: 788829692}
   - {fileID: 1342901034}
   - {fileID: 1660637534}
+  - {fileID: 130963033}
+  - {fileID: 1262605145}

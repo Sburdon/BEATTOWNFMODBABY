@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Playables;
 using System.Collections;
+using System.Collections.Generic;
 
 public class TimelineDialogueBridge : MonoBehaviour
 {
