@@ -9,12 +9,11 @@ public class SceneRestore : MonoBehaviour
     public BoolValue playReturnCutscene;
     public DialogueTrigger returnCutsceneTrigger;
 
-    public List<GameObject> destroyOnReturn;
+    public List<GameObject> destroyOnReturn, keepActiveOnReturn;
     public GameObject returnCutscene;
 
     private void Start()
     {
-        // Only use TownManager's saved position
         if (TownManager.Instance != null)
         {
             player.position = TownManager.Instance.savedPlayerPosition;
@@ -22,14 +21,33 @@ public class SceneRestore : MonoBehaviour
         }
 
         if (playReturnCutscene != null && playReturnCutscene.Value)
+        {
+            foreach (var obj in destroyOnReturn)
             {
-                foreach(var obj in destroyOnReturn){
                 obj.SetActive(false);
             }
+
+            foreach(var obj in keepActiveOnReturn){
+                obj.SetActive(true);
+            }
+
             returnCutscene.SetActive(true);
-            Debug.Log("Auto-playing cutscene after scene return");
-            returnCutsceneTrigger.TriggerAutomatically();
+            StartCoroutine(DelayedCutsceneTrigger());
             playReturnCutscene.Value = false;
         }
     }
+
+    IEnumerator DelayedCutsceneTrigger()
+    {
+        yield return null; 
+
+        if (returnCutsceneTrigger != null)
+        {
+            returnCutsceneTrigger.ResetTrigger();
+            Debug.Log("Auto-playing cutscene after scene return (delayed)");
+            returnCutsceneTrigger.TriggerAutomatically();
+        }
+    }
+
+
 }

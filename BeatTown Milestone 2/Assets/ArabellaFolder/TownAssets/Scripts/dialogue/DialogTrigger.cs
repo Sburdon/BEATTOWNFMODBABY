@@ -114,4 +114,10 @@ public class DialogueTrigger : MonoBehaviour
         }
     }
 
+    public void ResetTrigger()
+    {
+        triggered = false;
+    }
+
+
 }

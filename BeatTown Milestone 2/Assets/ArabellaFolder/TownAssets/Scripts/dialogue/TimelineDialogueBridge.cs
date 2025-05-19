@@ -24,6 +24,8 @@ public class TimelineDialogueBridge : MonoBehaviour
     public Vector2 returnPosition;
     public TownManager townManager; 
 
+    public bool isTransitioning;
+
     public void Awake(){
         StartCoroutine(FadeAndBeginScene());
     }
@@ -69,6 +71,9 @@ public class TimelineDialogueBridge : MonoBehaviour
         townManager.savedPlayerPosition = player.transform.position;
         Debug.Log(townManager.savedPlayerPosition);
         playReturnCutscene.Value = true;
-        UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneName);
+        if(isTransitioning && nextSceneName != null){
+            UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneName);
+        }
+        
     }
 }

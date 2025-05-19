@@ -1408,7 +1408,7 @@ MonoBehaviour:
     portrait: {fileID: 21300000, guid: 7270cd6bddc57924da2d126737a2c130, type: 3}
   contextualLines: []
   cutsceneTrigger: 1
-  cutsceneObject: {fileID: 1673584038}
+  cutsceneObject: {fileID: 373142035}
   screenFader: {fileID: 579120072}
   fishAnimator: {fileID: 71753390}
   contextClue: {fileID: 1239717044}
@@ -96495,6 +96495,122 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &373142035
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 373142036}
+  - component: {fileID: 373142038}
+  - component: {fileID: 373142037}
+  - component: {fileID: 373142039}
+  m_Layer: 0
+  m_Name: ReturnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &373142036
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373142035}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.007987, y: -0.56572723, z: 0.3012535}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1660637534}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &373142037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373142035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Events:
+    m_Signals:
+    - {fileID: 11400000, guid: 1edb917a404fd4918ae54dae6d7ea550, type: 2}
+    m_Events:
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 373142035}
+          m_TargetAssemblyTypeName: TimelineDialogueBridge, Assembly-CSharp
+          m_MethodName: 
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!320 &373142038
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373142035}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: fd970310015674d0bb5aa38833392f4b, type: 2}
+  m_InitialState: 0
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: 3595044518269001804, guid: 226dc5e52a5b74a01b6adaf5b5f4ef88, type: 2}
+    value: {fileID: 90644249}
+  - key: {fileID: -1311017475982058497, guid: 226dc5e52a5b74a01b6adaf5b5f4ef88, type: 2}
+    value: {fileID: 1338946858}
+  - key: {fileID: -1326949144620756128, guid: 226dc5e52a5b74a01b6adaf5b5f4ef88, type: 2}
+    value: {fileID: 693001018}
+  - key: {fileID: -6995480494300491711, guid: 226dc5e52a5b74a01b6adaf5b5f4ef88, type: 2}
+    value: {fileID: 373142037}
+  - key: {fileID: -42634856197894011, guid: 226dc5e52a5b74a01b6adaf5b5f4ef88, type: 2}
+    value: {fileID: 71753387}
+  - key: {fileID: -2969553944416913314, guid: 226dc5e52a5b74a01b6adaf5b5f4ef88, type: 2}
+    value: {fileID: 24119590}
+  m_ExposedReferences:
+    m_References: []
+--- !u!114 &373142039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373142035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3997b7c3d5e68425d8a28dcd92ec4249, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterDialogue: {fileID: 1384802726}
+  characterLines: []
+  director: {fileID: 373142038}
+  screenFader: {fileID: 579120072}
+  nextSceneName: 
+  playerPosition: {fileID: 11400000, guid: 9b53adf02e9ad4368b151b0b533b1ddd, type: 2}
+  player: {fileID: 90644245}
+  playReturnCutscene: {fileID: 11400000, guid: f8ffae3b937c94e399b392c4b1065aff, type: 2}
+  returnPosition: {x: 0, y: 0}
+  townManager: {fileID: 0}
+  isTransitioning: 0
 --- !u!1 &406128668
 GameObject:
   m_ObjectHideFlags: 0
@@ -99454,90 +99570,6 @@ Transform:
   - {fileID: 2096798136}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &880070883
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 880070884}
-  - component: {fileID: 880070885}
-  - component: {fileID: 880070886}
-  m_Layer: 0
-  m_Name: FishReturnCutscene
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &880070884
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 880070883}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1660637534}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!320 &880070885
-PlayableDirector:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 880070883}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: fd970310015674d0bb5aa38833392f4b, type: 2}
-  m_InitialState: 0
-  m_WrapMode: 2
-  m_DirectorUpdateMode: 1
-  m_InitialTime: 0
-  m_SceneBindings:
-  - key: {fileID: -1753988594571472099, guid: fd970310015674d0bb5aa38833392f4b, type: 2}
-    value: {fileID: 24119590}
-  - key: {fileID: 5476862447706225206, guid: fd970310015674d0bb5aa38833392f4b, type: 2}
-    value: {fileID: 1167814051}
-  m_ExposedReferences:
-    m_References: []
---- !u!114 &880070886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 880070883}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Events:
-    m_Signals:
-    - {fileID: 11400000, guid: 1edb917a404fd4918ae54dae6d7ea550, type: 2}
-    m_Events:
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 880070883}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: 
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: 
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!1 &882109865
 GameObject:
   m_ObjectHideFlags: 0
@@ -101469,12 +101501,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1167814051 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 23110834335609072, guid: 6c01fe90003324956aaeee6f16ca32fe,
-    type: 3}
-  m_PrefabInstance: {fileID: 799909331654100498}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1187083046
 GameObject:
   m_ObjectHideFlags: 0
@@ -109441,6 +109467,9 @@ MonoBehaviour:
   - {fileID: 693001018}
   - {fileID: 71753387}
   - {fileID: 1744781664}
+  - {fileID: 1518543097}
+  keepActiveOnReturn:
+  - {fileID: 24119590}
   returnCutscene: {fileID: 156451125}
 --- !u!4 &1262605145
 Transform:
@@ -110719,6 +110748,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1470789963}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1518543097 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8757586303429861527, guid: 27663212b6f2a4269813b163fd3a5d26,
+    type: 3}
+  m_PrefabInstance: {fileID: 3417661405227067399}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1561041513
 GameObject:
   m_ObjectHideFlags: 0
@@ -111419,10 +111454,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1673584040}
+  - {fileID: 373142036}
   - {fileID: 1705759502}
   - {fileID: 807391828}
   - {fileID: 1658486366}
-  - {fileID: 880070884}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1673584038
@@ -111570,6 +111605,7 @@ MonoBehaviour:
   playReturnCutscene: {fileID: 11400000, guid: f8ffae3b937c94e399b392c4b1065aff, type: 2}
   returnPosition: {x: 0, y: 0}
   townManager: {fileID: 130963032}
+  isTransitioning: 1
 --- !u!1 &1681924103
 GameObject:
   m_ObjectHideFlags: 0
